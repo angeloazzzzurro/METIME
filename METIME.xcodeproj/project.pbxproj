@@ -7,11 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FACD7A452F8EE065AE34DBE /* BedNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA6CECFC6AF48DB5E0C7427 /* BedNode.swift */; };
 		217D80CB58BEC18829D7402F /* MainPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93322C02B9A13F6223EAF383 /* MainPetView.swift */; };
+		42B8F107A0E8E681D2D588DB /* IslandMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E42FFAF837DF47092F5762 /* IslandMapView.swift */; };
 		4946FFBAA53D02B397FFE293 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB96584783D1F15149030F7 /* AppState.swift */; };
+		528F7AC404EC3DF89FD27016 /* SectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6E8F4C98752221E08FA079 /* SectionViews.swift */; };
 		6E3329208B09DA740019C006 /* GardenScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1A1B9356C560E725A25599 /* GardenScene.swift */; };
 		715C4C7A1DE46BB3EFB85FF8 /* SoundscapeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBE447E8DDF06F279BB5F1F /* SoundscapeManager.swift */; };
+		75F51B8E7D56F3CC4EF41917 /* MockupGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF8B4C4A3B1F7D971CE1E73 /* MockupGalleryView.swift */; };
 		8A66AFECAFD6D66A52D29B8E /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A92BFC107BC53F29B01519 /* GameStore.swift */; };
+		A8A4646C2E605A9C9DFC3374 /* IslandMapScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D76F1F793011ED3D8CFEF81 /* IslandMapScene.swift */; };
 		DDCDF327222A3BE66EE3FE5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E5D9C0DBB1C7F9277761554D /* Assets.xcassets */; };
 		E14191D9F9D4BA301D2E728C /* PetNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91242716B74CBD2BFF41195 /* PetNode.swift */; };
 		E57674FF2999B2D0DA863952 /* ParticleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22553E3DB9FE31B7AE9DFDF /* ParticleFactory.swift */; };
@@ -19,13 +24,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0DF8B4C4A3B1F7D971CE1E73 /* MockupGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockupGalleryView.swift; sourceTree = "<group>"; };
 		1FBE447E8DDF06F279BB5F1F /* SoundscapeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundscapeManager.swift; sourceTree = "<group>"; };
 		3BB96584783D1F15149030F7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		4D76F1F793011ED3D8CFEF81 /* IslandMapScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandMapScene.swift; sourceTree = "<group>"; };
 		519202695227C6EE54A2A64A /* METIMEApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = METIMEApp.swift; sourceTree = "<group>"; };
+		60E42FFAF837DF47092F5762 /* IslandMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandMapView.swift; sourceTree = "<group>"; };
+		7AA6CECFC6AF48DB5E0C7427 /* BedNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedNode.swift; sourceTree = "<group>"; };
 		93322C02B9A13F6223EAF383 /* MainPetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPetView.swift; sourceTree = "<group>"; };
 		B7D82AC5908E6C6B5D8BF125 /* METIME.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = METIME.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B91242716B74CBD2BFF41195 /* PetNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetNode.swift; sourceTree = "<group>"; };
 		BC1A1B9356C560E725A25599 /* GardenScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenScene.swift; sourceTree = "<group>"; };
+		DE6E8F4C98752221E08FA079 /* SectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionViews.swift; sourceTree = "<group>"; };
 		E5D9C0DBB1C7F9277761554D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F22553E3DB9FE31B7AE9DFDF /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
 		F6A92BFC107BC53F29B01519 /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
@@ -51,7 +61,10 @@
 		23C036E160A277FB6F880E7C /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				60E42FFAF837DF47092F5762 /* IslandMapView.swift */,
 				93322C02B9A13F6223EAF383 /* MainPetView.swift */,
+				DE6E8F4C98752221E08FA079 /* SectionViews.swift */,
+				F0E64F276DDEDB2D0B92CB3A /* Mockups */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -75,7 +88,9 @@
 		8F56FF9C35E2A5C31B855FB8 /* Garden */ = {
 			isa = PBXGroup;
 			children = (
+				7AA6CECFC6AF48DB5E0C7427 /* BedNode.swift */,
 				BC1A1B9356C560E725A25599 /* GardenScene.swift */,
+				4D76F1F793011ED3D8CFEF81 /* IslandMapScene.swift */,
 			);
 			path = Garden;
 			sourceTree = "<group>";
@@ -118,6 +133,14 @@
 				23339CAD280513CB80EC2B82 /* Persistence */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		F0E64F276DDEDB2D0B92CB3A /* Mockups */ = {
+			isa = PBXGroup;
+			children = (
+				0DF8B4C4A3B1F7D971CE1E73 /* MockupGalleryView.swift */,
+			);
+			path = Mockups;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,12 +214,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				4946FFBAA53D02B397FFE293 /* AppState.swift in Sources */,
+				0FACD7A452F8EE065AE34DBE /* BedNode.swift in Sources */,
 				8A66AFECAFD6D66A52D29B8E /* GameStore.swift in Sources */,
 				6E3329208B09DA740019C006 /* GardenScene.swift in Sources */,
+				A8A4646C2E605A9C9DFC3374 /* IslandMapScene.swift in Sources */,
+				42B8F107A0E8E681D2D588DB /* IslandMapView.swift in Sources */,
 				FF6639787893C0A041094DEA /* METIMEApp.swift in Sources */,
 				217D80CB58BEC18829D7402F /* MainPetView.swift in Sources */,
+				75F51B8E7D56F3CC4EF41917 /* MockupGalleryView.swift in Sources */,
 				E57674FF2999B2D0DA863952 /* ParticleFactory.swift in Sources */,
 				E14191D9F9D4BA301D2E728C /* PetNode.swift in Sources */,
+				528F7AC404EC3DF89FD27016 /* SectionViews.swift in Sources */,
 				715C4C7A1DE46BB3EFB85FF8 /* SoundscapeManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

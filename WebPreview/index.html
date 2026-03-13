@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Home</title>
+  <link rel="stylesheet" href="assets/kawaii.css" />
+  <style>
+    .home-shell { display: grid; gap: 12px; }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 0.95;
+      color: #2f3450;
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #ffffffcf;
+      border: 1px solid #fff;
+      font-size: 11px;
+      font-weight: 800;
+      color: #4a568a;
+    }
+
+    .house-card {
+      border-radius: 24px;
+      border: 1px solid #fff;
+      background: #ffffffbf;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .house {
+      position: relative;
+      border-radius: 20px;
+      min-height: 360px;
+      overflow: hidden;
+      perspective: 900px;
+      transform-style: preserve-3d;
+      background:
+        radial-gradient(220px 100px at 50% 8%, #fff9ce 0%, transparent 75%),
+        linear-gradient(180deg, #dff2ff 0%, #c5edff 46%, #ffe8c9 100%);
+      touch-action: none;
+      transition: transform 0.15s ease;
+    }
+
+    .world3d {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .back-wall {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 20px;
+      height: 210px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f4fbff 0%, #e3f3ff 76%);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      transform: translateZ(-30px);
+      box-shadow: inset 0 -24px 30px rgba(137, 190, 215, 0.15);
+    }
+
+    .left-wall,
+    .right-wall {
+      position: absolute;
+      top: 40px;
+      width: 42px;
+      height: 240px;
+      background: linear-gradient(180deg, #ffe4c8, #f4c996);
+      opacity: 0.85;
+      transform-origin: center;
+    }
+
+    .left-wall {
+      left: -10px;
+      transform: rotateY(48deg) translateZ(8px);
+    }
+
+    .right-wall {
+      right: -10px;
+      transform: rotateY(-48deg) translateZ(8px);
+    }
+
+    .sun {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      top: 18px;
+      right: 20px;
+      background: radial-gradient(circle at 35% 35%, #fffce4 12%, #ffd96b 70%);
+      box-shadow: 0 0 0 10px rgba(255, 226, 126, 0.26);
+    }
+
+    .window {
+      position: absolute;
+      width: 62px;
+      height: 72px;
+      border-radius: 14px;
+      top: 64px;
+      background: #e9f7ff;
+      border: 3px solid #b56d5f;
+      box-shadow: inset 0 -10px 0 rgba(140, 198, 232, 0.24);
+    }
+
+    .window.left { left: 32px; }
+    .window.right { right: 32px; }
+
+    .window::before,
+    .window::after {
+      content: "";
+      position: absolute;
+      background: #b56d5f;
+    }
+
+    .window::before {
+      width: 4px;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .window::after {
+      height: 4px;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .floor {
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -54px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffe3bc, #f6c68e);
+      transform: rotateX(58deg) translateZ(-8px);
+      transform-origin: bottom center;
+      filter: saturate(1.05);
+    }
+
+    .rug {
+      position: absolute;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 44px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffc4de, #ff9fc8);
+      box-shadow: inset 0 -8px 0 rgba(188, 82, 132, 0.2);
+      transform: translateX(-50%) rotateX(62deg) translateZ(6px);
+      transform-origin: bottom center;
+    }
+
+    .pet-shadow {
+      position: absolute;
+      left: var(--pet-x, 50%);
+      bottom: calc(var(--pet-y, 74px) - 20px);
+      width: 110px;
+      height: 26px;
+      border-radius: 50%;
+      transform: translateX(-50%) rotateX(70deg);
+      background: radial-gradient(ellipse at center, rgba(75, 58, 53, 0.35) 0%, rgba(75, 58, 53, 0) 72%);
+      filter: blur(1px);
+      transition: left 0.24s ease, bottom 0.24s ease;
+      pointer-events: none;
+    }
+
+    .pet {
+      position: absolute;
+      left: var(--pet-x, 50%);
+      bottom: var(--pet-y, 74px);
+      transform: translateX(-50%) scaleX(var(--pet-facing, 1));
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 14px 24px rgba(85, 88, 145, 0.18);
+      animation: bounce 2.1s ease-in-out infinite;
+      transition: left 0.24s ease, bottom 0.24s ease, transform 0.2s ease;
+      cursor: grab;
+      transform-origin: center bottom;
+    }
+
+    .pet:active {
+      cursor: grabbing;
+    }
+
+    .pet::before,
+    .pet::after {
+      content: "";
+      position: absolute;
+      width: 32px;
+      height: 42px;
+      border-radius: 20px;
+      background: #fff;
+      top: -14px;
+    }
+
+    .pet::before { left: 24px; transform: rotate(-22deg); }
+    .pet::after { right: 24px; transform: rotate(22deg); }
+
+    .eyes {
+      position: absolute;
+      left: 50%;
+      top: 52px;
+      width: 64px;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .eye {
+      width: 10px;
+      height: 14px;
+      border-radius: 8px;
+      background: #2d3049;
+    }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      top: 74px;
+      width: 26px;
+      height: 14px;
+      border-bottom: 3px solid #2d3049;
+      border-radius: 0 0 14px 14px;
+      transform: translateX(-50%);
+    }
+
+    .blush {
+      position: absolute;
+      top: 68px;
+      width: 16px;
+      height: 10px;
+      border-radius: 999px;
+      background: #ff9cbc;
+      opacity: 0.8;
+    }
+
+    .blush.left { left: 30px; }
+    .blush.right { right: 30px; }
+
+    .mood-line {
+      margin: 10px 0 0;
+      text-align: center;
+      color: #5a6694;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .user-core {
+      margin-top: 10px;
+      border-radius: 18px;
+      border: 1px solid #fff;
+      background: #ffffffd4;
+      padding: 10px;
+      box-shadow: inset 0 -8px 0 rgba(105, 106, 170, 0.08);
+    }
+
+    .user-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, #7d72d6, #5ca0e8);
+      border: 2px solid #fff;
+      box-shadow: 0 8px 14px rgba(83, 81, 156, 0.2);
+    }
+
+    .user-meta strong {
+      display: block;
+      color: #32406a;
+      font-size: 14px;
+      line-height: 1.1;
+    }
+
+    .user-meta span {
+      font-size: 11px;
+      color: #5f6d94;
+      font-weight: 700;
+    }
+
+    .user-bars {
+      margin-top: 8px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 48px 1fr 32px;
+      gap: 6px;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: #57648e;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .bar-track {
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid #f3ecff;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 50%;
+      border-radius: inherit;
+      transition: width 0.2s ease;
+    }
+
+    .f-energy { background: linear-gradient(90deg, #67b2ff, #4d96f4); }
+    .f-focus { background: linear-gradient(90deg, #a98cff, #8d73e8); }
+    .f-calm { background: linear-gradient(90deg, #57d1a8, #31ab82); }
+    .f-bond { background: linear-gradient(90deg, #ff92bf, #ff73ae); }
+
+    .self-actions {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .self-btn {
+      border: 1px solid #fff;
+      border-radius: 12px;
+      background: #ffffffdb;
+      color: #32406a;
+      padding: 8px 4px;
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .self-btn.hydrate { background: linear-gradient(145deg, #e7f1ff, #d9e9ff); }
+    .self-btn.breathe { background: linear-gradient(145deg, #e4fff5, #cdf8e9); }
+    .self-btn.focus { background: linear-gradient(145deg, #f1ebff, #e3dcff); }
+    .self-btn.walk { background: linear-gradient(145deg, #fff1df, #ffe4c4); }
+
+    .micro-log {
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px solid #fff;
+      background: #ffffffcf;
+      padding: 8px;
+      color: #5e6b94;
+      font-size: 11px;
+      font-weight: 700;
+      min-height: 34px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 14px;
+      border: 1px solid #fff;
+      padding: 10px 8px;
+      background: #ffffffd9;
+      color: #31426d;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .footer-nav {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .dock {
+      border-radius: 16px;
+      border: 1px solid #fff;
+      background: #ffffffcf;
+      padding: 10px 6px;
+      color: #4f5f90;
+      text-decoration: none;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0) scaleX(var(--pet-facing, 1)); }
+      50% { transform: translateX(-50%) translateY(-7px) scaleX(var(--pet-facing, 1)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="clouds"></div>
+  <div class="sparkles"></div>
+  <main class="wrap">
+    <section class="home-shell">
+      <div class="top">
+        <h1 class="title">Mimi Home</h1>
+        <div class="chips">
+          <span class="chip" id="chipCalm">Calm 82%</span>
+          <span class="chip" id="chipEnergy">Energy 71%</span>
+          <span class="chip" id="chipBond">Bond 60%</span>
+        </div>
+      </div>
+
+      <article class="house-card">
+        <div class="house">
+          <div class="world3d">
+            <div class="back-wall"></div>
+            <div class="left-wall"></div>
+            <div class="right-wall"></div>
+          </div>
+          <div class="sun"></div>
+          <div class="window left"></div>
+          <div class="window right"></div>
+
+          <div class="pet-shadow"></div>
+
+          <div class="pet">
+            <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
+            <span class="mouth"></span>
+            <span class="blush left"></span>
+            <span class="blush right"></span>
+          </div>
+
+          <div class="rug"></div>
+          <div class="floor"></div>
+        </div>
+
+        <p class="mood-line" id="moodLine">Mimi e a casa e aspetta le tue cure. Trascina con dito o mouse per muoverla.</p>
+
+        <section class="user-core">
+          <div class="user-head">
+            <div class="avatar">YOU</div>
+            <div class="user-meta">
+              <strong>User Core</strong>
+              <span>Il tuo stato influenza direttamente il pet</span>
+            </div>
+          </div>
+
+          <div class="user-bars">
+            <div class="bar-row">
+              <span>Energy</span>
+              <div class="bar-track"><div class="bar-fill f-energy" id="barEnergy"></div></div>
+              <span id="txtEnergy">71</span>
+            </div>
+            <div class="bar-row">
+              <span>Focus</span>
+              <div class="bar-track"><div class="bar-fill f-focus" id="barFocus"></div></div>
+              <span id="txtFocus">64</span>
+            </div>
+            <div class="bar-row">
+              <span>Calm</span>
+              <div class="bar-track"><div class="bar-fill f-calm" id="barCalm"></div></div>
+              <span id="txtCalm">82</span>
+            </div>
+            <div class="bar-row">
+              <span>Bond</span>
+              <div class="bar-track"><div class="bar-fill f-bond" id="barBond"></div></div>
+              <span id="txtBond">60</span>
+            </div>
+          </div>
+
+          <div class="self-actions">
+            <button class="self-btn hydrate" data-selfcare="hydrate">Hydrate</button>
+            <button class="self-btn breathe" data-selfcare="breathe">Breathe</button>
+            <button class="self-btn focus" data-selfcare="focus">Focus</button>
+            <button class="self-btn walk" data-selfcare="walk">Walk</button>
+          </div>
+
+          <div class="micro-log" id="microLog">Scegli un'azione utente per far reagire Mimi e la casa.</div>
+        </section>
+
+        <div class="quick-actions">
+          <a class="btn" href="pages/home-pet.html">Interagisci</a>
+          <a class="btn" href="pages/care-ritual.html">Rituale</a>
+          <a class="btn" href="pages/garden-plants.html">Giardino</a>
+          <a class="btn" href="pages/token-games.html">Giochi</a>
+        </div>
+      </article>
+
+      <nav class="footer-nav">
+        <a class="dock" href="pages/home-pet.html">Pet</a>
+        <a class="dock" href="pages/journal.html">Journal</a>
+        <a class="dock" href="pages/garden-plants.html">Garden</a>
+        <a class="dock" href="pages/token-games.html">Token</a>
+      </nav>
+    </section>
+  </main>
+
+  <script>
+    const house = document.querySelector(".house");
+    const pet = document.querySelector(".pet");
+    const petShadow = document.querySelector(".pet-shadow");
+    const moodLine = document.getElementById("moodLine");
+    const microLog = document.getElementById("microLog");
+
+    const pos = {
+      x: 50,
+      y: 74
+    };
+
+    const userState = {
+      energy: 71,
+      focus: 64,
+      calm: 82,
+      bond: 60
+    };
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function syncPet() {
+      pos.x = clamp(pos.x, 18, 82);
+      pos.y = clamp(pos.y, 62, 156);
+      pet.style.setProperty("--pet-x", `${pos.x}%`);
+      pet.style.setProperty("--pet-y", `${pos.y}px`);
+      petShadow.style.setProperty("--pet-x", `${pos.x}%`);
+      petShadow.style.setProperty("--pet-y", `${pos.y}px`);
+    }
+
+    function renderUserState() {
+      const map = [
+        ["Energy", userState.energy],
+        ["Focus", userState.focus],
+        ["Calm", userState.calm],
+        ["Bond", userState.bond]
+      ];
+
+      map.forEach(([name, value]) => {
+        document.getElementById(`bar${name}`).style.width = `${value}%`;
+        document.getElementById(`txt${name}`).textContent = String(Math.round(value));
+      });
+
+      document.getElementById("chipCalm").textContent = `Calm ${Math.round(userState.calm)}%`;
+      document.getElementById("chipEnergy").textContent = `Energy ${Math.round(userState.energy)}%`;
+      document.getElementById("chipBond").textContent = `Bond ${Math.round(userState.bond)}%`;
+
+      if (userState.bond > 78) {
+        moodLine.textContent = "Mimi e super connessa con te e ti segue felice in casa.";
+      } else if (userState.calm < 42) {
+        moodLine.textContent = "Mimi percepisce tensione: prova un'azione calmante.";
+      } else if (userState.energy < 40) {
+        moodLine.textContent = "Mimi si muove piano: recupera energia con una pausa breve.";
+      } else {
+        moodLine.textContent = "Mimi e a casa e aspetta le tue cure. Trascina con dito o mouse per muoverla.";
+      }
+    }
+
+    function clampState() {
+      userState.energy = clamp(userState.energy, 0, 100);
+      userState.focus = clamp(userState.focus, 0, 100);
+      userState.calm = clamp(userState.calm, 0, 100);
+      userState.bond = clamp(userState.bond, 0, 100);
+    }
+
+    function applySelfcare(action) {
+      if (action === "hydrate") {
+        userState.energy += 9;
+        userState.calm += 3;
+        userState.bond += 4;
+        microLog.textContent = "Hai bevuto acqua: Mimi ti osserva e si rilassa.";
+      }
+      if (action === "breathe") {
+        userState.calm += 12;
+        userState.focus += 4;
+        userState.bond += 5;
+        microLog.textContent = "Respirazione guidata: la stanza diventa piu serena.";
+      }
+      if (action === "focus") {
+        userState.focus += 11;
+        userState.energy -= 3;
+        userState.bond += 3;
+        microLog.textContent = "Hai completato uno sprint focus: Mimi e orgogliosa di te.";
+      }
+      if (action === "walk") {
+        userState.energy += 6;
+        userState.calm += 6;
+        userState.bond += 7;
+        pos.x = clamp(pos.x + 6, 18, 82);
+        microLog.textContent = "Mini passeggiata in casa: Mimi ti segue verso destra.";
+      }
+
+      // Gentle decay keeps interaction meaningful over time.
+      userState.energy -= 1;
+      userState.focus -= 1;
+      clampState();
+      syncPet();
+      renderUserState();
+    }
+
+    document.querySelectorAll("[data-selfcare]").forEach((button) => {
+      button.addEventListener("click", () => applySelfcare(button.dataset.selfcare));
+    });
+
+    function moveToPointer(event) {
+      const rect = house.getBoundingClientRect();
+      const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+      const yFromBottom = rect.bottom - event.clientY;
+      const previousX = pos.x;
+      pos.x = xPercent;
+      pos.y = yFromBottom;
+      pet.style.setProperty("--pet-facing", xPercent < previousX ? "-1" : "1");
+      syncPet();
+    }
+
+    let dragging = false;
+
+    // Start drag from either the pet or any point inside the house.
+    function startDrag(event) {
+      dragging = true;
+      house.setPointerCapture(event.pointerId);
+      moveToPointer(event);
+    }
+
+    house.addEventListener("pointerdown", startDrag);
+    pet.addEventListener("pointerdown", startDrag);
+
+    house.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      moveToPointer(event);
+    });
+
+    house.addEventListener("pointermove", (event) => {
+      const rect = house.getBoundingClientRect();
+      const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+      const ny = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+      const rx = clamp(ny * -5, -5, 5);
+      const ry = clamp(nx * 7, -7, 7);
+      house.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+
+    house.addEventListener("pointerup", () => {
+      dragging = false;
+    });
+
+    house.addEventListener("pointercancel", () => {
+      dragging = false;
+    });
+
+    house.addEventListener("pointerleave", () => {
+      house.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg)";
+    });
+
+    syncPet();
+    renderUserState();
+  </script>
+</body>
+</html>

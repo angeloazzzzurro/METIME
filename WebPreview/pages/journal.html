@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Journal</title>
+  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <style>
+    .journal-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px; }
+    .panel { padding: 18px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+    .metric { border-radius: 14px; border: 1px solid #fff; background: #ffffffbf; padding: 12px; }
+    .metric small { color: var(--muted); text-transform: uppercase; font-size: 11px; font-weight: 700; }
+    .metric strong { display: block; margin-top: 3px; font-size: 22px; }
+    textarea {
+      width: 100%;
+      min-height: 128px;
+      border: 1px solid #fff;
+      border-radius: 14px;
+      background: #ffffffcf;
+      padding: 12px;
+      font: inherit;
+      color: #364066;
+      resize: vertical;
+    }
+    .save { margin-top: 10px; background: linear-gradient(145deg, #ffe5f3, #ffd0e9); }
+    .entries { margin-top: 12px; display: grid; gap: 10px; }
+    .entry-card { border-radius: 14px; border: 1px solid #fff; background: #ffffffbf; padding: 12px; }
+    .entry-card b { color: #344061; }
+    @media (max-width: 920px) { .journal-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="clouds"></div>
+  <div class="sparkles"></div>
+  <main class="wrap">
+    <nav class="top-nav">
+      <a class="nav-link" href="home-pet.html">Home Pet</a>
+      <a class="nav-link" href="care-ritual.html">Care Ritual</a>
+      <a class="nav-link active" href="journal.html">Journal</a>
+      <a class="nav-link" href="garden-plants.html">Garden Piante</a>
+      <a class="nav-link" href="token-games.html">Giochi Token</a>
+      <a class="nav-link" href="../index.html">Hub</a>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">mockup pagina separata</div>
+      <h1>Journal e Insights</h1>
+      <p class="subtitle">Pagina dedicata a note quotidiane, streak, trend umore e riflessioni.</p>
+    </section>
+
+    <section class="journal-layout">
+      <article class="card panel">
+        <h2 style="margin:0;font-size:30px;">Insight Snapshot</h2>
+        <div class="metric-grid">
+          <div class="metric"><small>Streak</small><strong>9 giorni</strong></div>
+          <div class="metric"><small>Mood medio</small><strong>Sereno</strong></div>
+          <div class="metric"><small>Sessioni cura</small><strong>14</strong></div>
+          <div class="metric"><small>Piante vive</small><strong>5/6</strong></div>
+        </div>
+        <div class="timeline" style="margin-top:12px;">
+          <div class="entry"><strong>Trend</strong>Calm in crescita negli ultimi 5 giorni.</div>
+          <div class="entry"><strong>Consiglio</strong>Continua i rituali serali da 4 minuti.</div>
+        </div>
+      </article>
+
+      <aside class="side">
+        <section class="card panel">
+          <h3 style="margin:0 0 8px;font-size:24px;">Nuova nota</h3>
+          <textarea id="noteInput" placeholder="Scrivi una riflessione breve su come ti senti oggi..."></textarea>
+          <button class="btn save" id="saveBtn">Salva nota</button>
+        </section>
+        <section class="card panel">
+          <h3 style="margin:0;font-size:24px;">Ultime riflessioni</h3>
+          <div class="entries" id="entries">
+            <div class="entry-card"><b>Oggi</b><br/>Passeggiata breve e pet piu calmo.</div>
+            <div class="entry-card"><b>Ieri</b><br/>Meditazione completata prima di dormire.</div>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const saveBtn = document.getElementById("saveBtn");
+    const noteInput = document.getElementById("noteInput");
+    const entries = document.getElementById("entries");
+
+    saveBtn.addEventListener("click", () => {
+      const text = noteInput.value.trim();
+      if (!text) return;
+      const card = document.createElement("div");
+      card.className = "entry-card";
+      card.innerHTML = `<b>Nuova nota</b><br/>${text}`;
+      entries.prepend(card);
+      noteInput.value = "";
+    });
+  </script>
+</body>
+</html>

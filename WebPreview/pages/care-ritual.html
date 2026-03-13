@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Care Ritual</title>
+  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <style>
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel { padding: 18px; }
+    .breath {
+      width: min(280px, 74vw);
+      aspect-ratio: 1 / 1;
+      margin: 14px auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #fff7eb 10%, #f2a044 70%);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 26px rgba(127, 67, 16, 0.24);
+      animation: pulse 6s ease-in-out infinite;
+      text-align: center;
+    }
+    .breath strong { display: block; font-size: 44px; line-height: 1; }
+    .steps { display: grid; gap: 10px; margin-top: 10px; }
+    .step { border-radius: 12px; background: #ffffffbf; border: 1px solid #fff; padding: 11px; }
+    .step b { color: #364066; }
+    .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .start { background: linear-gradient(145deg, #e4fff5, #c8f9e8); }
+    .skip { background: linear-gradient(145deg, #e8f2ff, #d8e8ff); }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      45% { transform: scale(1.08); }
+      65% { transform: scale(0.98); }
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="clouds"></div>
+  <div class="sparkles"></div>
+  <main class="wrap">
+    <nav class="top-nav">
+      <a class="nav-link" href="home-pet.html">Home Pet</a>
+      <a class="nav-link active" href="care-ritual.html">Care Ritual</a>
+      <a class="nav-link" href="journal.html">Journal</a>
+      <a class="nav-link" href="garden-plants.html">Garden Piante</a>
+      <a class="nav-link" href="token-games.html">Giochi Token</a>
+      <a class="nav-link" href="../index.html">Hub</a>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">mockup pagina separata</div>
+      <h1>Care Ritual</h1>
+      <p class="subtitle">Sessione guidata per calmare pet e player. Visual timer, step rituali e ricompensa finale.</p>
+    </section>
+
+    <section class="layout">
+      <article class="card panel">
+        <h2 style="margin:0;font-size:30px;">Rituale del respiro</h2>
+        <p style="margin:6px 0 0;color:var(--muted);">4 minuti consigliati per recuperare calma.</p>
+        <div class="breath">
+          <div>
+            Inspira
+            <strong id="timer">03:12</strong>
+            espira lentamente
+          </div>
+        </div>
+        <div class="cta">
+          <button class="btn start" id="startBtn">Start Ritual</button>
+          <button class="btn skip" id="skipBtn">Skip</button>
+        </div>
+      </article>
+
+      <aside class="side">
+        <section class="card mini">
+          <h3>Flow</h3>
+          <div class="steps">
+            <div class="step"><b>1. Grounding</b><br/>Siediti e rilassa le spalle.</div>
+            <div class="step"><b>2. Breathing</b><br/>Inspira 4 sec, espira 6 sec.</div>
+            <div class="step"><b>3. Gratitude</b><br/>Scrivi una cosa positiva.</div>
+          </div>
+        </section>
+        <section class="card mini">
+          <h3>Reward</h3>
+          <p>Completando la sessione: Calm +18, Happiness +7, 2 semi sereni.</p>
+        </section>
+        <section class="card mini">
+          <h3>Session log</h3>
+          <div class="timeline" id="sessionLog">
+            <div class="entry"><strong>Ready</strong>In attesa di avvio.</div>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    let seconds = 192;
+    let timer = null;
+    const timerNode = document.getElementById("timer");
+    const log = document.getElementById("sessionLog");
+
+    function fmt(s) {
+      const m = String(Math.floor(s / 60)).padStart(2, "0");
+      const ss = String(s % 60).padStart(2, "0");
+      return `${m}:${ss}`;
+    }
+
+    function addLog(title, text) {
+      const item = document.createElement("div");
+      item.className = "entry";
+      item.innerHTML = `<strong>${title}</strong>${text}`;
+      log.prepend(item);
+      while (log.children.length > 5) log.removeChild(log.lastElementChild);
+    }
+
+    function tick() {
+      if (seconds <= 0) {
+        clearInterval(timer);
+        timer = null;
+        addLog("Completed", "Ritual complete. Reward unlocked.");
+        return;
+      }
+      seconds -= 1;
+      timerNode.textContent = fmt(seconds);
+      if (seconds % 30 === 0) addLog("Breath", "Mantieni ritmo lento e regolare.");
+    }
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      if (timer) return;
+      addLog("Start", "Sessione avviata.");
+      timer = setInterval(tick, 1000);
+    });
+
+    document.getElementById("skipBtn").addEventListener("click", () => {
+      clearInterval(timer);
+      timer = null;
+      seconds = 90;
+      timerNode.textContent = fmt(seconds);
+      addLog("Skip", "Sessione ridotta in modalita rapida.");
+    });
+  </script>
+</body>
+</html>

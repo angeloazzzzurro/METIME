@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Giochi Token</title>
+  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <style>
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel { padding: 18px; }
+    .token-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .token-pill {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #ffffffcf;
+      border: 1px solid #fff;
+      font-weight: 800;
+      color: #495584;
+    }
+
+    .click-arena {
+      margin-top: 10px;
+      border-radius: 18px;
+      min-height: 220px;
+      background: linear-gradient(180deg, #f7f3ff, #e9f8ff);
+      border: 1px solid #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff5ba 20%, #f6c95f 75%);
+      color: #6e4c00;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(148, 115, 28, 0.22);
+    }
+
+    .star.golden {
+      background: radial-gradient(circle at 35% 30%, #fff7de 15%, #ffb84f 74%);
+      box-shadow: 0 10px 20px rgba(255, 145, 32, 0.3);
+    }
+
+    .timing-track {
+      margin-top: 12px;
+      height: 22px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #f1ecff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .target-zone {
+      position: absolute;
+      left: 42%;
+      width: 16%;
+      top: 0;
+      bottom: 0;
+      background: rgba(102, 216, 153, 0.35);
+    }
+
+    .cursor {
+      position: absolute;
+      top: 2px;
+      width: 14px;
+      height: 18px;
+      border-radius: 7px;
+      background: #6f7ef3;
+      left: 0;
+      transition: left 0.06s linear;
+    }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .play-btn { background: linear-gradient(145deg, #ffe5f3, #ffd0e9); }
+    .claim-btn { background: linear-gradient(145deg, #e4fff5, #c8f9e8); }
+    .sync-btn { background: linear-gradient(145deg, #e8f2ff, #d8e8ff); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+    .mini-stat { border-radius: 12px; border: 1px solid #fff; background: #ffffffbf; padding: 9px; text-align: center; }
+    .mini-stat small { color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 700; }
+    .mini-stat strong { display: block; margin-top: 2px; }
+
+    @media (max-width: 920px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="clouds"></div>
+  <div class="sparkles"></div>
+  <main class="wrap">
+    <nav class="top-nav">
+      <a class="nav-link" href="home-pet.html">Home Pet</a>
+      <a class="nav-link" href="care-ritual.html">Care Ritual</a>
+      <a class="nav-link" href="journal.html">Journal</a>
+      <a class="nav-link" href="garden-plants.html">Garden Piante</a>
+      <a class="nav-link active" href="token-games.html">Giochi Token</a>
+      <a class="nav-link" href="../index.html">Hub</a>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">economia token</div>
+      <h1>Gioca per guadagnare token</h1>
+      <p class="subtitle">I token che ottieni qui vengono salvati e usati nel Giardino per curare e far crescere le piante.</p>
+    </section>
+
+    <section class="layout">
+      <article class="card panel">
+        <div class="token-head">
+          <h2 style="margin:0;font-size:28px;">Mini gioco 1: Star Catch</h2>
+          <span class="token-pill" id="wallet">Token: 0</span>
+        </div>
+        <p style="margin:8px 0 0;color:var(--muted);">Clicca le stelline entro 20 secondi. Ogni 5 stelle = 1 token.</p>
+        <div class="click-arena" id="arena"></div>
+        <div class="stats-grid">
+          <div class="mini-stat"><small>Tempo</small><strong id="timeTxt">20s</strong></div>
+          <div class="mini-stat"><small>Stelle</small><strong id="starsTxt">0</strong></div>
+          <div class="mini-stat"><small>Token round</small><strong id="roundTokenTxt">0</strong></div>
+          <div class="mini-stat"><small>Combo</small><strong id="comboTxt">x1</strong></div>
+          <div class="mini-stat"><small>Best combo</small><strong id="bestComboTxt">x1</strong></div>
+          <div class="mini-stat"><small>Bonus score</small><strong id="bonusTxt">0</strong></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn play-btn" id="startStars">Avvia Star Catch</button>
+          <button class="btn claim-btn" id="claimStars">Riscatta token</button>
+        </div>
+      </article>
+
+      <aside class="side">
+        <section class="card panel">
+          <h3 style="margin:0;font-size:24px;">Mini gioco 2: Timing Tap</h3>
+          <p style="margin:8px 0 0;color:var(--muted);">Premi STOP quando il cursore entra nella zona verde. 3 successi = 2 token.</p>
+          <div class="timing-track">
+            <div class="target-zone"></div>
+            <div class="cursor" id="cursor"></div>
+          </div>
+          <div class="stats-grid">
+            <div class="mini-stat"><small>Successi</small><strong id="hitTxt">0</strong></div>
+            <div class="mini-stat"><small>Tentativi</small><strong id="tryTxt">0</strong></div>
+            <div class="mini-stat"><small>Token round</small><strong id="timingTokenTxt">0</strong></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn play-btn" id="startTiming">Start</button>
+            <button class="btn claim-btn" id="stopTiming">Stop</button>
+          </div>
+        </section>
+
+        <section class="card mini">
+          <h3>Log giochi</h3>
+          <div class="timeline" id="gameLog">
+            <div class="entry"><strong>Ready</strong>Inizia un mini gioco per guadagnare token.</div>
+          </div>
+        </section>
+
+        <section class="card mini">
+          <h3>Usa i token</h3>
+          <p>Vai in Garden Piante: ogni cura costa token. Con piu cure la crescita sale di stage fino a Bloom.</p>
+          <div class="btn-row">
+            <a class="btn sync-btn" href="garden-plants.html">Vai al Giardino</a>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const TOKEN_KEY = "metimeTokens";
+    const arena = document.getElementById("arena");
+    const wallet = document.getElementById("wallet");
+    const gameLog = document.getElementById("gameLog");
+
+    let tokens = Number(localStorage.getItem(TOKEN_KEY) || "0");
+
+    let stars = 0;
+    let bonusScore = 0;
+    let timeLeft = 20;
+    let starTimer = null;
+    let spawnTimer = null;
+    let combo = 1;
+    let bestCombo = 1;
+    let lastStarTs = 0;
+
+    let cursorPos = 0;
+    let cursorDir = 1;
+    let timingLoop = null;
+    let hits = 0;
+    let tries = 0;
+
+    function addLog(title, text) {
+      const item = document.createElement("div");
+      item.className = "entry";
+      item.innerHTML = `<strong>${title}</strong>${text}`;
+      gameLog.prepend(item);
+      while (gameLog.children.length > 6) gameLog.removeChild(gameLog.lastElementChild);
+    }
+
+    function syncWallet() {
+      localStorage.setItem(TOKEN_KEY, String(tokens));
+      wallet.textContent = `Token: ${tokens}`;
+    }
+
+    function addTokens(amount, reason) {
+      if (amount <= 0) return;
+      tokens += amount;
+      syncWallet();
+      addLog("Token +" + amount, reason);
+    }
+
+    function spawnStar() {
+      const btn = document.createElement("button");
+      const isGolden = Math.random() < 0.15;
+      btn.className = isGolden ? "star golden" : "star";
+      btn.textContent = "★";
+      const x = Math.random() * (arena.clientWidth - 50);
+      const y = Math.random() * (arena.clientHeight - 50);
+      btn.style.left = `${x}px`;
+      btn.style.top = `${y}px`;
+      btn.addEventListener("click", () => {
+        const now = Date.now();
+        combo = now - lastStarTs < 850 ? Math.min(9, combo + 1) : 1;
+        lastStarTs = now;
+        bestCombo = Math.max(bestCombo, combo);
+
+        const starValue = isGolden ? 3 : 1;
+        stars += starValue;
+        bonusScore += Math.max(0, combo - 1);
+        document.getElementById("starsTxt").textContent = String(stars);
+        document.getElementById("comboTxt").textContent = `x${combo}`;
+        document.getElementById("bestComboTxt").textContent = `x${bestCombo}`;
+        document.getElementById("bonusTxt").textContent = String(bonusScore);
+        document.getElementById("roundTokenTxt").textContent = String(Math.floor((stars + bonusScore) / 5));
+        btn.remove();
+      });
+      arena.appendChild(btn);
+      setTimeout(() => btn.remove(), 1300);
+    }
+
+    function startStarGame() {
+      if (starTimer) return;
+      stars = 0;
+      bonusScore = 0;
+      timeLeft = 20;
+      combo = 1;
+      bestCombo = 1;
+      lastStarTs = 0;
+      document.getElementById("starsTxt").textContent = "0";
+      document.getElementById("roundTokenTxt").textContent = "0";
+      document.getElementById("timeTxt").textContent = "20s";
+      document.getElementById("comboTxt").textContent = "x1";
+      document.getElementById("bestComboTxt").textContent = "x1";
+      document.getElementById("bonusTxt").textContent = "0";
+      addLog("Star Catch", "Round avviato (20s).");
+
+      spawnTimer = setInterval(spawnStar, 420);
+      starTimer = setInterval(() => {
+        timeLeft -= 1;
+        document.getElementById("timeTxt").textContent = `${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(starTimer);
+          clearInterval(spawnTimer);
+          starTimer = null;
+          spawnTimer = null;
+          addLog("Star Catch", `Round finito: ${stars} stelle raccolte.`);
+        }
+      }, 1000);
+    }
+
+    function claimStarTokens() {
+      const score = stars + bonusScore;
+      const earned = Math.floor(score / 5);
+      addTokens(earned, `Da Star Catch (${stars} stelle + bonus ${bonusScore}).`);
+      stars = 0;
+      bonusScore = 0;
+      combo = 1;
+      document.getElementById("starsTxt").textContent = "0";
+      document.getElementById("roundTokenTxt").textContent = "0";
+      document.getElementById("comboTxt").textContent = "x1";
+      document.getElementById("bonusTxt").textContent = "0";
+    }
+
+    function startTiming() {
+      if (timingLoop) return;
+      hits = 0;
+      tries = 0;
+      document.getElementById("hitTxt").textContent = "0";
+      document.getElementById("tryTxt").textContent = "0";
+      document.getElementById("timingTokenTxt").textContent = "0";
+      addLog("Timing Tap", "Loop avviato. Premi STOP nella zona verde.");
+
+      timingLoop = setInterval(() => {
+        cursorPos += 3 * cursorDir;
+        if (cursorPos >= 96) cursorDir = -1;
+        if (cursorPos <= 0) cursorDir = 1;
+        document.getElementById("cursor").style.left = `${cursorPos}%`;
+      }, 45);
+    }
+
+    function stopTiming() {
+      if (!timingLoop) return;
+      tries += 1;
+      const inZone = cursorPos >= 42 && cursorPos <= 58;
+      if (inZone) {
+        hits += 1;
+        addLog("Timing", "Hit perfetto.");
+      } else {
+        addLog("Timing", "Fuori zona, ritenta.");
+      }
+      document.getElementById("hitTxt").textContent = String(hits);
+      document.getElementById("tryTxt").textContent = String(tries);
+
+      const earned = Math.floor(hits / 3) * 2;
+      document.getElementById("timingTokenTxt").textContent = String(earned);
+
+      if (tries >= 6) {
+        clearInterval(timingLoop);
+        timingLoop = null;
+        addTokens(earned, `Da Timing Tap (${hits} hit su ${tries}).`);
+      }
+    }
+
+    document.getElementById("startStars").addEventListener("click", startStarGame);
+    document.getElementById("claimStars").addEventListener("click", claimStarTokens);
+    document.getElementById("startTiming").addEventListener("click", startTiming);
+    document.getElementById("stopTiming").addEventListener("click", stopTiming);
+
+    window.addEventListener("keydown", (event) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        stopTiming();
+      }
+    });
+
+    syncWallet();
+  </script>
+</body>
+</html>

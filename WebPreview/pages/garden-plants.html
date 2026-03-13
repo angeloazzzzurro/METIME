@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Garden Piante</title>
+  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <style>
+    .garden-layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; }
+    .panel { padding: 18px; }
+    .token-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .token-pill {
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: #ffffffcf;
+      border: 1px solid #fff;
+      font-weight: 800;
+      color: #495584;
+    }
+
+    .beds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+    .plant-card {
+      border-radius: 16px;
+      border: 1px solid #fff;
+      background: #ffffffbf;
+      padding: 10px;
+    }
+    .plant-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .plant-header b { color: #344061; }
+    .mood-pill {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      background: #7ea5cf;
+    }
+
+    .sprite {
+      margin: 8px auto;
+      width: 72px;
+      height: 96px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      transition: transform 0.2s ease;
+    }
+    .soil {
+      position: absolute;
+      bottom: 0;
+      width: 66px;
+      height: 20px;
+      border-radius: 14px;
+      background: #b6804f;
+    }
+    .stem {
+      position: absolute;
+      bottom: 12px;
+      width: 8px;
+      height: 44px;
+      border-radius: 6px;
+      background: #4aa06b;
+      transition: height 0.2s ease;
+    }
+    .leaf {
+      position: absolute;
+      width: 16px;
+      height: 10px;
+      border-radius: 10px;
+      background: #67bd84;
+      top: 34px;
+      transition: opacity 0.2s ease;
+    }
+    .leaf.left { left: 20px; transform: rotate(-26deg); }
+    .leaf.right { right: 20px; transform: rotate(26deg); }
+    .bloom {
+      position: absolute;
+      top: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ffc7e4;
+      box-shadow: 0 0 0 6px #ffdff0;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .plant-card.good .mood-pill { background: #4ab381; }
+    .plant-card.warn .mood-pill { background: #f0a441; }
+    .plant-card.bad .mood-pill { background: #dc6d7d; }
+    .plant-card.bad .sprite { transform: rotate(-8deg); }
+
+    .plant-card.critical {
+      animation: criticalPulse 1s ease-in-out infinite;
+      box-shadow: 0 0 0 2px rgba(223, 91, 111, 0.28) inset;
+    }
+
+    .plant-card.critical .sprite {
+      animation: shake 0.22s linear infinite;
+    }
+
+    .plant-card.sick .leaf {
+      background: #8fb59c;
+      opacity: 0.6;
+    }
+
+    .pest-mark {
+      position: absolute;
+      top: 8px;
+      right: 6px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      background: #db5a70;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .plant-card.pests .pest-mark {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stage-seed .stem,
+    .stage-seed .leaf,
+    .stage-seed .bloom { opacity: 0; }
+    .stage-sprout .stem { height: 24px; }
+    .stage-sprout .leaf { opacity: 0.55; }
+    .stage-young .stem { height: 36px; }
+    .stage-young .leaf { opacity: 1; }
+    .stage-bloom .stem { height: 46px; }
+    .stage-bloom .bloom { opacity: 1; }
+
+    .meter { margin-top: 6px; }
+    .meter small { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+    .meter-track { margin-top: 4px; height: 8px; border-radius: 999px; background: #fff; border: 1px solid #f4edff; overflow: hidden; }
+    .meter-fill { height: 100%; width: 50%; border-radius: inherit; transition: width 0.25s ease; }
+    .water { background: linear-gradient(90deg, #6fb2ff, #4b93f4); }
+    .nutrient { background: linear-gradient(90deg, #6ad89a, #3db87d); }
+    .health { background: linear-gradient(90deg, #f7bf60, #f29f3d); }
+    .growth { background: linear-gradient(90deg, #ff8ebe, #ff6ea8); }
+
+    .controls {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .water-btn { background: linear-gradient(145deg, #e8f2ff, #d8e8ff); }
+    .fert-btn { background: linear-gradient(145deg, #e4fff5, #c8f9e8); }
+    .prune-btn { background: linear-gradient(145deg, #fff2dc, #ffe5be); }
+
+    .cost {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid #fff;
+      background: #ffffffbf;
+      padding: 10px;
+      color: #526081;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .boss-box {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid #fff;
+      background: #fff0f4;
+      padding: 10px;
+      color: #526081;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .boss-box strong {
+      color: #ab3a56;
+    }
+
+    .boss-steps {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .boss-step {
+      border-radius: 999px;
+      border: 1px solid #ffd0db;
+      background: #fff;
+      color: #7a4f61;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .boss-step.done {
+      background: #d6f7e6;
+      border-color: #b7ebd2;
+      color: #2c7f55;
+    }
+
+    .list { display: grid; gap: 8px; margin-top: 10px; }
+    .list .entry { margin: 0; }
+
+    .status-grid {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .status-chip {
+      border-radius: 12px;
+      border: 1px solid #fff;
+      background: #ffffffbf;
+      padding: 8px;
+      font-size: 12px;
+      color: #526081;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .garden-layout { grid-template-columns: 1fr; }
+      .beds { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: 1fr; }
+    }
+
+    @keyframes criticalPulse {
+      0%, 100% { background: #ffffffbf; }
+      50% { background: #ffe8ee; }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-1px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="clouds"></div>
+  <div class="sparkles"></div>
+  <main class="wrap">
+    <nav class="top-nav">
+      <a class="nav-link" href="home-pet.html">Home Pet</a>
+      <a class="nav-link" href="care-ritual.html">Care Ritual</a>
+      <a class="nav-link" href="journal.html">Journal</a>
+      <a class="nav-link active" href="garden-plants.html">Garden Piante</a>
+      <a class="nav-link" href="token-games.html">Giochi Token</a>
+      <a class="nav-link" href="../index.html">Hub</a>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">gioca per crescere</div>
+      <h1>Giardino: crescita piante a token</h1>
+      <p class="subtitle">Per curare e far crescere le piante devi spendere token. I token si ottengono solo nei mini-giochi.</p>
+    </section>
+
+    <section class="garden-layout">
+      <article class="card panel">
+        <div class="token-head">
+          <h2 style="margin:0;font-size:30px;">Plant Care Garden</h2>
+          <span class="token-pill" id="tokenWallet">Token: 0</span>
+        </div>
+        <div class="beds" id="beds"></div>
+      </article>
+
+      <aside class="side">
+        <section class="card mini">
+          <h3>Cura selezionata</h3>
+          <p id="selectedText">Seleziona una pianta dal giardino per applicare una cura.</p>
+          <div class="controls">
+            <button class="btn water-btn" id="waterBtn">Acqua (-1)</button>
+            <button class="btn fert-btn" id="fertBtn">Fertilizza (-2)</button>
+            <button class="btn prune-btn" id="pruneBtn">Pota (-1)</button>
+          </div>
+          <div class="controls" style="margin-top:8px;">
+            <button class="btn" id="nextDayBtn" style="background:linear-gradient(145deg,#f3edff,#e3dcff);">Passa giorno</button>
+            <button class="btn" id="eventBtn" style="background:linear-gradient(145deg,#ffeef8,#ffdff0);">Evento random</button>
+            <button class="btn" id="syncBtn" style="background:linear-gradient(145deg,#e8f2ff,#d8e8ff);">Sync</button>
+          </div>
+          <div class="cost">
+            Costi token: Acqua 1, Fertilizza 2, Pota 1.<br/>
+            Ogni cura aumenta Growth. Stage: Seed, Sprout, Young, Bloom.<br/>
+            Doppio click su una pianta Bloom per raccogliere token bonus.
+          </div>
+          <div class="status-grid">
+            <div class="status-chip" id="dayChip">Day 1</div>
+            <div class="status-chip" id="weatherChip">Weather: Sunny</div>
+            <div class="status-chip" id="comboChip">Combo x1</div>
+            <div class="status-chip" id="questChip">Quest 0/3 Bloom</div>
+          </div>
+          <div class="boss-box" id="bossBox" style="display:none;">
+            <strong>Mini-boss parassiti attivo</strong>
+            <div id="bossText" style="margin-top:4px;">Esegui la sequenza per salvare la pianta.</div>
+            <div class="boss-steps" id="bossSteps"></div>
+          </div>
+          <div class="controls" style="margin-top:8px;">
+            <a class="btn" href="token-games.html" style="text-align:center;background:linear-gradient(145deg,#ffe5f3,#ffd0e9);">Vai ai Giochi Token</a>
+          </div>
+        </section>
+
+        <section class="card mini">
+          <h3>Garden log</h3>
+          <div class="list" id="gardenLog">
+            <div class="entry"><strong>Start</strong>Gioca per guadagnare token e curare le piante.</div>
+          </div>
+        </section>
+
+        <section class="card mini">
+          <h3>Obiettivo</h3>
+          <p>Porta tutte le piante allo stage Bloom mantenendo Health sopra 70.</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const TOKEN_KEY = "metimeTokens";
+    const PLANTS_KEY = "metimePlants";
+
+    const defaultPlants = [
+      { id: 1, name: "Luna Mint", water: 58, nutrient: 52, health: 65, growth: 6, harvested: false, pests: false, criticalDays: 0 },
+      { id: 2, name: "Peach Bud", water: 44, nutrient: 66, health: 62, growth: 8, harvested: false, pests: false, criticalDays: 0 },
+      { id: 3, name: "Sky Leaf", water: 72, nutrient: 48, health: 57, growth: 4, harvested: false, pests: false, criticalDays: 0 }
+    ];
+
+    let tokens = Number(localStorage.getItem(TOKEN_KEY) || "0");
+    let plants = JSON.parse(localStorage.getItem(PLANTS_KEY) || "null") || defaultPlants;
+    let selectedId = null;
+    let day = Number(localStorage.getItem("metimeGardenDay") || "1");
+    let weather = localStorage.getItem("metimeGardenWeather") || "Sunny";
+    let combo = 1;
+    let lastActionPlantId = null;
+    let questRewardClaimed = localStorage.getItem("metimeQuestBloomReward") === "1";
+    let boss = {
+      active: false,
+      plantId: null,
+      sequence: [],
+      progress: 0,
+      attempts: 0
+    };
+
+    const beds = document.getElementById("beds");
+    const selectedText = document.getElementById("selectedText");
+    const gardenLog = document.getElementById("gardenLog");
+    const tokenWallet = document.getElementById("tokenWallet");
+    const dayChip = document.getElementById("dayChip");
+    const weatherChip = document.getElementById("weatherChip");
+    const comboChip = document.getElementById("comboChip");
+    const questChip = document.getElementById("questChip");
+    const bossBox = document.getElementById("bossBox");
+    const bossText = document.getElementById("bossText");
+    const bossSteps = document.getElementById("bossSteps");
+
+    const clamp = (v) => Math.max(0, Math.min(100, v));
+
+    function syncStorage() {
+      localStorage.setItem(TOKEN_KEY, String(tokens));
+      localStorage.setItem(PLANTS_KEY, JSON.stringify(plants));
+      localStorage.setItem("metimeGardenDay", String(day));
+      localStorage.setItem("metimeGardenWeather", weather);
+      localStorage.setItem("metimeQuestBloomReward", questRewardClaimed ? "1" : "0");
+      tokenWallet.textContent = `Token: ${tokens}`;
+      dayChip.textContent = `Day ${day}`;
+      weatherChip.textContent = `Weather: ${weather}`;
+      comboChip.textContent = `Combo x${combo}`;
+      const bloomCount = plants.filter((p) => stageFromGrowth(p.growth) === "bloom").length;
+      questChip.textContent = `Quest ${bloomCount}/3 Bloom`;
+    }
+
+    function addLog(title, text) {
+      const item = document.createElement("div");
+      item.className = "entry";
+      item.innerHTML = `<strong>${title}</strong>${text}`;
+      gardenLog.prepend(item);
+      while (gardenLog.children.length > 7) gardenLog.removeChild(gardenLog.lastElementChild);
+    }
+
+    function stageFromGrowth(growth) {
+      if (growth >= 80) return "bloom";
+      if (growth >= 50) return "young";
+      if (growth >= 20) return "sprout";
+      return "seed";
+    }
+
+    function isCritical(plant) {
+      return plant.health < 30;
+    }
+
+    function isSick(plant) {
+      return plant.health < 45;
+    }
+
+    function moodClass(plant) {
+      if (plant.health >= 70) return "good";
+      if (plant.health < 45) return "bad";
+      return "warn";
+    }
+
+    function moodText(plant) {
+      if (plant.health >= 70) return "Happy";
+      if (plant.health < 45) return "Weak";
+      return "Ok";
+    }
+
+    function computeHealth(plant) {
+      const waterBalance = 100 - Math.abs(plant.water - 60);
+      const nutrientBalance = 100 - Math.abs(plant.nutrient - 60);
+      plant.health = clamp(Math.round((waterBalance * 0.45) + (nutrientBalance * 0.45) + (plant.health * 0.1)));
+    }
+
+    function render() {
+      syncStorage();
+      beds.innerHTML = "";
+      plants.forEach((plant) => {
+        const stage = stageFromGrowth(plant.growth);
+        const card = document.createElement("div");
+        const flags = [
+          `plant-card ${moodClass(plant)} stage-${stage}`,
+          isSick(plant) ? "sick" : "",
+          isCritical(plant) ? "critical" : "",
+          plant.pests ? "pests" : ""
+        ].join(" ").trim();
+        card.className = flags;
+        card.innerHTML = `
+          <div class="plant-header">
+            <b>${plant.name}</b>
+            <span class="mood-pill">${moodText(plant)}</span>
+          </div>
+          <div class="sprite">
+            <span class="soil"></span>
+            <span class="stem"></span>
+            <span class="leaf left"></span>
+            <span class="leaf right"></span>
+            <span class="bloom"></span>
+            <span class="pest-mark">PESTS</span>
+          </div>
+          <div class="meter">
+            <small>Water</small>
+            <div class="meter-track"><div class="meter-fill water" style="width:${plant.water}%"></div></div>
+          </div>
+          <div class="meter">
+            <small>Nutrient</small>
+            <div class="meter-track"><div class="meter-fill nutrient" style="width:${plant.nutrient}%"></div></div>
+          </div>
+          <div class="meter">
+            <small>Health</small>
+            <div class="meter-track"><div class="meter-fill health" style="width:${plant.health}%"></div></div>
+          </div>
+          <div class="meter">
+            <small>Growth (${stage.toUpperCase()})</small>
+            <div class="meter-track"><div class="meter-fill growth" style="width:${plant.growth}%"></div></div>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          selectedId = plant.id;
+          selectedText.textContent = `Selezionata: ${plant.name}. Cura con token per aumentare la crescita.`;
+          render();
+        });
+        card.addEventListener("dblclick", () => {
+          const currentStage = stageFromGrowth(plant.growth);
+          if (currentStage !== "bloom") {
+            addLog("Harvest", `${plant.name} non e ancora Bloom.`);
+            return;
+          }
+          if (plant.harvested) {
+            addLog("Harvest", `${plant.name} ha gia dato token oggi.`);
+            return;
+          }
+          plant.harvested = true;
+          tokens += 3;
+          addLog("Harvest +3", `${plant.name} ha prodotto token bonus.`);
+          render();
+        });
+        if (selectedId === plant.id) {
+          card.style.outline = "3px solid #8ea9ff";
+          card.style.outlineOffset = "2px";
+        }
+        beds.appendChild(card);
+      });
+
+      renderBossPanel();
+    }
+
+    function renderBossPanel() {
+      if (!boss.active) {
+        bossBox.style.display = "none";
+        bossSteps.innerHTML = "";
+        return;
+      }
+      bossBox.style.display = "block";
+      const targetPlant = plants.find((p) => p.id === boss.plantId);
+      const name = targetPlant ? targetPlant.name : "Pianta";
+      bossText.textContent = `Salva ${name}: sequenza corretta entro 3 errori.`;
+      bossSteps.innerHTML = "";
+      boss.sequence.forEach((step, index) => {
+        const chip = document.createElement("span");
+        chip.className = `boss-step ${index < boss.progress ? "done" : ""}`;
+        chip.textContent = step;
+        bossSteps.appendChild(chip);
+      });
+    }
+
+    function getSelectedPlant() {
+      return plants.find((p) => p.id === selectedId);
+    }
+
+    function spendTokens(cost) {
+      if (tokens < cost) {
+        addLog("Token insufficienti", "Gioca prima ai mini-giochi per ottenere token.");
+        return false;
+      }
+      tokens -= cost;
+      return true;
+    }
+
+    function startPestBoss(plant) {
+      if (boss.active) return;
+      plant.pests = true;
+      boss.active = true;
+      boss.plantId = plant.id;
+      boss.sequence = ["prune", "fert", "water"];
+      boss.progress = 0;
+      boss.attempts = 0;
+      addLog("Mini-boss", `Parassiti su ${plant.name}. Segui: prune -> fert -> water.`);
+    }
+
+    function resolveBossSuccess(plant) {
+      boss.active = false;
+      plant.pests = false;
+      plant.health = clamp(plant.health + 20);
+      plant.growth = clamp(plant.growth + 12);
+      tokens += 5;
+      addLog("Boss vinto +5", `${plant.name} e salva dai parassiti.`);
+    }
+
+    function resolveBossFail(plant) {
+      boss.active = false;
+      plant.pests = false;
+      plant.health = clamp(plant.health - 15);
+      plant.growth = clamp(plant.growth - 8);
+      addLog("Boss fallito", `${plant.name} ha perso crescita.`);
+    }
+
+    function handleBossAction(type, plant) {
+      if (!boss.active || boss.plantId !== plant.id) return false;
+      const expected = boss.sequence[boss.progress];
+      if (type === expected) {
+        boss.progress += 1;
+        addLog("Boss step", `${type} corretto (${boss.progress}/${boss.sequence.length}).`);
+        if (boss.progress >= boss.sequence.length) {
+          resolveBossSuccess(plant);
+        }
+      } else {
+        boss.attempts += 1;
+        addLog("Boss errore", `Atteso ${expected}, ricevuto ${type}.`);
+        if (boss.attempts >= 3) {
+          resolveBossFail(plant);
+        }
+      }
+      return true;
+    }
+
+    function applyWeatherEffect(plant) {
+      if (weather === "Sunny") {
+        plant.water = clamp(plant.water - 3);
+        plant.health = clamp(plant.health + 1);
+      }
+      if (weather === "Rainy") {
+        plant.water = clamp(plant.water + 6);
+        plant.nutrient = clamp(plant.nutrient - 1);
+      }
+      if (weather === "Windy") {
+        plant.health = clamp(plant.health - 2);
+        plant.nutrient = clamp(plant.nutrient - 2);
+      }
+    }
+
+    function rollWeather() {
+      const options = ["Sunny", "Rainy", "Windy"];
+      weather = options[Math.floor(Math.random() * options.length)];
+    }
+
+    function applyQuestRewardIfReady() {
+      const bloomCount = plants.filter((p) => stageFromGrowth(p.growth) === "bloom").length;
+      if (bloomCount === 3 && !questRewardClaimed) {
+        tokens += 15;
+        questRewardClaimed = true;
+        addLog("Quest complete +15", "Tutte le piante sono Bloom.");
+      }
+    }
+
+    function applyCare(type) {
+      const plant = getSelectedPlant();
+      if (!plant) {
+        addLog("Tip", "Seleziona prima una pianta.");
+        return;
+      }
+
+      if (lastActionPlantId === plant.id) combo = Math.min(5, combo + 1);
+      else combo = 1;
+      lastActionPlantId = plant.id;
+
+      if (type === "water") {
+        if (!spendTokens(1)) return;
+        handleBossAction(type, plant);
+        plant.water = clamp(plant.water + 16);
+        plant.nutrient = clamp(plant.nutrient - 2);
+        plant.growth = clamp(plant.growth + (8 + combo));
+        addLog("Acqua", `${plant.name} ha ricevuto acqua. Growth +${8 + combo}.`);
+      }
+      if (type === "fert") {
+        if (!spendTokens(2)) return;
+        handleBossAction(type, plant);
+        plant.nutrient = clamp(plant.nutrient + 18);
+        plant.water = clamp(plant.water - 3);
+        plant.growth = clamp(plant.growth + (14 + combo));
+        addLog("Fertilizza", `${plant.name} ha nutrient extra. Growth +${14 + combo}.`);
+      }
+      if (type === "prune") {
+        if (!spendTokens(1)) return;
+        handleBossAction(type, plant);
+        plant.health = clamp(plant.health + 10);
+        plant.water = clamp(plant.water - 5);
+        plant.growth = clamp(plant.growth + (6 + combo));
+        addLog("Pota", `${plant.name} e stata potata. Growth +${6 + combo}.`);
+      }
+
+      plant.water = clamp(plant.water - 2);
+      plant.nutrient = clamp(plant.nutrient - 1);
+      computeHealth(plant);
+      if (plant.pests) {
+        plant.health = clamp(plant.health - 4);
+      }
+      applyQuestRewardIfReady();
+      render();
+    }
+
+    function nextDay() {
+      day += 1;
+      rollWeather();
+      plants.forEach((plant) => {
+        plant.harvested = false;
+        plant.water = clamp(plant.water - 5);
+        plant.nutrient = clamp(plant.nutrient - 3);
+        applyWeatherEffect(plant);
+        computeHealth(plant);
+
+        if (isCritical(plant)) {
+          plant.criticalDays += 1;
+        } else {
+          plant.criticalDays = 0;
+        }
+
+        if (plant.criticalDays >= 2) {
+          plant.growth = clamp(plant.growth - 10);
+          addLog("Stato critico", `${plant.name} ha perso crescita per mancata cura.`);
+        }
+
+        if (!plant.pests && (isCritical(plant) || Math.random() < 0.2)) {
+          startPestBoss(plant);
+        }
+      });
+      combo = 1;
+      lastActionPlantId = null;
+      addLog("Nuovo giorno", `Day ${day} con meteo ${weather}.`);
+      render();
+    }
+
+    function randomEvent() {
+      const plant = getSelectedPlant() || plants[Math.floor(Math.random() * plants.length)];
+      const roll = Math.random();
+      if (roll < 0.34) {
+        plant.growth = clamp(plant.growth + 10);
+        addLog("Evento", `Arcobaleno su ${plant.name}: Growth +10.`);
+      } else if (roll < 0.67) {
+        plant.health = clamp(plant.health - 8);
+        addLog("Evento", `Insetti su ${plant.name}: Health -8.`);
+        if (!plant.pests) {
+          startPestBoss(plant);
+        }
+      } else {
+        tokens += 2;
+        addLog("Evento +2", `Hai trovato token tra i cespugli.`);
+      }
+      computeHealth(plant);
+      applyQuestRewardIfReady();
+      render();
+    }
+
+    function syncFromStorage() {
+      tokens = Number(localStorage.getItem(TOKEN_KEY) || String(tokens));
+      plants = JSON.parse(localStorage.getItem(PLANTS_KEY) || JSON.stringify(plants));
+      addLog("Sync", "Stato sincronizzato con wallet token globale.");
+      render();
+    }
+
+    document.getElementById("waterBtn").addEventListener("click", () => applyCare("water"));
+    document.getElementById("fertBtn").addEventListener("click", () => applyCare("fert"));
+    document.getElementById("pruneBtn").addEventListener("click", () => applyCare("prune"));
+    document.getElementById("nextDayBtn").addEventListener("click", nextDay);
+    document.getElementById("eventBtn").addEventListener("click", randomEvent);
+    document.getElementById("syncBtn").addEventListener("click", syncFromStorage);
+
+    render();
+  </script>
+</body>
+</html>

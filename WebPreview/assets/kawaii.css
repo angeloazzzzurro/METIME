@@ -1,0 +1,235 @@
+:root {
+  --ink: #2f3450;
+  --muted: #66708f;
+  --pink-1: #ffdceb;
+  --pink-2: #ffc1dd;
+  --mint-1: #d9f9ef;
+  --sky-1: #dff2ff;
+  --lemon-1: #fff6d8;
+  --card: rgba(255, 255, 255, 0.8);
+  --stroke: rgba(255, 255, 255, 0.92);
+  --shadow: 0 16px 34px rgba(102, 96, 150, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(1100px 600px at -8% -20%, #ffd4ee 0%, transparent 62%),
+    radial-gradient(1100px 700px at 120% -10%, #d7f6ff 0%, transparent 64%),
+    linear-gradient(155deg, #fff2fa, #f4fff9 52%, #f3f8ff);
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12px 0;
+}
+
+.clouds,
+.sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.clouds {
+  background:
+    radial-gradient(130px 52px at 10% 12%, rgba(255, 255, 255, 0.8), transparent 72%),
+    radial-gradient(150px 62px at 82% 10%, rgba(255, 255, 255, 0.78), transparent 72%),
+    radial-gradient(120px 48px at 62% 20%, rgba(255, 255, 255, 0.64), transparent 72%);
+}
+
+.sparkles {
+  opacity: 0.35;
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 0 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.wrap {
+  width: min(430px, 95vw);
+  min-height: calc(100dvh - 24px);
+  margin: 0;
+  padding: 52px 12px 24px;
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 20px 40px rgba(84, 88, 142, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.wrap::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36%;
+  height: 24px;
+  border-radius: 14px;
+  background: rgba(34, 38, 58, 0.82);
+  z-index: 2;
+}
+
+.hero {
+  margin-bottom: 18px;
+  animation: rise 0.65s ease-out both;
+}
+
+.tag {
+  width: fit-content;
+  background: #ffffffcf;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5f4b90;
+  margin-bottom: 12px;
+  backdrop-filter: blur(8px);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 62px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  max-width: 14ch;
+}
+
+.subtitle {
+  margin: 12px 0 0;
+  max-width: 72ch;
+  color: var(--muted);
+  font-size: clamp(15px, 2.2vw, 19px);
+  line-height: 1.45;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--stroke);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.top-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 4px 0 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0));
+}
+
+.nav-link {
+  display: inline-block;
+  text-decoration: none;
+  color: #33406a;
+  background: #ffffffcc;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nav-link.active {
+  color: #fff;
+  background: linear-gradient(135deg, #7f73d6, #5ea2ea);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.side {
+  display: grid;
+  gap: 12px;
+}
+
+.mini {
+  padding: 14px;
+}
+
+.mini h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.mini p {
+  margin: 0;
+  line-height: 1.42;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.timeline {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.entry {
+  border: 1px solid #fff;
+  background: #ffffffbf;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 13px;
+  color: #526081;
+}
+
+.entry strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #344061;
+  font-size: 13px;
+}
+
+.panel {
+  padding: 18px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: #2d3450;
+  background: #fff;
+  cursor: pointer;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    width: 100vw;
+    min-height: 100dvh;
+    border-radius: 0;
+    border: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .wrap::before {
+    width: 34%;
+  }
+}

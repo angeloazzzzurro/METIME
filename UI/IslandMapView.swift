@@ -11,7 +11,7 @@ struct IslandMapView: View {
     @State private var destination: IslandZone?
     @State private var showJournal = false
 
-    private let scene: IslandMapScene = {
+    @State private var scene: IslandMapScene = {
         let s = IslandMapScene(size: UIScreen.main.bounds.size)
         s.scaleMode = .resizeFill
         return s

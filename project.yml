@@ -13,13 +13,15 @@ settings:
     DEVELOPMENT_TEAM: ""
 
 targets:
+
+  # ── Main App ──────────────────────────────────────────────────────────────
   METIME:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
     bundleId: com.metime.app
     sources:
-      - path: App
+      - path: App        # METIMEApp.swift, AppState.swift, Resources.swift
       - path: Audio
       - path: Creature
       - path: Garden
@@ -35,3 +37,32 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         CODE_SIGN_ENTITLEMENTS: METIME.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  # ── Unit Tests ────────────────────────────────────────────────────────────
+  METIMETests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    bundleId: com.metime.app.tests
+    sources:
+      - path: Tests/METIMETests
+    dependencies:
+      - target: METIME
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.metime.app.tests
+
+  # ── UI Tests ──────────────────────────────────────────────────────────────
+  METIMEUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    bundleId: com.metime.app.uitests
+    sources:
+      - path: Tests/METIMEUITests
+    dependencies:
+      - target: METIME
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.metime.app.uitests
+        TEST_TARGET_NAME: METIME

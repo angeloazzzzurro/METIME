@@ -6,8 +6,10 @@ final class SoundscapeManager {
 
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
-    private let mixer = AVAudioMixerNode()
+    private let mixer  = AVAudioMixerNode()
     private var started = false
+
+    // MARK: - Public API
 
     func start(mood: PetMood) {
         if !started {
@@ -20,25 +22,25 @@ final class SoundscapeManager {
     }
 
     func transition(to mood: PetMood) {
-        let filename: String
-        switch mood {
-        case .calm: filename = "ambient_calm"
-        case .happy, .evolving: filename = "ambient_happy"
-        case .anxious: filename = "ambient_anxious"
-        case .sleepy: filename = "ambient_sleepy"
-        case .sick: filename = "ambient_sick"
-        }
-        playLoop(named: filename)
+        let track = AudioResource.Ambient.track(for: mood)
+        playLoop(resource: track)
     }
 
     func playBell() {
-        guard let url = Bundle.main.url(forResource: "gentle_bell", withExtension: "caf"),
+        let sfx = AudioResource.SFX.gentleBell
+        guard let url = Bundle.main.url(forResource: sfx.rawValue,
+                                        withExtension: AudioResource.SFX.ext),
               let file = try? AVAudioFile(forReading: url),
-              let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: AVAudioFrameCount(file.length)) else { return }
+              let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+                                            frameCapacity: AVAudioFrameCount(file.length))
+        else { return }
+
         try? file.read(into: buffer)
         player.scheduleBuffer(buffer, at: nil, options: [], completionHandler: nil)
         if !player.isPlaying { player.play() }
     }
+
+    // MARK: - Private
 
     private func setupGraph() {
         engine.attach(player)
@@ -49,15 +51,19 @@ final class SoundscapeManager {
     }
 
     private func setupSession() {
-        let s = AVAudioSession.sharedInstance()
-        try? s.setCategory(.playback, mode: .default, options: [.mixWithOthers])
-        try? s.setActive(true)
+        let session = AVAudioSession.sharedInstance()
+        try? session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        try? session.setActive(true)
     }
 
-    private func playLoop(named name: String) {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "m4a"),
+    private func playLoop(resource: AudioResource.Ambient) {
+        guard let url = Bundle.main.url(forResource: resource.rawValue,
+                                        withExtension: AudioResource.Ambient.ext),
               let file = try? AVAudioFile(forReading: url),
-              let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: AVAudioFrameCount(file.length)) else { return }
+              let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
+                                            frameCapacity: AVAudioFrameCount(file.length))
+        else { return }
+
         try? file.read(into: buffer)
         player.stop()
         player.scheduleBuffer(buffer, at: nil, options: [.loops], completionHandler: nil)

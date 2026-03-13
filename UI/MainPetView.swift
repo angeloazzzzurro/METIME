@@ -7,9 +7,19 @@ struct MainPetView: View {
 
     @State private var showJournal = false
 
+    // La scena viene creata una sola volta e mantenuta stabile.
+    // Usare @StateObject-like pattern con @State + classe evita che
+    // makeScene() venga ri-chiamata ad ogni re-render, il che causerebbe
+    // un loop di rendering che blocca l'UI.
+    @State private var scene: GardenScene = {
+        let s = GardenScene(size: UIScreen.main.bounds.size)
+        s.scaleMode = .resizeFill
+        return s
+    }()
+
     var body: some View {
         ZStack(alignment: .bottom) {
-            SceneView(scene: makeScene(), options: [.allowsTransparency])
+            SceneView(scene: scene, options: [.allowsTransparency])
                 .ignoresSafeArea()
 
             VStack {
@@ -23,10 +33,16 @@ struct MainPetView: View {
                 .padding(.bottom, 30)
                 .padding(.horizontal, 20)
         }
+        .onAppear {
+            scene.mood = appState.mood
+        }
         .onChange(of: appState.mood) { _, mood in
+            scene.mood = mood
             SoundscapeManager.shared.transition(to: mood)
         }
     }
+
+    // MARK: - HUD
 
     private var topHUD: some View {
         VStack(spacing: 8) {
@@ -46,20 +62,18 @@ struct MainPetView: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 
+    // MARK: - Action Bar
+
     private var actionBar: some View {
         HStack {
-            Button("Medita") { appState.mood = .happy }
-            Button("Cibo") { store.feed() }
-            Button("Gioca") { store.play() }
+            Button("Medita") {
+                appState.mood = .happy
+                store.meditate()
+            }
+            Button("Cibo")   { store.feed() }
+            Button("Gioca")  { store.play() }
             Button("Diario") { showJournal.toggle() }
         }
         .buttonStyle(.borderedProminent)
-    }
-
-    private func makeScene() -> SKScene {
-        let scene = GardenScene(size: UIScreen.main.bounds.size)
-        scene.scaleMode = .resizeFill
-        scene.mood = appState.mood
-        return scene
     }
 }

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>METIME — Fattoria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/game.css"/>
+  <style>
+    .farm-tabs{margin-bottom:0}
+    .resource-preview{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--radius);background:linear-gradient(135deg,#f0e8d4,#e8dcc4);border:2px solid var(--border-lt);margin-bottom:12px;transition:background .3s}
+    .resource-icon{font-size:48px;transition:transform .3s}
+    .resource-info h3{margin:0;font-size:18px;font-weight:900;color:var(--ink)}
+    .resource-info p{margin:4px 0 0;font-size:13px;color:var(--ink-lt);font-weight:700}
+    .resource-qty{margin-left:auto;font-size:28px;font-weight:900;color:var(--orange);font-variant-numeric:tabular-nums;transition:transform .2s}
+    .resource-qty.bump{animation:bump .3s}
+    @keyframes bump{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+    .chef-scroll{padding:6px 0 10px}
+    .avatar-circle{cursor:pointer;transition:transform .15s,border-color .15s}
+    .avatar-circle:hover{transform:scale(1.1)}
+    .avatar-circle.working{border-color:var(--orange)!important;box-shadow:0 0 6px rgba(212,136,74,.3)}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .harvest-btn{margin-top:10px}
+    .char-illust{transition:opacity .3s}
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<main class="phone">
+  <div class="screen">
+
+    <div class="page-hdr">
+      <h1 class="page-title" id="farmTitle">Pollaio</h1>
+      <button class="close-btn" onclick="history.back()">✕</button>
+    </div>
+
+    <div class="tabs farm-tabs">
+      <div class="tab active" data-farm="0">🐔 Pollaio</div>
+      <div class="tab" data-farm="1">🐟 Pesca</div>
+      <div class="tab" data-farm="2">🍎 Frutteto</div>
+      <div class="tab" data-farm="3">🌾 Risaia</div>
+    </div>
+
+    <div class="panel panel--wood panel--fancy floral">
+
+      <div class="resource-preview">
+        <span class="resource-icon" id="resIcon">🥚</span>
+        <div class="resource-info">
+          <h3 id="resName">Uova Fresche</h3>
+          <p id="resDesc">Uova biologiche di gallina felice</p>
+        </div>
+        <span class="resource-qty" id="resQty">×24</span>
+      </div>
+
+      <div class="flex items-center justify-between mb-12">
+        <span class="section-label" style="margin:0">Prossimo Raccolto</span>
+        <span class="timer" id="timerDisplay">⏱ 00h 00m 00s</span>
+      </div>
+
+      <div class="progress mb-12"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+
+      <button class="btn btn--green w-full harvest-btn" id="harvestBtn" disabled>🌾 Raccogli!</button>
+
+      <span class="section-label" style="margin-top:14px">Chef al lavoro (<span id="chefCount">4</span>/10)</span>
+      <div class="h-scroll chef-scroll" id="chefScroll"></div>
+
+      <div class="char-illust mt-12" id="farmIllust" style="min-height:100px;font-size:40px;gap:8px">
+        🐔🐔🐔<br/>
+        <span style="font-size:14px;color:var(--ink-lt);font-weight:700" id="farmMsg">Le tue galline sono felici!</span>
+      </div>
+
+    </div>
+  </div>
+
+  <nav class="tab-bar">
+    <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
+    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
+    <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
+    <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
+  </nav>
+</main>
+
+<script>
+(function(){
+  const farms=[
+    {title:'Pollaio',icon:'🥚',name:'Uova Fresche',desc:'Uova biologiche di gallina felice',qty:24,duration:15,illust:'🐔🐔🐔',msg:'Le tue galline sono felici!',chefs:4},
+    {title:'Pesca',icon:'🐟',name:'Pesce Fresco',desc:'Trota e koi dal laghetto sereno',qty:12,duration:20,illust:'🐟🐟🎣',msg:'I pesci nuotano tranquilli!',chefs:3},
+    {title:'Frutteto',icon:'🍎',name:'Frutti di Stagione',desc:'Mele, arance e frutti di bosco',qty:36,duration:12,illust:'🍎🍊🍇',msg:'Il frutteto è rigoglioso!',chefs:5},
+    {title:'Risaia',icon:'🌾',name:'Riso di Montagna',desc:'Riso coltivato con acqua di sorgente',qty:18,duration:25,illust:'🌾🌱🌿',msg:'La risaia cresce bene!',chefs:2},
+  ];
+  const allChefs=[
+    {name:'Mochi',emoji:'🐱'},{name:'Honey',emoji:'🐻'},{name:'Pip',emoji:'🐥'},
+    {name:'Bun',emoji:'🐰'},{name:'Foxy',emoji:'🦊'},{name:'Lily',emoji:'🐸'}
+  ];
+
+  let current=0,timerEnd=null,timerInterval=null;
+
+  const $=s=>document.querySelector(s);
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+
+  function startTimer(){
+    const f=farms[current];
+    timerEnd=Date.now()+f.duration*1000;
+    $('#harvestBtn').disabled=true;
+    if(timerInterval)clearInterval(timerInterval);
+    timerInterval=setInterval(tickTimer,200);
+  }
+
+  function tickTimer(){
+    const remaining=Math.max(0,timerEnd-Date.now());
+    const sec=Math.ceil(remaining/1000);
+    const h=Math.floor(sec/3600);const m=Math.floor((sec%3600)/60);const s=sec%60;
+    $('#timerDisplay').textContent=`⏱ ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+    const f=farms[current];
+    const pct=Math.min(100,((f.duration*1000-remaining)/(f.duration*1000))*100);
+    $('#progressBar').style.width=pct+'%';
+    if(remaining<=0){
+      clearInterval(timerInterval);timerInterval=null;
+      $('#harvestBtn').disabled=false;
+      $('#timerDisplay').textContent='✅ Pronto!';
+      $('#progressBar').style.width='100%';
+      toast('🌾 Raccolto pronto nella '+f.title+'!');
+    }
+  }
+
+  function render(){
+    const f=farms[current];
+    $('#farmTitle').textContent=f.title;
+    $('#resIcon').textContent=f.icon;
+    $('#resName').textContent=f.name;
+    $('#resDesc').textContent=f.desc;
+    $('#resQty').textContent='×'+f.qty;
+    const il=$('#farmIllust');
+    il.innerHTML=f.illust+'<br/><span style="font-size:14px;color:var(--ink-lt);font-weight:700" id="farmMsg">'+f.msg+'</span>';
+    renderChefs(f);
+    startTimer();
+  }
+
+  function renderChefs(f){
+    const container=$('#chefScroll');
+    let html='';
+    for(let i=0;i<10;i++){
+      if(i<allChefs.length){
+        const c=allChefs[i];
+        const working=i<f.chefs;
+        html+=`<div class="avatar-slot"><div class="avatar-circle filled${working?' working':''}" data-cidx="${i}">${c.emoji}</div><span class="label">${c.name}</span></div>`;
+      }else{
+        html+=`<div class="avatar-slot"><div class="avatar-circle" data-cidx="${i}">+</div><span class="label">—</span></div>`;
+      }
+    }
+    container.innerHTML=html;
+    $('#chefCount').textContent=f.chefs;
+
+    container.querySelectorAll('[data-cidx]').forEach(el=>{
+      el.addEventListener('click',()=>{
+        const idx=+el.dataset.cidx;
+        if(idx>=allChefs.length){toast('🔓 Recluta più chef nel Negozio!');return}
+        const isWorking=el.classList.contains('working');
+        if(isWorking){
+          f.chefs=Math.max(0,f.chefs-1);
+          el.classList.remove('working');
+          toast('🐾 '+allChefs[idx].name+' rimosso dal lavoro');
+        }else{
+          f.chefs++;
+          el.classList.add('working');
+          toast('👨‍🍳 '+allChefs[idx].name+' assegnato!');
+        }
+        $('#chefCount').textContent=f.chefs;
+      });
+    });
+  }
+
+  // Harvest
+  $('#harvestBtn').addEventListener('click',()=>{
+    const f=farms[current];
+    const bonus=Math.floor(Math.random()*5)+3;
+    f.qty+=bonus;
+    $('#resQty').textContent='×'+f.qty;
+    $('#resQty').classList.add('bump');
+    setTimeout(()=>$('#resQty').classList.remove('bump'),300);
+    toast('🎉 Raccolto! +'+bonus+' '+f.name);
+    startTimer();
+  });
+
+  // Tab switching
+  document.querySelectorAll('.farm-tabs .tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.farm-tabs .tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      current=+tab.dataset.farm;
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

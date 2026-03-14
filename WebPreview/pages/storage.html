@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>METIME — Magazzino</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/game.css"/>
+  <style>
+    .farm-card{transition:transform .15s,box-shadow .15s;cursor:pointer}
+    .farm-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .farm-card.placed{opacity:.7;border-color:var(--sage)}
+    .farm-card.placed .btn{background:var(--sage)!important;border-color:var(--sage)!important}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .placed-badge{display:none;position:absolute;top:8px;right:8px;background:var(--sage);color:#fff;border-radius:999px;padding:2px 8px;font-size:9px;font-weight:800}
+    .farm-card.placed .placed-badge{display:block}
+    .farm-card{position:relative}
+    .slot-count{text-align:center;font-size:12px;font-weight:800;color:var(--ink-lt);margin-top:10px}
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<main class="phone">
+  <div class="screen">
+
+    <div class="page-hdr">
+      <h1 class="page-title">Magazzino</h1>
+      <button class="close-btn" onclick="history.back()">✕</button>
+    </div>
+
+    <div class="tabs" id="storageTabs">
+      <div class="tab active" data-cat="0">🏗️ Fattorie</div>
+      <div class="tab" data-cat="1">🍳 Stazioni</div>
+      <div class="tab" data-cat="2">🪑 Arredo</div>
+    </div>
+
+    <div class="grid-2" id="storageGrid"></div>
+    <p class="slot-count" id="slotCount"></p>
+
+  </div>
+
+  <nav class="tab-bar">
+    <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
+    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
+    <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
+    <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
+  </nav>
+</main>
+
+<script>
+(function(){
+  const categories=[
+    [
+      {emoji:'🐔',name:'Pollaio',desc:'Alleva galline felici per uova fresche ogni giorno.',illust:'🐔🥚',bg:'',placed:false},
+      {emoji:'🐟',name:'Laghetto Pesca',desc:'Un laghetto sereno con koi e trote dorate.',illust:'🐟🎣',bg:'linear-gradient(135deg,#c8dce8,#98b8d0)',placed:false},
+      {emoji:'🍎',name:'Frutteto',desc:'Frutteti con frutti di stagione e bacche.',illust:'🍎🍊🍇',bg:'linear-gradient(135deg,#e8d8c8,#d0c0a8)',placed:false},
+      {emoji:'🌾',name:'Risaia',desc:'Risaie a terrazze alimentate da sorgenti montane.',illust:'🌾🌱',bg:'linear-gradient(135deg,#d8e8c0,#c0d8a0)',placed:false},
+    ],
+    [
+      {emoji:'🍳',name:'Cucina Base',desc:'Piano cottura con due fuochi e bancone.',illust:'🍳🔪',bg:'linear-gradient(135deg,#e8e0d0,#d0c8b0)',placed:false},
+      {emoji:'🫕',name:'Cucina Gourmet',desc:'Cucina professionale con forno e grill.',illust:'🫕🔥',bg:'linear-gradient(135deg,#e0d0c0,#c8b8a0)',placed:false},
+      {emoji:'🧁',name:'Pasticceria',desc:'Laboratorio dolci con forno speciale.',illust:'🧁🎂',bg:'linear-gradient(135deg,#f0d8e0,#e0c0d0)',placed:false},
+    ],
+    [
+      {emoji:'🪑',name:'Set Tavoli',desc:'Tavoli e sedie rustiche per il ristorante.',illust:'🪑🍽️',bg:'linear-gradient(135deg,#e0d8c8,#c8bca0)',placed:false},
+      {emoji:'🪴',name:'Piante Decorative',desc:'Piante in vaso per un ambiente accogliente.',illust:'🪴🌿',bg:'linear-gradient(135deg,#d0e8c0,#b8d0a0)',placed:false},
+      {emoji:'🖼️',name:'Quadri',desc:'Dipinti kawaii per le pareti del locale.',illust:'🖼️🎨',bg:'linear-gradient(135deg,#d8d0e8,#c0b8d0)',placed:false},
+    ]
+  ];
+
+  let currentCat=0;
+  const $=s=>document.querySelector(s);
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+
+  function render(){
+    const items=categories[currentCat];
+    const placedCount=items.filter(i=>i.placed).length;
+    $('#slotCount').textContent=`Posizionati: ${placedCount}/${items.length}`;
+
+    $('#storageGrid').innerHTML=items.map((item,i)=>`
+      <div class="farm-card floral${item.placed?' placed':''}" data-idx="${i}">
+        <span class="placed-badge">✅ Posizionato</span>
+        <h3>${item.emoji} ${item.name}</h3>
+        <p>${item.desc}</p>
+        <div class="farm-illust"${item.bg?' style="background:'+item.bg+'"':''}>${item.illust}</div>
+        <button class="btn btn--primary btn--sm w-full" data-place="${i}">${item.placed?'↩️ Rimuovi':'📍 Posiziona'}</button>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('[data-place]').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        e.stopPropagation();
+        const idx=+btn.dataset.place;
+        const item=items[idx];
+        item.placed=!item.placed;
+        toast(item.placed?'📍 '+item.name+' posizionato!':'↩️ '+item.name+' rimesso in magazzino');
+        render();
+      });
+    });
+  }
+
+  document.querySelectorAll('#storageTabs .tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('#storageTabs .tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCat=+tab.dataset.cat;render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

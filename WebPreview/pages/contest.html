@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>METIME — Classifica Concorso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/game.css"/>
+  <style>
+    .contest-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+    .result-timer{display:flex;align-items:center;gap:6px}
+    .help-btn{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-lt);background:var(--panel-alt);font-size:11px;font-weight:900;display:grid;place-items:center;color:var(--ink-lt);cursor:pointer}
+    .npc-review{display:flex;gap:12px;align-items:flex-start;margin-top:12px}
+    .npc-char{flex-shrink:0}
+    .vote-section{margin-top:14px;padding:12px;border-radius:var(--radius);background:linear-gradient(135deg,#f0e8d4,#e8dcc4);border:2px solid var(--border-lt)}
+    .vote-section h4{margin:0 0 8px;font-size:14px;font-weight:900;color:var(--ink)}
+    .vote-btns{display:flex;gap:8px;margin-top:10px}
+    .lb-row{cursor:pointer;transition:background .15s,transform .15s}
+    .lb-row:hover{background:rgba(212,136,74,.08);transform:translateX(2px)}
+    .lb-row.voted{background:rgba(143,168,130,.15);border-left:3px solid var(--sage)}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:80;place-items:center}
+    .overlay.show{display:grid}
+    .modal{background:var(--panel);border-radius:var(--radius-lg);border:2px solid var(--border);padding:20px;max-width:300px;text-align:center;box-shadow:var(--shadow-lg)}
+    .modal h3{margin:0 0 10px;font-size:18px}
+    .modal p{font-size:13px;color:var(--ink-lt);margin:0 0 14px}
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="designOverlay">
+  <div class="modal">
+    <h3 id="designTitle">Design di ChefMochi</h3>
+    <div style="font-size:64px;margin:10px 0" id="designDish">🥞</div>
+    <p id="designDesc">Pancake al Miele con decorazione a fiore — presentazione impeccabile!</p>
+    <button class="btn btn--primary" onclick="document.getElementById('designOverlay').classList.remove('show')">Chiudi</button>
+  </div>
+</div>
+<main class="phone">
+  <div class="screen">
+
+    <div class="contest-hdr">
+      <h1 class="page-title">Classifica Concorso</h1>
+      <div class="result-timer">
+        <span class="timer--pending timer" id="contestTimer">Risultato tra: 2g 14h 32m</span>
+        <button class="help-btn" id="helpBtn">?</button>
+      </div>
+    </div>
+
+    <div class="panel panel--wood panel--fancy floral">
+
+      <div id="leaderboard"></div>
+
+      <div class="npc-review">
+        <div class="npc-char">
+          <div class="char-body" style="width:50px;height:50px;font-size:24px"><span class="ears"></span>🦉</div>
+        </div>
+        <div class="speech" id="npcReview">"I Pancake al Miele di ChefMochi erano una perfezione assoluta! Il croccante dorato, il cuore morbido… semplicemente divino!"</div>
+      </div>
+
+      <div class="vote-btns">
+        <button class="btn btn--primary flex-1" id="voteBtn">🗳️ Vota</button>
+        <button class="btn flex-1" id="viewDesignBtn">👁️ Vedi Design</button>
+      </div>
+
+    </div>
+
+    <div class="panel mt-12">
+      <div class="vote-section">
+        <h4>🍀 Voto Fortunato</h4>
+        <div class="flex items-center justify-between mb-8">
+          <span class="text-sm font-bold" style="color:var(--ink-mid)">Progresso</span>
+          <span class="text-xs font-bold" style="color:var(--ink-lt)" id="voteCount">14 / 20 Voti</span>
+        </div>
+        <div class="progress"><div class="progress-fill--orange progress-fill" id="voteBar" style="width:70%"></div></div>
+        <div class="mt-8"><button class="btn btn--green w-full" id="claimBtn">🎁 Riscuoti Premio</button></div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="tab-bar">
+    <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
+    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
+    <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
+    <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
+  </nav>
+</main>
+
+<script>
+(function(){
+  const players=[
+    {name:'ChefMochi',avatar:'🐱',stars:5,dish:'🥞',desc:'Pancake al Miele con fiori eduli'},
+    {name:'BunnyBake',avatar:'🐰',stars:4,dish:'🍰',desc:'Torta di Fragole con panna montata'},
+    {name:'HoneyPot',avatar:'🐻',stars:4,dish:'🍜',desc:'Ramen con brodo di miso speciale'},
+    {name:'PipCook',avatar:'🐥',stars:3,dish:'🍣',desc:'Sushi roll con salmone e avocado'},
+    {name:'FoxyFry',avatar:'🦊',stars:3,dish:'🧁',desc:'Cupcake arcobaleno con crema'},
+    {name:'LilyPad',avatar:'🐸',stars:2,dish:'🥧',desc:'Crostata con marmellata fatta in casa'},
+  ];
+  const medals=['gold','silver','bronze'];
+  let votedFor=-1,votes=14,claimed=false,selected=0;
+
+  const $=s=>document.querySelector(s);
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+
+  function renderBoard(){
+    $('#leaderboard').innerHTML=players.map((p,i)=>{
+      const medal=i<3?` ${medals[i]}`:'';
+      return `<div class="lb-row${votedFor===i?' voted':''}" data-idx="${i}">
+        <span class="lb-rank${medal}">${i+1}</span>
+        <div class="lb-avatar">${p.avatar}</div>
+        <span class="lb-name">${p.name}</span>
+        <span class="lb-stars">${'★'.repeat(p.stars)+'☆'.repeat(5-p.stars)}</span>
+      </div>`;
+    }).join('');
+
+    document.querySelectorAll('.lb-row').forEach(row=>{
+      row.addEventListener('click',()=>{
+        selected=+row.dataset.idx;
+        const p=players[selected];
+        $('#npcReview').textContent=`"${p.desc} — un piatto da ${p.stars} stelle da ${p.name}!"`;
+      });
+    });
+  }
+
+  // Vote
+  $('#voteBtn').addEventListener('click',()=>{
+    if(votedFor>=0){toast('Hai già votato in questa sessione!');return}
+    votedFor=selected;votes++;
+    toast('🗳️ Hai votato per '+players[selected].name+'!');
+    $('#voteCount').textContent=votes+' / 20 Voti';
+    $('#voteBar').style.width=Math.min(100,votes/20*100)+'%';
+    renderBoard();
+  });
+
+  // View design
+  $('#viewDesignBtn').addEventListener('click',()=>{
+    const p=players[selected];
+    $('#designTitle').textContent='Design di '+p.name;
+    $('#designDish').textContent=p.dish;
+    $('#designDesc').textContent=p.desc;
+    $('#designOverlay').classList.add('show');
+  });
+
+  // Claim
+  $('#claimBtn').addEventListener('click',()=>{
+    if(claimed){toast('🎁 Premio già riscosso!');return}
+    if(votes<20){toast('⏳ Servono 20 voti per il premio! ('+votes+'/20)');return}
+    claimed=true;
+    toast('🎉 Premio riscosso! +🪙 500 e ✨ Aura Speciale!');
+    $('#claimBtn').disabled=true;$('#claimBtn').textContent='✅ Riscosso!';
+  });
+
+  // Help
+  $('#helpBtn').addEventListener('click',()=>toast('ℹ️ Vota i piatti e raccogli premi!'));
+
+  // Live timer
+  let contestEnd=Date.now()+2*24*3600000+14*3600000+32*60000;
+  setInterval(()=>{
+    const rem=Math.max(0,contestEnd-Date.now());
+    const d=Math.floor(rem/86400000);const h=Math.floor((rem%86400000)/3600000);const m=Math.floor((rem%3600000)/60000);
+    $('#contestTimer').textContent=`Risultato tra: ${d}g ${h}h ${m}m`;
+  },10000);
+
+  renderBoard();
+})();
+</script>
+</body>
+</html>

@@ -17,7 +17,7 @@ enum AudioResource {
         case sick     = "ambient_sick"
 
         /// File extension used for all ambient loops.
-        static let ext = "m4a"
+        static let ext = "wav"
 
         /// Returns the `Ambient` track matching a given `PetMood`.
         static func track(for mood: PetMood) -> Ambient {
@@ -38,7 +38,7 @@ enum AudioResource {
         case gentleBell = "gentle_bell"
 
         /// File extension used for all SFX files.
-        static let ext = "caf"
+        static let ext = "wav"
     }
 }
 

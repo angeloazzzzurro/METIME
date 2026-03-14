@@ -451,6 +451,32 @@
       0%, 100% { transform: translateX(-50%) translateY(0) scaleX(var(--pet-facing, 1)); }
       50% { transform: translateX(-50%) translateY(-7px) scaleX(var(--pet-facing, 1)); }
     }
+
+    .gallery-fab {
+      display: block;
+      margin: 14px 0 0;
+      padding: 14px;
+      border-radius: 18px;
+      border: 2px solid #8b6340;
+      background: linear-gradient(180deg, #e8a868, #d4884a);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      text-shadow: 0 1px 2px rgba(61,43,31,.3);
+      box-shadow:
+        0 4px 16px rgba(212,136,74,.35),
+        inset 0 1px 0 rgba(255,255,255,.4),
+        0 3px 0 rgba(61,43,31,.18);
+      transition: transform .12s, box-shadow .12s;
+    }
+    .gallery-fab:active {
+      transform: scale(.97) translateY(1px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 1px 0 rgba(61,43,31,.12);
+    }
   </style>
 </head>
 <body>
@@ -545,10 +571,14 @@
 
       <nav class="footer-nav">
         <a class="dock" href="pages/home-pet.html">Pet</a>
-        <a class="dock" href="pages/journal.html">Journal</a>
-        <a class="dock" href="pages/garden-plants.html">Garden</a>
-        <a class="dock" href="pages/token-games.html">Token</a>
+        <a class="dock" href="pages/journal.html">Diario</a>
+        <a class="dock" href="pages/garden-plants.html">Giardino</a>
+        <a class="dock" href="pages/hub.html">Ristorante</a>
       </nav>
+
+      <a class="gallery-fab" href="gallery.html">
+        🎮 Galleria UI →
+      </a>
     </section>
   </main>
 

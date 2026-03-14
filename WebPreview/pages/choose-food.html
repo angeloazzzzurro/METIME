@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>METIME — Scegli Ricetta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/game.css"/>
+  <style>
+    .food-layout{display:grid;grid-template-columns:80px 1fr;gap:12px}
+    @media(min-width:400px){.food-layout{grid-template-columns:90px 1fr 100px}}
+    .chef-sidebar{display:flex;flex-direction:column;gap:8px}
+    .recipe-area{flex:1}
+    .cook-illust{display:none}
+    @media(min-width:400px){.cook-illust{display:flex;align-items:center;justify-content:center}.cook-illust .char-illust{width:100%;min-height:180px;font-size:48px}}
+    .time-options{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+    .recipe-nav{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}
+    .recipe-btn{padding:6px 12px;border-radius:999px;border:2px solid var(--border-lt);background:var(--panel);font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s}
+    .recipe-btn.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+    .ingredient{transition:transform .15s,opacity .15s;cursor:pointer}
+    .ingredient:hover{transform:scale(1.2)}
+    .ingredient.used{opacity:.35;transform:scale(.85)}
+    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .cook-btn{position:relative;overflow:hidden}
+    .cook-btn.cooking{pointer-events:none;opacity:.8}
+    .cook-btn .cook-progress{position:absolute;left:0;top:0;height:100%;background:rgba(255,255,255,.3);width:0;transition:width linear}
+    .chef-sidebar .avatar-circle{cursor:pointer;transition:transform .15s}
+    .chef-sidebar .avatar-circle:hover{transform:scale(1.1)}
+    .chef-sidebar .avatar-circle.selected{border:3px solid var(--orange);box-shadow:0 0 8px rgba(212,136,74,.4)}
+    .star-rating{cursor:pointer;user-select:none}
+    .star-rating span{transition:color .1s}
+    .recipe-card h4{transition:transform .2s}
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<main class="phone">
+  <div class="screen">
+
+    <div class="page-hdr">
+      <h1 class="page-title">Scegli Ricetta</h1>
+      <button class="close-btn" onclick="history.back()">✕</button>
+    </div>
+
+    <!-- Recipe navigation -->
+    <div class="recipe-nav" id="recipeNav"></div>
+
+    <div class="panel panel--wood panel--fancy floral">
+      <div class="food-layout">
+
+        <div class="chef-sidebar">
+          <span class="section-label">Chef</span>
+          <div class="avatar-slot"><div class="avatar-circle filled selected" data-chef="0">🐱</div><span class="label">Chef #1</span></div>
+          <div class="avatar-slot"><div class="avatar-circle filled" data-chef="1">🐻</div><span class="label">Chef #2</span></div>
+          <div class="avatar-slot"><div class="avatar-circle filled" data-chef="2">🐥</div><span class="label">Chef #3</span></div>
+          <div class="avatar-slot"><div class="avatar-circle" data-chef="add">+</div><span class="label">Vuoto</span></div>
+        </div>
+
+        <div class="recipe-area">
+          <div class="recipe-card">
+            <h4 id="recipeName">Pancake al Miele 🥞</h4>
+            <div class="star-rating" id="starRating">★★★★☆</div>
+            <p class="recipe-time">Seleziona tempo di cottura:</p>
+
+            <div class="time-options" id="timeOptions"></div>
+
+            <button class="btn btn--primary w-full cook-btn" id="cookBtn" style="margin:8px 0">
+              <span class="cook-progress" id="cookProgress"></span>
+              <span id="cookLabel">🍳 Cucina!</span>
+            </button>
+
+            <span class="section-label">Ingredienti</span>
+            <div class="ingredients" id="ingredientList"></div>
+
+            <div class="mt-8">
+              <div class="flex items-center justify-between mb-8">
+                <span class="text-sm font-bold">Completamento</span>
+                <span class="text-xs" style="color:var(--ink-lt)" id="progressLabel">0 / 15</span>
+              </div>
+              <div class="progress"><div class="progress-fill--orange progress-fill" id="progressBar" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cook-illust">
+          <div class="char-illust" id="chefIllust" style="flex-direction:column;gap:4px;padding:10px">
+            <span style="font-size:42px" id="chefEmoji">🐱</span>
+            <span style="font-size:9px;font-weight:800;color:var(--ink-lt)" id="chefStatus">IN ATTESA</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="tab-bar">
+    <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
+    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
+    <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
+    <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
+  </nav>
+</main>
+
+<script>
+(function(){
+  const recipes=[
+    {name:'Pancake al Miele 🥞',stars:4,ingredients:['🥚','🧈','🍯','🌾','🥛'],times:[{cost:1500,time:'30 min',sec:3},{cost:1600,time:'20 min',sec:2},{cost:1500,time:'45 min',sec:4},{cost:150,time:'3 ore',sec:6}]},
+    {name:'Ramen Speciale 🍜',stars:5,ingredients:['🍜','🥚','🧄','🌶️','🍖'],times:[{cost:2000,time:'40 min',sec:4},{cost:2200,time:'25 min',sec:3},{cost:1800,time:'1 ora',sec:5},{cost:400,time:'4 ore',sec:7}]},
+    {name:'Torta di Fragole 🍰',stars:3,ingredients:['🍓','🧈','🌾','🥛','🍫'],times:[{cost:1200,time:'20 min',sec:2},{cost:1400,time:'15 min',sec:2},{cost:1000,time:'35 min',sec:3},{cost:100,time:'2 ore',sec:5}]},
+    {name:'Sushi Misto 🍣',stars:4,ingredients:['🍚','🐟','🥑','🥒','🍋'],times:[{cost:1800,time:'35 min',sec:3},{cost:2000,time:'20 min',sec:2},{cost:1600,time:'50 min',sec:4},{cost:300,time:'3 ore',sec:6}]},
+  ];
+
+  const chefs=['🐱','🐻','🐥'];
+  let currentRecipe=0,selectedTime=0,selectedChef=0,cooked=0,cooking=false;
+
+  const $=s=>document.querySelector(s);
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+
+  function renderRecipeNav(){
+    $('#recipeNav').innerHTML=recipes.map((r,i)=>
+      `<button class="recipe-btn${i===currentRecipe?' active':''}" data-idx="${i}">${r.name}</button>`
+    ).join('');
+    document.querySelectorAll('.recipe-btn').forEach(b=>b.addEventListener('click',()=>{
+      if(cooking)return;
+      currentRecipe=+b.dataset.idx;render();
+    }));
+  }
+
+  function render(){
+    const r=recipes[currentRecipe];
+    $('#recipeName').textContent=r.name;
+    $('#starRating').innerHTML='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
+    $('#ingredientList').innerHTML=r.ingredients.map(i=>`<div class="ingredient">${i}</div>`).join('');
+    $('#timeOptions').innerHTML=r.times.map((t,i)=>
+      `<div class="radio-opt${i===selectedTime?' active':''}" data-tidx="${i}">
+        <div style="font-size:13px;font-weight:900">🪙 ${t.cost}</div>
+        <div style="font-size:9px;color:var(--ink-lt)">${t.time}</div>
+      </div>`).join('');
+
+    document.querySelectorAll('.time-options .radio-opt').forEach(o=>o.addEventListener('click',()=>{
+      if(cooking)return;
+      selectedTime=+o.dataset.tidx;
+      document.querySelectorAll('.radio-opt').forEach(x=>x.classList.remove('active'));
+      o.classList.add('active');
+    }));
+
+    document.querySelectorAll('.ingredient').forEach(ig=>ig.addEventListener('click',()=>{
+      ig.classList.toggle('used');
+    }));
+
+    $('#progressLabel').textContent=cooked+' / 15';
+    $('#progressBar').style.width=Math.min(100,Math.round(cooked/15*100))+'%';
+    $('#chefEmoji').textContent=chefs[selectedChef];
+    renderRecipeNav();
+  }
+
+  // Chef selection
+  document.querySelectorAll('[data-chef]').forEach(c=>{
+    c.addEventListener('click',()=>{
+      if(c.dataset.chef==='add'){toast('🔓 Sblocca più chef nel Negozio!');return}
+      selectedChef=+c.dataset.chef;
+      document.querySelectorAll('[data-chef]').forEach(x=>x.classList.remove('selected'));
+      c.classList.add('selected');
+      $('#chefEmoji').textContent=chefs[selectedChef];
+    });
+  });
+
+  // Cook button
+  $('#cookBtn').addEventListener('click',()=>{
+    if(cooking)return;
+    cooking=true;
+    const r=recipes[currentRecipe];
+    const t=r.times[selectedTime];
+    const btn=$('#cookBtn');const prog=$('#cookProgress');
+    btn.classList.add('cooking');
+    $('#cookLabel').textContent='⏳ Cucinando...';
+    $('#chefStatus').textContent='CUCINANDO!';
+    prog.style.transition='none';prog.style.width='0';
+    requestAnimationFrame(()=>{
+      prog.style.transition=`width ${t.sec}s linear`;
+      prog.style.width='100%';
+    });
+
+    // Animate ingredients
+    document.querySelectorAll('.ingredient').forEach((ig,i)=>{
+      setTimeout(()=>ig.classList.add('used'),i*400);
+    });
+
+    setTimeout(()=>{
+      cooking=false;cooked++;
+      btn.classList.remove('cooking');
+      prog.style.transition='none';prog.style.width='0';
+      $('#cookLabel').textContent='🍳 Cucina!';
+      $('#chefStatus').textContent='FATTO! ✨';
+      document.querySelectorAll('.ingredient').forEach(ig=>ig.classList.remove('used'));
+      toast('✅ '+r.name+' pronto! +🪙'+t.cost);
+      if(cooked>=15)toast('🏆 Traguardo raggiunto! Bonus sbloccato!');
+      setTimeout(()=>$('#chefStatus').textContent='IN ATTESA',2000);
+      render();
+    },t.sec*1000);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

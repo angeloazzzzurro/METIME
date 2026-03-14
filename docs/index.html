@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="METIME — Il tuo pet virtuale per il benessere quotidiano. Coltiva la tua isola, prenditi cura di te stessa." />
+  <title>METIME 🌸 — Il tuo pet del benessere</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── SFONDO ANIMATO ─────────────────────────────────────────────────── -->
+<div class="bg-blobs" aria-hidden="true">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+</div>
+<div class="stars" aria-hidden="true"></div>
+
+<!-- ── NAV ────────────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">ME<span>TIME</span> 🌸</a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#island">Isola</a></li>
+      <li><a href="#how">Come funziona</a></li>
+    </ul>
+    <a href="https://github.com/angeloazzzzurro/METIME" class="btn-nav" target="_blank" rel="noopener">
+      GitHub ↗
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="pill">🌱 iOS 17+ · SwiftUI · SpriteKit</p>
+    <h1>Il tuo spazio<br />per stare <em>bene</em> ✨</h1>
+    <p class="subtitle">
+      METIME è il pet virtuale che cresce insieme a te.<br />
+      Medita, prenditi cura, esplora la tua isola — ogni giorno.
+    </p>
+    <div class="hero-cta">
+      <a href="https://github.com/angeloazzzzurro/METIME" class="btn-primary" target="_blank" rel="noopener">
+        Scarica il codice
+      </a>
+      <a href="#island" class="btn-ghost">Scopri l'isola ↓</a>
+    </div>
+    <div class="hero-badges">
+      <span>🥚 Uovo</span>
+      <span>🌱 Germoglio</span>
+      <span>🌸 Fioritura</span>
+      <span>✨ Spirito</span>
+      <span>👑 Leggenda</span>
+    </div>
+  </div>
+
+  <!-- Phone mockup -->
+  <div class="hero-phone" aria-hidden="true">
+    <div class="phone-shell">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <!-- Isola miniatura animata in CSS -->
+        <div class="mini-island">
+          <div class="mi-sky"></div>
+          <div class="mi-sea">
+            <span class="wave w1">〜</span>
+            <span class="wave w2">〜</span>
+            <span class="wave w3">〜</span>
+          </div>
+          <div class="mi-grass">
+            <div class="mi-house">
+              <div class="mi-roof"></div>
+              <div class="mi-walls">
+                <div class="mi-door"></div>
+                <div class="mi-win l"></div>
+                <div class="mi-win r"></div>
+              </div>
+            </div>
+            <div class="mi-garden">
+              <span class="mi-plant">🌱</span>
+              <span class="mi-plant">🌿</span>
+              <span class="mi-plant">🌺</span>
+            </div>
+            <div class="mi-shop">
+              <div class="mi-shop-body">🛒</div>
+            </div>
+            <div class="mi-pet">🥚</div>
+            <div class="mi-tree t1">🌳</div>
+            <div class="mi-tree t2">🌲</div>
+            <div class="mi-tree t3">🌳</div>
+          </div>
+          <!-- HUD statsbar -->
+          <div class="mi-hud">
+            <div class="mi-hud-inner">
+              <span class="hud-name">MeTime 🌸</span>
+              <div class="hud-bars">
+                <span class="hb green" style="--v:82%"></span>
+                <span class="hb yellow" style="--v:71%"></span>
+                <span class="hb mint" style="--v:94%"></span>
+                <span class="hb orange" style="--v:60%"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Decorazioni attorno al phone -->
+    <span class="deco d1">🌸</span>
+    <span class="deco d2">⭐️</span>
+    <span class="deco d3">🍃</span>
+    <span class="deco d4">✨</span>
+  </div>
+</section>
+
+<!-- ── FEATURES ───────────────────────────────────────────────────────── -->
+<section class="features" id="features">
+  <h2 class="section-title">Tutto ciò di cui hai bisogno 🌿</h2>
+  <div class="features-grid">
+
+    <div class="feat-card fc-mint">
+      <div class="feat-icon">🏡</div>
+      <h3>Casa</h3>
+      <p>Cura il tuo pet, avvia sessioni di respiro guidato e vai a dormire quando sei stanca.</p>
+    </div>
+
+    <div class="feat-card fc-sky">
+      <div class="feat-icon">🌿</div>
+      <h3>Giardino</h3>
+      <p>Annaffia le piante, gioca con il pet e guarda il tuo giardino fiorire ogni giorno.</p>
+    </div>
+
+    <div class="feat-card fc-sea">
+      <div class="feat-icon">🌊</div>
+      <h3>Riva del Mare</h3>
+      <p>Timer di meditazione con onde animate. Stai ferma, respira, osserva il mare.</p>
+    </div>
+
+    <div class="feat-card fc-lemon">
+      <div class="feat-icon">🛒</div>
+      <h3>Negozio</h3>
+      <p>Compra cibo e oggetti speciali per nutrire il tuo pet e fargli guadagnare energia.</p>
+    </div>
+
+    <div class="feat-card fc-pink">
+      <div class="feat-icon">📈</div>
+      <h3>Statistiche</h3>
+      <p>Fame · Felicità · Calma · Energia — quattro barre che riflettono la tua cura quotidiana.</p>
+    </div>
+
+    <div class="feat-card fc-purple">
+      <div class="feat-icon">🎵</div>
+      <h3>Suono Ambientale</h3>
+      <p>Ogni stato d'animo ha la sua colonna sonora. Il pet cambia musica in base a come ti senti.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ISLAND TOUR ─────────────────────────────────────────────────────── -->
+<section class="island-tour" id="island">
+  <h2 class="section-title">Esplora l'isola 🗺️</h2>
+  <p class="section-sub">Tocca ogni zona per entrare nella sezione corrispondente.</p>
+
+  <div class="island-map">
+    <!-- Mare -->
+    <div class="zone z-sea" data-label="🌊 Riva del Mare" data-desc="Medita sulla riva con onde animate">
+      <div class="zone-waves"><span>〜</span><span>〜</span><span>〜</span></div>
+    </div>
+    <!-- Giardino -->
+    <div class="zone z-garden" data-label="🌿 Giardino" data-desc="Annaffia le piante, gioca col pet">
+      <span>🌱</span><span>🌿</span><span>🌸</span>
+    </div>
+    <!-- Casa -->
+    <div class="zone z-house" data-label="🏡 Casa" data-desc="Cura, respiro guidato, riposo">
+      <div class="z-house-roof"></div>
+      <div class="z-house-body">
+        <div class="z-door"></div>
+      </div>
+    </div>
+    <!-- Negozio -->
+    <div class="zone z-shop" data-label="🛒 Negozio" data-desc="Acquista cibo e oggetti">
+      <div class="z-shop-label">🛒</div>
+    </div>
+
+    <!-- Tooltip -->
+    <div class="island-tooltip" id="iTooltip"></div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ────────────────────────────────────────────────────── -->
+<section class="how" id="how">
+  <h2 class="section-title">Come funziona ✨</h2>
+  <ol class="steps">
+    <li>
+      <span class="step-num">1</span>
+      <div>
+        <strong>Scegli la tua zona</strong>
+        <p>Apri l'app e tocca una zona sulla mappa isola per accedere alla sezione.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">2</span>
+      <div>
+        <strong>Prenditi cura di te stessa</strong>
+        <p>Medita, nutri il pet, fai una passeggiata — ogni azione migliora le statistiche.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">3</span>
+      <div>
+        <strong>Il pet cresce con te</strong>
+        <p>Da 🥚 uovo fino a 👑 leggenda — 5 stadi di evoluzione basati sulla cura costante.</p>
+      </div>
+    </li>
+    <li>
+      <span class="step-num">4</span>
+      <div>
+        <strong>Ogni giorno conta</strong>
+        <p>Persiste su SwiftData. Torna il giorno dopo e trovi il tuo pet esattamente dove lo hai lasciato.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ── EVOLUTION STRIP ─────────────────────────────────────────────────── -->
+<section class="evo-strip">
+  <div class="evo-inner">
+    <span class="evo-item">🥚 <small>Uovo</small></span>
+    <span class="evo-arrow">→</span>
+    <span class="evo-item">🌱 <small>Germoglio</small></span>
+    <span class="evo-arrow">→</span>
+    <span class="evo-item">🌸 <small>Fioritura</small></span>
+    <span class="evo-arrow">→</span>
+    <span class="evo-item">✨ <small>Spirito</small></span>
+    <span class="evo-arrow">→</span>
+    <span class="evo-item">👑 <small>Leggenda</small></span>
+  </div>
+</section>
+
+<!-- ── TECH STACK ──────────────────────────────────────────────────────── -->
+<section class="tech">
+  <h2 class="section-title">Stack tecnologico 🛠️</h2>
+  <div class="tech-grid">
+    <div class="tech-chip">SwiftUI</div>
+    <div class="tech-chip">SpriteKit</div>
+    <div class="tech-chip">SwiftData</div>
+    <div class="tech-chip">AVFoundation</div>
+    <div class="tech-chip">XcodeGen</div>
+    <div class="tech-chip">GitHub Actions</div>
+    <div class="tech-chip">iOS 17+</div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-logo">METIME 🌸</span>
+    <p>Fatto con amore · iOS 17+ · <a href="https://github.com/angeloazzzzurro/METIME" target="_blank" rel="noopener">GitHub</a></p>
+    <p class="footer-small">Prenditi cura di te ogni giorno 💛</p>
+  </div>
+</footer>
+
+<script>
+// ── Parallax blobs ─────────────────────────────────────────────────────────
+document.addEventListener("mousemove", e => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 30;
+  const y = (e.clientY / window.innerHeight - 0.5) * 30;
+  document.querySelectorAll(".blob").forEach((b, i) => {
+    const factor = (i + 1) * 0.5;
+    b.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+  });
+});
+
+// ── Island zone tooltips ───────────────────────────────────────────────────
+const tt = document.getElementById("iTooltip");
+document.querySelectorAll(".zone").forEach(z => {
+  z.addEventListener("mouseenter", e => {
+    tt.textContent = z.dataset.label + " — " + z.dataset.desc;
+    tt.classList.add("visible");
+  });
+  z.addEventListener("mouseleave", () => tt.classList.remove("visible"));
+  z.addEventListener("click", () => {
+    z.classList.add("zone-tap");
+    setTimeout(() => z.classList.remove("zone-tap"), 300);
+  });
+});
+
+// ── Scroll reveal ──────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("revealed"); });
+}, { threshold: 0.12 });
+document.querySelectorAll(".feat-card, .steps li, .tech-chip, .evo-item").forEach(el => {
+  el.classList.add("reveal");
+  observer.observe(el);
+});
+
+// ── Pet stage click cycle ──────────────────────────────────────────────────
+const stages = ["🥚","🌱","🌸","✨","👑"];
+let si = 0;
+const petEl = document.querySelector(".mi-pet");
+if (petEl) petEl.addEventListener("click", () => {
+  si = (si + 1) % stages.length;
+  petEl.textContent = stages[si];
+  petEl.classList.add("pet-bounce");
+  setTimeout(() => petEl.classList.remove("pet-bounce"), 350);
+});
+
+// ── Stars background generation ───────────────────────────────────────────
+const starsEl = document.querySelector(".stars");
+if (starsEl) {
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement("span");
+    s.style.cssText = `
+      position:absolute;
+      width:${Math.random()*3+1}px;
+      height:${Math.random()*3+1}px;
+      border-radius:50%;
+      background:rgba(255,255,255,${Math.random()*0.6+0.2});
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      animation: twinkle ${Math.random()*3+2}s ease-in-out infinite;
+      animation-delay:${Math.random()*4}s;
+    `;
+    starsEl.appendChild(s);
+  }
+}
+</script>
+</body>
+</html>

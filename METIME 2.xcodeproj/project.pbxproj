@@ -7,89 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07F5B781C32DDAB6DAFF668B /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901FCB96F3EC1D093E1FAA26 /* Resources.swift */; };
-		0FACD7A452F8EE065AE34DBE /* BedNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA6CECFC6AF48DB5E0C7427 /* BedNode.swift */; };
 		217D80CB58BEC18829D7402F /* MainPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93322C02B9A13F6223EAF383 /* MainPetView.swift */; };
-		2F1A049D585F08B0DADD902D /* GameStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A70FB2F1F3E9B098C83D508 /* GameStoreTests.swift */; };
-		42B8F107A0E8E681D2D588DB /* IslandMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E42FFAF837DF47092F5762 /* IslandMapView.swift */; };
 		4946FFBAA53D02B397FFE293 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB96584783D1F15149030F7 /* AppState.swift */; };
-		528F7AC404EC3DF89FD27016 /* SectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6E8F4C98752221E08FA079 /* SectionViews.swift */; };
 		6E3329208B09DA740019C006 /* GardenScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1A1B9356C560E725A25599 /* GardenScene.swift */; };
 		715C4C7A1DE46BB3EFB85FF8 /* SoundscapeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBE447E8DDF06F279BB5F1F /* SoundscapeManager.swift */; };
 		75F51B8E7D56F3CC4EF41917 /* MockupGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF8B4C4A3B1F7D971CE1E73 /* MockupGalleryView.swift */; };
 		8A66AFECAFD6D66A52D29B8E /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A92BFC107BC53F29B01519 /* GameStore.swift */; };
-		A8A4646C2E605A9C9DFC3374 /* IslandMapScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D76F1F793011ED3D8CFEF81 /* IslandMapScene.swift */; };
 		DDCDF327222A3BE66EE3FE5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E5D9C0DBB1C7F9277761554D /* Assets.xcassets */; };
 		E14191D9F9D4BA301D2E728C /* PetNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91242716B74CBD2BFF41195 /* PetNode.swift */; };
 		E57674FF2999B2D0DA863952 /* ParticleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22553E3DB9FE31B7AE9DFDF /* ParticleFactory.swift */; };
-		EFB90F5486189C0C0E1F5D3D /* METIMEUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97799F0DC0CAF0F77FB58402 /* METIMEUITests.swift */; };
 		FF6639787893C0A041094DEA /* METIMEApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519202695227C6EE54A2A64A /* METIMEApp.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		072435BD8333835ADE26F10F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 094BAA5952368A2A20FFE1BD /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 96FEC00E8DED502095E010C5;
-			remoteInfo = METIME;
-		};
-		E4E28A22235FC053F5881D9C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 094BAA5952368A2A20FFE1BD /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 96FEC00E8DED502095E010C5;
-			remoteInfo = METIME;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0DF8B4C4A3B1F7D971CE1E73 /* MockupGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockupGalleryView.swift; sourceTree = "<group>"; };
 		1FBE447E8DDF06F279BB5F1F /* SoundscapeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundscapeManager.swift; sourceTree = "<group>"; };
-		2A70FB2F1F3E9B098C83D508 /* GameStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStoreTests.swift; sourceTree = "<group>"; };
 		3BB96584783D1F15149030F7 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		41EC7216656400D141376423 /* METIMEUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = METIMEUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4D76F1F793011ED3D8CFEF81 /* IslandMapScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandMapScene.swift; sourceTree = "<group>"; };
 		519202695227C6EE54A2A64A /* METIMEApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = METIMEApp.swift; sourceTree = "<group>"; };
-		60E42FFAF837DF47092F5762 /* IslandMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandMapView.swift; sourceTree = "<group>"; };
-		7AA6CECFC6AF48DB5E0C7427 /* BedNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedNode.swift; sourceTree = "<group>"; };
-		901FCB96F3EC1D093E1FAA26 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		93322C02B9A13F6223EAF383 /* MainPetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPetView.swift; sourceTree = "<group>"; };
-		97799F0DC0CAF0F77FB58402 /* METIMEUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = METIMEUITests.swift; sourceTree = "<group>"; };
 		B7D82AC5908E6C6B5D8BF125 /* METIME.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = METIME.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B91242716B74CBD2BFF41195 /* PetNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetNode.swift; sourceTree = "<group>"; };
 		BC1A1B9356C560E725A25599 /* GardenScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenScene.swift; sourceTree = "<group>"; };
-		DE6E8F4C98752221E08FA079 /* SectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionViews.swift; sourceTree = "<group>"; };
 		E5D9C0DBB1C7F9277761554D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		ECCB30A5EDD189D19827303E /* METIMETests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = METIMETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F22553E3DB9FE31B7AE9DFDF /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
 		F6A92BFC107BC53F29B01519 /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		04279DD9F1EF407EA2D79457 /* METIMEUITests */ = {
-			isa = PBXGroup;
-			children = (
-				97799F0DC0CAF0F77FB58402 /* METIMEUITests.swift */,
-			);
-			path = METIMEUITests;
-			sourceTree = "<group>";
-		};
 		16D5EDEDF2B8AAB5E279C831 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				E5D9C0DBB1C7F9277761554D /* Assets.xcassets */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		1D31ACA709E0B302B1B46708 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				7135A2822DFD67AF739FE549 /* METIMETests */,
-				04279DD9F1EF407EA2D79457 /* METIMEUITests */,
-			);
-			path = Tests;
 			sourceTree = "<group>";
 		};
 		23339CAD280513CB80EC2B82 /* Persistence */ = {
@@ -103,9 +53,7 @@
 		23C036E160A277FB6F880E7C /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				60E42FFAF837DF47092F5762 /* IslandMapView.swift */,
 				93322C02B9A13F6223EAF383 /* MainPetView.swift */,
-				DE6E8F4C98752221E08FA079 /* SectionViews.swift */,
 				F0E64F276DDEDB2D0B92CB3A /* Mockups */,
 			);
 			path = UI;
@@ -115,8 +63,6 @@
 			isa = PBXGroup;
 			children = (
 				B7D82AC5908E6C6B5D8BF125 /* METIME.app */,
-				ECCB30A5EDD189D19827303E /* METIMETests.xctest */,
-				41EC7216656400D141376423 /* METIMEUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -129,20 +75,10 @@
 			path = Audio;
 			sourceTree = "<group>";
 		};
-		7135A2822DFD67AF739FE549 /* METIMETests */ = {
-			isa = PBXGroup;
-			children = (
-				2A70FB2F1F3E9B098C83D508 /* GameStoreTests.swift */,
-			);
-			path = METIMETests;
-			sourceTree = "<group>";
-		};
 		8F56FF9C35E2A5C31B855FB8 /* Garden */ = {
 			isa = PBXGroup;
 			children = (
-				7AA6CECFC6AF48DB5E0C7427 /* BedNode.swift */,
 				BC1A1B9356C560E725A25599 /* GardenScene.swift */,
-				4D76F1F793011ED3D8CFEF81 /* IslandMapScene.swift */,
 			);
 			path = Garden;
 			sourceTree = "<group>";
@@ -152,7 +88,6 @@
 			children = (
 				3BB96584783D1F15149030F7 /* AppState.swift */,
 				519202695227C6EE54A2A64A /* METIMEApp.swift */,
-				901FCB96F3EC1D093E1FAA26 /* Resources.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -166,7 +101,6 @@
 				CAD47FF4938B8498089BB2DE /* Data */,
 				8F56FF9C35E2A5C31B855FB8 /* Garden */,
 				16D5EDEDF2B8AAB5E279C831 /* Resources */,
-				1D31ACA709E0B302B1B46708 /* Tests */,
 				23C036E160A277FB6F880E7C /* UI */,
 				36D5B366B19C9DBCF9C139AB /* Products */,
 			);
@@ -200,24 +134,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		268BB536C5F2A49EEE8A686F /* METIMEUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = AADAF282187E9A454A38C6AB /* Build configuration list for PBXNativeTarget "METIMEUITests" */;
-			buildPhases = (
-				83A92F28C57E22B42A9F3BB1 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A4FD08FC00371F00AA86BB9B /* PBXTargetDependency */,
-			);
-			name = METIMEUITests;
-			packageProductDependencies = (
-			);
-			productName = METIMEUITests;
-			productReference = 41EC7216656400D141376423 /* METIMEUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		96FEC00E8DED502095E010C5 /* METIME */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 71EB0B81D34CE4FBAB0B2B5E /* Build configuration list for PBXNativeTarget "METIME" */;
@@ -236,24 +152,6 @@
 			productReference = B7D82AC5908E6C6B5D8BF125 /* METIME.app */;
 			productType = "com.apple.product-type.application";
 		};
-		FC0B1164F7A8AB9253B75C12 /* METIMETests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FEC3D010D36ADEA8BD140773 /* Build configuration list for PBXNativeTarget "METIMETests" */;
-			buildPhases = (
-				AD0F1BC3E020673A5DCD8175 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B237DA752556A85870F001BC /* PBXTargetDependency */,
-			);
-			name = METIMETests;
-			packageProductDependencies = (
-			);
-			productName = METIMETests;
-			productReference = ECCB30A5EDD189D19827303E /* METIMETests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -263,14 +161,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
-					268BB536C5F2A49EEE8A686F = {
-						DevelopmentTeam = "";
-						TestTargetID = 96FEC00E8DED502095E010C5;
-					};
 					96FEC00E8DED502095E010C5 = {
-						DevelopmentTeam = "";
-					};
-					FC0B1164F7A8AB9253B75C12 = {
 						DevelopmentTeam = "";
 					};
 				};
@@ -290,8 +181,6 @@
 			projectRoot = "";
 			targets = (
 				96FEC00E8DED502095E010C5 /* METIME */,
-				FC0B1164F7A8AB9253B75C12 /* METIMETests */,
-				268BB536C5F2A49EEE8A686F /* METIMEUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -308,93 +197,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		83A92F28C57E22B42A9F3BB1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EFB90F5486189C0C0E1F5D3D /* METIMEUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AD0F1BC3E020673A5DCD8175 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				2F1A049D585F08B0DADD902D /* GameStoreTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BE64CE19C5F261455BBB0BEA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				4946FFBAA53D02B397FFE293 /* AppState.swift in Sources */,
-				0FACD7A452F8EE065AE34DBE /* BedNode.swift in Sources */,
 				8A66AFECAFD6D66A52D29B8E /* GameStore.swift in Sources */,
 				6E3329208B09DA740019C006 /* GardenScene.swift in Sources */,
-				A8A4646C2E605A9C9DFC3374 /* IslandMapScene.swift in Sources */,
-				42B8F107A0E8E681D2D588DB /* IslandMapView.swift in Sources */,
 				FF6639787893C0A041094DEA /* METIMEApp.swift in Sources */,
 				217D80CB58BEC18829D7402F /* MainPetView.swift in Sources */,
 				75F51B8E7D56F3CC4EF41917 /* MockupGalleryView.swift in Sources */,
 				E57674FF2999B2D0DA863952 /* ParticleFactory.swift in Sources */,
 				E14191D9F9D4BA301D2E728C /* PetNode.swift in Sources */,
-				07F5B781C32DDAB6DAFF668B /* Resources.swift in Sources */,
-				528F7AC404EC3DF89FD27016 /* SectionViews.swift in Sources */,
 				715C4C7A1DE46BB3EFB85FF8 /* SoundscapeManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		A4FD08FC00371F00AA86BB9B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 96FEC00E8DED502095E010C5 /* METIME */;
-			targetProxy = E4E28A22235FC053F5881D9C /* PBXContainerItemProxy */;
-		};
-		B237DA752556A85870F001BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 96FEC00E8DED502095E010C5 /* METIME */;
-			targetProxy = 072435BD8333835ADE26F10F /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		3FA66650A82A51BE54A62420 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.metime.app.uitests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = METIME;
-			};
-			name = Debug;
-		};
-		744F9CA9990400179E7B3161 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.metime.app.tests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/METIME.app/METIME";
-			};
-			name = Debug;
-		};
 		80975BA0533F4E18D49A2991 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -491,40 +312,6 @@
 			};
 			name = Release;
 		};
-		A3582FF8E503D5DE35B87231 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.metime.app.tests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/METIME.app/METIME";
-			};
-			name = Release;
-		};
-		A4C3D5274228F433792D8169 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.metime.app.uitests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = METIME;
-			};
-			name = Release;
-		};
 		A5C9007B5B82E5E3BEFA8A45 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -607,24 +394,6 @@
 			buildConfigurations = (
 				810689739599EDD00BC0E607 /* Debug */,
 				832A38EE96928DB8E8F00A5F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		AADAF282187E9A454A38C6AB /* Build configuration list for PBXNativeTarget "METIMEUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3FA66650A82A51BE54A62420 /* Debug */,
-				A4C3D5274228F433792D8169 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		FEC3D010D36ADEA8BD140773 /* Build configuration list for PBXNativeTarget "METIMETests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				744F9CA9990400179E7B3161 /* Debug */,
-				A3582FF8E503D5DE35B87231 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

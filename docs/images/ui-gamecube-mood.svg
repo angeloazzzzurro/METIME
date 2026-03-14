@@ -1,0 +1,70 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="METIME gamecube mood UI">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8f99c7"/>
+      <stop offset="100%" stop-color="#dbe2fb"/>
+    </linearGradient>
+    <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d9def4"/>
+      <stop offset="100%" stop-color="#aab4d9"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d9f0c5"/>
+      <stop offset="100%" stop-color="#7faa75"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#bg)"/>
+
+  <g transform="translate(220 90)">
+    <rect width="760" height="560" rx="46" fill="url(#shell)" stroke="#6a759f" stroke-width="8"/>
+    <rect x="52" y="42" width="656" height="362" rx="24" fill="url(#screen)" stroke="#4e587e" stroke-width="10"/>
+
+    <rect x="90" y="78" width="580" height="34" rx="16" fill="#e7ffd7" stroke="#95b37b" stroke-width="3"/>
+    <text x="380" y="101" text-anchor="middle" font-family="Avenir Next, Arial, sans-serif" font-size="18" font-weight="900" fill="#43563a">METIME - USER CORE HUD</text>
+
+    <g font-family="Avenir Next, Arial, sans-serif" font-size="14" fill="#2d3a31" font-weight="700">
+      <text x="106" y="154">Energy</text>
+      <rect x="180" y="140" width="420" height="16" rx="8" fill="#edf3ff" stroke="#6f7fa8"/>
+      <rect x="180" y="140" width="294" height="16" rx="8" fill="#86c86f"/>
+
+      <text x="106" y="196">Focus</text>
+      <rect x="180" y="182" width="420" height="16" rx="8" fill="#edf3ff" stroke="#6f7fa8"/>
+      <rect x="180" y="182" width="252" height="16" rx="8" fill="#7ba3e8"/>
+
+      <text x="106" y="238">Calm</text>
+      <rect x="180" y="224" width="420" height="16" rx="8" fill="#edf3ff" stroke="#6f7fa8"/>
+      <rect x="180" y="224" width="336" height="16" rx="8" fill="#a0d779"/>
+
+      <text x="106" y="280">Bond</text>
+      <rect x="180" y="266" width="420" height="16" rx="8" fill="#edf3ff" stroke="#6f7fa8"/>
+      <rect x="180" y="266" width="240" height="16" rx="8" fill="#8c94db"/>
+    </g>
+
+    <g transform="translate(108 315)">
+      <rect width="130" height="54" rx="14" fill="#f4f8ff" stroke="#6978a6" stroke-width="3"/>
+      <text x="65" y="33" text-anchor="middle" font-family="Avenir Next, Arial, sans-serif" font-size="16" font-weight="800" fill="#344267">Hydrate</text>
+    </g>
+    <g transform="translate(256 315)">
+      <rect width="130" height="54" rx="14" fill="#f4f8ff" stroke="#6978a6" stroke-width="3"/>
+      <text x="65" y="33" text-anchor="middle" font-family="Avenir Next, Arial, sans-serif" font-size="16" font-weight="800" fill="#344267">Breathe</text>
+    </g>
+    <g transform="translate(404 315)">
+      <rect width="130" height="54" rx="14" fill="#f4f8ff" stroke="#6978a6" stroke-width="3"/>
+      <text x="65" y="33" text-anchor="middle" font-family="Avenir Next, Arial, sans-serif" font-size="16" font-weight="800" fill="#344267">Focus</text>
+    </g>
+    <g transform="translate(552 315)">
+      <rect width="130" height="54" rx="14" fill="#f4f8ff" stroke="#6978a6" stroke-width="3"/>
+      <text x="65" y="33" text-anchor="middle" font-family="Avenir Next, Arial, sans-serif" font-size="16" font-weight="800" fill="#344267">Walk</text>
+    </g>
+
+    <circle cx="160" cy="472" r="28" fill="#c8d0ef" stroke="#6f7aa8" stroke-width="4"/>
+    <circle cx="230" cy="472" r="28" fill="#c8d0ef" stroke="#6f7aa8" stroke-width="4"/>
+    <circle cx="690" cy="472" r="18" fill="#8ab66f" stroke="#5c7b4b" stroke-width="4"/>
+    <circle cx="730" cy="450" r="14" fill="#87a6e5" stroke="#5e72a9" stroke-width="4"/>
+    <circle cx="730" cy="494" r="14" fill="#d5c67f" stroke="#988d53" stroke-width="4"/>
+    <circle cx="770" cy="472" r="14" fill="#d688b5" stroke="#945d7f" stroke-width="4"/>
+  </g>
+
+  <text x="600" y="48" text-anchor="middle" font-family="Avenir Next, Arial, sans-serif" font-size="42" font-weight="900" fill="#252f55">UI Direction - GameCube Mood</text>
+</svg>

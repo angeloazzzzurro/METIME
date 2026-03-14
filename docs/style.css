@@ -262,6 +262,104 @@ h1 em { font-style: normal; color: #e05a8a; }
   50%      { transform: rotate(8deg) scale(1.15); }
 }
 
+/* ── Story ───────────────────────────────────────────────────────────────── */
+.story {
+  padding: 84px 32px 40px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.story-card {
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 14px;
+}
+
+.story-card p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.story-milestones {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.milestone {
+  border-radius: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
+}
+
+.milestone span {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 900;
+  color: #5f6290;
+  background: #eef1ff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  margin-bottom: 10px;
+}
+
+.milestone h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.milestone p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── Gallery ─────────────────────────────────────────────────────────────── */
+.gallery {
+  padding: 36px 32px 80px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.gallery-card {
+  margin: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
+}
+
+.gallery-card img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: #f2f6ff;
+}
+
+.gallery-card figcaption {
+  padding: 12px 14px 14px;
+  font-size: 13px;
+  color: #586285;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
 /* ── Features ─────────────────────────────────────────────────────────────── */
 .features {
   padding: 80px 32px; max-width: 1100px; margin: 0 auto;
@@ -451,6 +549,12 @@ h1 em { font-style: normal; color: #e05a8a; }
   .hero-phone { order: 0; width: 230px; }
   .phone-shell { width: 210px; height: 420px; }
   .hero-cta, .hero-badges { justify-content: center; }
+  .story { padding-left: 18px; padding-right: 18px; }
+  .story-card { padding: 18px; }
+  .story-milestones { grid-template-columns: 1fr; }
+  .gallery { padding-left: 18px; padding-right: 18px; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-card img { height: 200px; }
   .island-map { height: 260px; }
   .z-house { top: 2%; }
   .z-garden { top: 42%; left: 2%; width: 130px; height: 72px; }

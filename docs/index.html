@@ -57,6 +57,23 @@
       <span>✨ Spirito</span>
       <span>👑 Leggenda</span>
     </div>
+
+    <section class="color-customizer" aria-label="Personalizza colore">
+      <h3>Personalizza il colore</h3>
+      <p>Scegli il tuo tono preferito: il tema si adatta in tempo reale.</p>
+      <div class="color-controls">
+        <label for="themeColor">Colore tema</label>
+        <input id="themeColor" type="color" value="#cf87ab" />
+      </div>
+      <div class="preset-swatches" role="group" aria-label="Colori suggeriti">
+        <button class="swatch" data-color="#cf87ab" style="--sw:#cf87ab;" aria-label="Rosa morbido"></button>
+        <button class="swatch" data-color="#9fb4ec" style="--sw:#9fb4ec;" aria-label="Blu pastello"></button>
+        <button class="swatch" data-color="#8dcfa7" style="--sw:#8dcfa7;" aria-label="Menta"></button>
+        <button class="swatch" data-color="#d5b183" style="--sw:#d5b183;" aria-label="Pesca caldo"></button>
+        <button class="swatch" data-color="#b8a2de" style="--sw:#b8a2de;" aria-label="Lilla"></button>
+      </div>
+      <button id="resetThemeColor" class="btn-ghost btn-reset" type="button">Reset colore</button>
+    </section>
   </div>
 
   <!-- Phone mockup -->
@@ -395,6 +412,83 @@ if (starsEl) {
     `;
     starsEl.appendChild(s);
   }
+}
+
+// ── Theme color customization ──────────────────────────────────────────────
+const themeColorInput = document.getElementById("themeColor");
+const swatches = document.querySelectorAll(".swatch[data-color]");
+const resetThemeColor = document.getElementById("resetThemeColor");
+const STORAGE_KEY = "metimeThemeColor";
+const DEFAULT_COLOR = "#cf87ab";
+
+function hexToRgb(hex) {
+  const clean = hex.replace("#", "").trim();
+  if (clean.length !== 6) return null;
+  const n = Number.parseInt(clean, 16);
+  if (Number.isNaN(n)) return null;
+  return {
+    r: (n >> 16) & 255,
+    g: (n >> 8) & 255,
+    b: n & 255
+  };
+}
+
+function rgbToHex(r, g, b) {
+  const toHex = (v) => v.toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function blendWithWhite(hex, ratio) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  const mix = (c) => Math.round(c + (255 - c) * ratio);
+  return rgbToHex(mix(rgb.r), mix(rgb.g), mix(rgb.b));
+}
+
+function blendWithBlack(hex, ratio) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  const mix = (c) => Math.round(c * (1 - ratio));
+  return rgbToHex(mix(rgb.r), mix(rgb.g), mix(rgb.b));
+}
+
+function applyThemeColor(hex) {
+  document.documentElement.style.setProperty("--user-accent", hex);
+  document.documentElement.style.setProperty("--user-accent-soft", blendWithWhite(hex, 0.35));
+  document.documentElement.style.setProperty("--user-accent-tint", blendWithWhite(hex, 0.72));
+  document.documentElement.style.setProperty("--user-accent-deep", blendWithBlack(hex, 0.22));
+  if (themeColorInput) themeColorInput.value = hex;
+}
+
+function persistThemeColor(hex) {
+  localStorage.setItem(STORAGE_KEY, hex);
+}
+
+if (themeColorInput) {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const startColor = saved || DEFAULT_COLOR;
+  applyThemeColor(startColor);
+
+  themeColorInput.addEventListener("input", () => {
+    applyThemeColor(themeColorInput.value);
+    persistThemeColor(themeColorInput.value);
+  });
+}
+
+swatches.forEach((sw) => {
+  sw.addEventListener("click", () => {
+    const color = sw.getAttribute("data-color");
+    if (!color) return;
+    applyThemeColor(color);
+    persistThemeColor(color);
+  });
+});
+
+if (resetThemeColor) {
+  resetThemeColor.addEventListener("click", () => {
+    applyThemeColor(DEFAULT_COLOR);
+    localStorage.removeItem(STORAGE_KEY);
+  });
 }
 </script>
 </body>

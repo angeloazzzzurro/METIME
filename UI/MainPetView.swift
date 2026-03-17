@@ -54,20 +54,31 @@ struct MainPetView: View {
                     // ── Giardino SpriteKit isometrico ────────────────────
                     SpriteView(scene: scene, options: [.allowsTransparency])
                         .frame(width: geo.size.width, height: geo.size.height * 0.54)
-                        .onChange(of: appState.mood) { _, mood in
-                            scene.mood = mood
-                            SoundscapeManager.shared.transition(to: mood)
-                        }
-                        .onAppear {
-                            let isoSize = CGSize(width: geo.size.width,
-                                                 height: geo.size.height * 0.54)
-                            scene = {
-                                let s = GardenScene(size: isoSize)
-                                s.scaleMode = .resizeFill
-                                s.mood = appState.mood
-                                return s
-                            }()
-                        }
+        .onChange(of: appState.mood) { _, mood in
+            scene.mood = mood
+            SoundscapeManager.shared.transition(to: mood)
+        }
+        .onChange(of: store.pet.colorIndex) { _, _ in
+            // Aggiorna il colore del pet nella scena quando cambia l'indice
+            scene.applyPetColor(store.currentPetColor, animated: true)
+        }
+        .onAppear {
+            let isoSize = CGSize(width: geo.size.width,
+                                 height: geo.size.height * 0.54)
+            scene = {
+                let s = GardenScene(size: isoSize)
+                s.scaleMode = .resizeFill
+                s.mood = appState.mood
+                // Colore iniziale (persistito)
+                s.applyPetColor(store.currentPetColor, animated: false)
+                // Tap sul pet → cicla colore
+                s.onPetTapped = { [weak store] in
+                    UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                    store?.cycleColor()
+                }
+                return s
+            }()
+        }
 
                     Spacer(minLength: 0)
 

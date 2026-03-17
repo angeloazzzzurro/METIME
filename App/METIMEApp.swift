@@ -8,18 +8,13 @@ import OSLog
 struct METIMEApp: App {
     @StateObject private var appState = AppState()
 
-    // INJ-06: rileva se siamo in modalità UI test
     private static let isUITesting = CommandLine.arguments.contains("--uitesting")
 
     private let container: ModelContainer = {
-        let schema = Schema([Pet.self, PetNeeds.self])
+        let schema = Schema([Pet.self, PetNeeds.self, OwnedItem.self, Wallet.self])
         let logger = Logger(subsystem: "com.metime.app", category: "Container")
         let inMemory = METIMEApp.isUITesting
 
-        // DATA PROTECTION: i file SwiftData vengono cifrati con la chiave
-        // derivata dal passcode dell'utente. Il file è accessibile solo
-        // quando il dispositivo è sbloccato o in background dopo il primo sblocco.
-        // Richiede il capability "Data Protection" abilitato in Xcode.
         let config = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: inMemory,
@@ -30,14 +25,9 @@ struct METIMEApp: App {
 
         do {
             let c = try ModelContainer(for: schema, configurations: [config])
-
-            // Applica Data Protection al file del database dopo la creazione
-            if !inMemory {
-                applyDataProtection(to: c, logger: logger)
-            }
+            if !inMemory { applyDataProtection(to: c, logger: logger) }
             return c
         } catch {
-            // INJ-03: fallback in-memory invece di fatalError
             logger.error("Primary ModelContainer failed: \(error.localizedDescription) — falling back to in-memory")
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             do {
@@ -59,20 +49,13 @@ struct METIMEApp: App {
         }
     }
 
-    // MARK: - Data Protection Helper
-
-    /// Applica `FileProtectionType.completeUnlessOpen` a tutti i file
-    /// nella directory del container SwiftData.
-    private static func applyDataProtection(to container: ModelContainer,
-                                            logger: Logger) {
+    private static func applyDataProtection(to container: ModelContainer, logger: Logger) {
         guard let storeURL = container.configurations.first?.url else { return }
         let directory = storeURL.deletingLastPathComponent()
-
         let fm = FileManager.default
         guard let enumerator = fm.enumerator(at: directory,
                                               includingPropertiesForKeys: [.fileProtectionKey],
                                               options: [.skipsHiddenFiles]) else { return }
-
         for case let fileURL as URL in enumerator {
             do {
                 try fm.setAttributes(
@@ -102,14 +85,43 @@ struct ContentRoot: View {
 // MARK: - ContentRootInner
 
 private struct ContentRootInner: View {
-    @StateObject private var store: GameStore
+    @StateObject private var gameStore: GameStore
+    @StateObject private var houseStore: HouseStore
 
     init(modelContext: ModelContext) {
-        _store = StateObject(wrappedValue: GameStore(modelContext: modelContext))
+        let gs = GameStore(modelContext: modelContext)
+        let hs = HouseStore(modelContext: modelContext)
+        _gameStore  = StateObject(wrappedValue: gs)
+        _houseStore = StateObject(wrappedValue: hs)
     }
 
     var body: some View {
-        MainPetView()
-            .environmentObject(store)
+        AppTabView()
+            .environmentObject(gameStore)
+            .environmentObject(houseStore)
+    }
+}
+
+// MARK: - AppTabView (navigazione principale)
+
+struct AppTabView: View {
+    @EnvironmentObject var gameStore: GameStore
+    @EnvironmentObject var houseStore: HouseStore
+
+    var body: some View {
+        TabView {
+            MainPetView()
+                .tabItem {
+                    Label("Giardino", systemImage: "leaf.fill")
+                }
+                .tag(0)
+
+            HouseView()
+                .tabItem {
+                    Label("Casa", systemImage: "house.fill")
+                }
+                .tag(1)
+        }
+        .tint(Color(red: 0.6, green: 0.3, blue: 0.9))
     }
 }

@@ -74,6 +74,17 @@ final class GameStore: ObservableObject {
         save()
     }
 
+    /// Applies stat boosts from a house item (cibo, essenziali, decorazioni).
+    func applyBoost(hunger: Double, happiness: Double, calm: Double, energy: Double) {
+        objectWillChange.send()
+        pet.needs.hunger    = min(1, pet.needs.hunger    + hunger)
+        pet.needs.happiness = min(1, pet.needs.happiness + happiness)
+        pet.needs.calm      = min(1, pet.needs.calm      + calm)
+        pet.needs.energy    = min(1, pet.needs.energy    + energy)
+        syncMood()
+        save()
+    }
+
     // MARK: - Mood Derivation (BUG-01 / BUG-06)
 
     /// Derives the pet mood from its current statistics and persists it.

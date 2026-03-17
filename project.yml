@@ -30,6 +30,8 @@ targets:
       - path: Data
       - path: UI
       - path: Resources
+      - path: House      # HouseScene.swift, HouseView.swift
+      - path: Store      # HouseItem.swift, InventoryModel.swift, HouseStore.swift
     resources:
       - path: Resources
       # PrivacyInfo.xcprivacy — richiesto da Apple per App Store (iOS 17+)

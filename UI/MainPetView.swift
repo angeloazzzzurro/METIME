@@ -25,7 +25,12 @@ struct MainPetView: View {
                 kawaiiBg.ignoresSafeArea()
                 KawaiiDecorations().ignoresSafeArea()
 
+                // Scena isometrica: occupa la fascia centrale della schermata
+                // lasciando spazio all'HUD in alto e all'action bar in basso.
                 SceneView(scene: scene, options: [.allowsTransparency])
+                    .frame(width: geo.size.width,
+                           height: geo.size.height * 0.58)
+                    .offset(y: geo.size.height * 0.04)
                     .ignoresSafeArea()
 
                 VStack(spacing: 0) {
@@ -38,11 +43,12 @@ struct MainPetView: View {
                         .padding(.horizontal, 20)
                 }
             }
-            // INJ-05: aggiorna la scena quando le dimensioni cambiano
+            // INJ-05: aggiorna la scena con le dimensioni reali del frame iso
             .onAppear {
-                let size = geo.size
+                let isoSize = CGSize(width: geo.size.width,
+                                    height: geo.size.height * 0.58)
                 scene = {
-                    let s = GardenScene(size: size)
+                    let s = GardenScene(size: isoSize)
                     s.scaleMode = .resizeFill
                     s.mood = appState.mood
                     return s

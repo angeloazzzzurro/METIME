@@ -52,3 +52,12 @@ fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/
 2026-03-17 11:19:21,350  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
 2026-03-17 11:19:21,352  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
 2026-03-17 11:19:21,352  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,369  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:26,370  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,378  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:26,380  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,380  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:26,381  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,381  INFO      Commit: auto: update MainPetView.swift, auto_commit.log, watcher.out
+2026-03-17 11:19:26,688  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'

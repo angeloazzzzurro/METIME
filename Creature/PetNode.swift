@@ -28,26 +28,37 @@ final class PetNode: SKNode {
 
     required init?(coder: NSCoder) { return nil }
 
+    // MARK: - Colore corrente
+
+    /// Colore base del pet (impostato da GameStore, indipendente dal mood)
+    private var baseColor: PetColor = .cream
+
+    /// Imposta il colore base con animazione fluida.
+    func setColor(_ petColor: PetColor, animated: Bool = true) {
+        baseColor = petColor
+        let newColor = petColor.uiColor
+        let newStroke = petColor.strokeUIColor
+        if animated {
+            // Bounce + cambio colore
+            let scaleUp   = SKAction.scale(to: 1.15, duration: 0.12)
+            let scaleDown = SKAction.scale(to: 1.00, duration: 0.12)
+            let colorAct  = SKAction.customAction(withDuration: 0.12) { [weak self] _, _ in
+                self?.body.fillColor   = newColor
+                self?.body.strokeColor = newStroke
+            }
+            run(.sequence([scaleUp, SKAction.group([scaleDown, colorAct])]))
+        } else {
+            body.fillColor   = newColor
+            body.strokeColor = newStroke
+        }
+    }
+
     // MARK: - Mood
 
     func setMood(_ mood: PetMood) {
-        let targetColor: UIColor
-        switch mood {
-        case .calm:     targetColor = UIColor(red: 0.98, green: 0.95, blue: 0.93, alpha: 1) // bianco/crema (default)
-        case .happy:    targetColor = UIColor(red: 1.00, green: 0.90, blue: 0.55, alpha: 1) // giallo
-        case .anxious:  targetColor = UIColor(red: 1.00, green: 0.75, blue: 0.60, alpha: 1) // pesca
-        case .sleepy:   targetColor = UIColor(red: 0.75, green: 0.88, blue: 1.00, alpha: 1) // azzurro
-        case .sick:     targetColor = UIColor(red: 0.80, green: 0.95, blue: 0.80, alpha: 1) // verde pallido
-        case .evolving: targetColor = UIColor(red: 1.00, green: 0.80, blue: 0.95, alpha: 1) // rosa
-        }
-        // Transizione colore fluida
-        let fade = SKAction.customAction(withDuration: 0.35) { [weak self] _, _ in
-            self?.body.fillColor = targetColor
-        }
-        body.run(fade)
+        // Il mood non sovrascrive più il colore base — agisce solo sulla bocca
+        // e sugli effetti speciali (evolving)
         updateMouthForMood(mood)
-
-        // Effetto speciale per .evolving: scintille intorno al pet
         if mood == .evolving { runEvolvingEffect() }
     }
 

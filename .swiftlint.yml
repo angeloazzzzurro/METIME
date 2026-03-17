@@ -1,0 +1,85 @@
+# SwiftLint — METIME
+# Configurazione focalizzata su sicurezza, qualità del codice e coerenza stilistica.
+# Eseguire con: make lint
+
+disabled_rules:
+  - trailing_whitespace   # gestito dall'editor
+
+opt_in_rules:
+  # ── Sicurezza ────────────────────────────────────────────────────────────────
+  - force_unwrapping                  # vieta ! su Optional (crash potenziale)
+  - force_try                         # vieta try! (crash su errore)
+  - force_cast                        # vieta as! (crash su tipo errato)
+  - implicitly_unwrapped_optional     # vieta var x: Type! nelle proprietà
+  - discouraged_optional_boolean      # Bool? è quasi sempre un errore logico
+
+  # ── Qualità ──────────────────────────────────────────────────────────────────
+  - empty_count                       # usa isEmpty invece di .count == 0
+  - first_where                       # usa .first(where:) invece di .filter.first
+  - contains_over_filter_count        # usa .contains invece di .filter.count > 0
+  - sorted_first_last                 # usa .min()/.max() invece di .sorted().first
+  - redundant_nil_coalescing          # rimuove ?? nil ridondanti
+  - unused_import                     # segnala import non usati
+  - unneeded_break_in_switch          # rimuove break ridondanti in switch
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+
+  # ── Concorrenza ──────────────────────────────────────────────────────────────
+  - actor_change_handler              # avvisa su handler non-isolated in Actor
+
+analyzer_rules:
+  - unused_declaration                # segnala dichiarazioni mai usate
+  - unused_import                     # segnala import mai usati
+
+included:
+  - App
+  - Audio
+  - Creature
+  - Data
+  - Garden
+  - UI
+
+excluded:
+  - Tests                             # i test possono usare force_try/force_unwrapping
+  - .build
+  - DerivedData
+
+# ── Limiti dimensionali ───────────────────────────────────────────────────────
+line_length:
+  warning: 120
+  error: 160
+  ignores_comments: true
+  ignores_urls: true
+
+function_body_length:
+  warning: 40
+  error: 80
+
+type_body_length:
+  warning: 200
+  error: 350
+
+file_length:
+  warning: 400
+  error: 600
+
+# ── Naming ────────────────────────────────────────────────────────────────────
+identifier_name:
+  min_length:
+    warning: 2
+  excluded:
+    - id
+    - x
+    - y
+    - t
+    - n
+    - s
+
+type_name:
+  min_length: 3
+  max_length:
+    warning: 50
+    error: 60
+
+# ── Reporter ─────────────────────────────────────────────────────────────────
+reporter: "xcode"   # output compatibile con Xcode Issue Navigator

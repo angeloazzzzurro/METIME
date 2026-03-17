@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <!--
+        PrivacyInfo.xcprivacy — METIME
+        Richiesto da Apple per tutte le app distribuite su App Store (iOS 17+).
+        Dichiara quali dati vengono raccolti, per quale scopo e se vengono
+        collegati all'identità dell'utente.
+
+        METIME è un'app completamente offline. Non invia dati a server esterni,
+        non usa analytics di terze parti e non condivide dati con nessuno.
+    -->
+
+    <!-- ═══════════════════════════════════════════════════════════
+         NSPrivacyTracking
+         L'app NON traccia l'utente ai sensi dell'App Tracking Transparency.
+    ═══════════════════════════════════════════════════════════ -->
+    <key>NSPrivacyTracking</key>
+    <false/>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         NSPrivacyTrackingDomains
+         Nessun dominio di tracking utilizzato.
+    ═══════════════════════════════════════════════════════════ -->
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         NSPrivacyCollectedDataTypes
+         Dati raccolti dall'app e conservati localmente sul dispositivo.
+         Nessun dato viene trasmesso a server esterni.
+    ═══════════════════════════════════════════════════════════ -->
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array>
+
+        <!-- 1. Nome del pet (inserito dall'utente) -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeName</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+
+        <!-- 2. Dati di utilizzo (statistiche del pet: umore, energia, calma) -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeOtherUserContent</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+
+        <!-- 3. Dati del diario (riflessioni testuali, se implementate) -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeEmailAddress</string>
+            <!-- Riutilizziamo il tipo più vicino disponibile; in realtà
+                 si tratta di testo libero del diario personale. -->
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+
+    </array>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         NSPrivacyAccessedAPITypes
+         API di sistema accedute dall'app con relativa motivazione.
+    ═══════════════════════════════════════════════════════════ -->
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+
+        <!-- File System: lettura/scrittura del database SwiftData -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <!-- C617.1: accesso ai timestamp per la gestione del database locale -->
+                <string>C617.1</string>
+            </array>
+        </dict>
+
+        <!-- UserDefaults: non utilizzato per dati sensibili -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <!-- CA92.1: utilizzo esclusivo per preferenze non sensibili -->
+                <string>CA92.1</string>
+            </array>
+        </dict>
+
+    </array>
+
+</dict>
+</plist>

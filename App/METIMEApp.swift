@@ -11,20 +11,34 @@ struct METIMEApp: App {
     // INJ-06: rileva se siamo in modalità UI test
     private static let isUITesting = CommandLine.arguments.contains("--uitesting")
 
-    // INJ-03: sostituisce fatalError con fallback in-memory
     private let container: ModelContainer = {
         let schema = Schema([Pet.self, PetNeeds.self])
         let logger = Logger(subsystem: "com.metime.app", category: "Container")
-
-        // INJ-06: usa sempre in-memory durante i test UI
         let inMemory = METIMEApp.isUITesting
 
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        // DATA PROTECTION: i file SwiftData vengono cifrati con la chiave
+        // derivata dal passcode dell'utente. Il file è accessibile solo
+        // quando il dispositivo è sbloccato o in background dopo il primo sblocco.
+        // Richiede il capability "Data Protection" abilitato in Xcode.
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: inMemory,
+            allowsSave: true,
+            groupContainer: .none,
+            cloudKitDatabase: .none
+        )
+
         do {
-            return try ModelContainer(for: schema, configurations: [config])
+            let c = try ModelContainer(for: schema, configurations: [config])
+
+            // Applica Data Protection al file del database dopo la creazione
+            if !inMemory {
+                applyDataProtection(to: c, logger: logger)
+            }
+            return c
         } catch {
-            logger.error("Primary ModelContainer failed: \(error.localizedDescription) — falling back to in-memory")
             // INJ-03: fallback in-memory invece di fatalError
+            logger.error("Primary ModelContainer failed: \(error.localizedDescription) — falling back to in-memory")
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             return try! ModelContainer(for: schema, configurations: [fallback])
         }
@@ -40,11 +54,37 @@ struct METIMEApp: App {
                 }
         }
     }
+
+    // MARK: - Data Protection Helper
+
+    /// Applica `FileProtectionType.completeUnlessOpen` a tutti i file
+    /// nella directory del container SwiftData.
+    private static func applyDataProtection(to container: ModelContainer,
+                                            logger: Logger) {
+        guard let storeURL = container.configurations.first?.url else { return }
+        let directory = storeURL.deletingLastPathComponent()
+
+        let fm = FileManager.default
+        guard let enumerator = fm.enumerator(at: directory,
+                                              includingPropertiesForKeys: [.fileProtectionKey],
+                                              options: [.skipsHiddenFiles]) else { return }
+
+        for case let fileURL as URL in enumerator {
+            do {
+                try fm.setAttributes(
+                    [.protectionKey: FileProtectionType.completeUnlessOpen],
+                    ofItemAtPath: fileURL.path
+                )
+            } catch {
+                logger.warning("Could not set Data Protection on \(fileURL.lastPathComponent): \(error.localizedDescription)")
+            }
+        }
+        logger.info("Data Protection applied to SwiftData store at \(directory.path)")
+    }
 }
 
 // MARK: - ContentRoot
 
-/// NON private: SwiftUI deve poter istanziare questa view come radice della WindowGroup.
 struct ContentRoot: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.modelContext) private var modelContext

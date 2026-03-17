@@ -35,15 +35,34 @@ final class PetNeeds {
 
 @Model
 final class Pet {
-    var name: String
+
+    // MARK: - Constants
+
+    /// Allowlist: lettere, cifre, spazi e punteggiatura comune.
+    private static let allowedCharacters = CharacterSet.alphanumerics
+        .union(.whitespaces)
+        .union(CharacterSet(charactersIn: "'-_!?."))
+
+    static let maxNameLength = 20
+
+    // MARK: - Stored Properties
+
+    /// Nome grezzo — usare sempre `sanitizedName` per la visualizzazione.
+    /// La validazione viene applicata in scrittura tramite `setName(_:)`.
+    private(set) var name: String
+
     var stage: Int
     var food: Int
     var moodRaw: String
+
     @Relationship(deleteRule: .cascade) var needs: PetNeeds
 
-    // MARK: - Mood accessor (INJ-02: validazione in lettura con logging)
+    // MARK: - Loggers
 
-    private static let moodLogger = Logger(subsystem: "com.metime.app", category: "Pet")
+    private static let petLogger  = Logger(subsystem: "com.metime.app", category: "Pet")
+    private static let moodLogger = Logger(subsystem: "com.metime.app", category: "Pet.Mood")
+
+    // MARK: - Mood accessor (INJ-02)
 
     var mood: PetMood {
         get {
@@ -54,14 +73,28 @@ final class Pet {
         set { moodRaw = newValue.rawValue }
     }
 
-    // MARK: - INJ-01: nome sanitizzato
+    // MARK: - Name validation (INJ-01 — scrittura)
 
-    /// Returns `name` with control characters removed and length capped at 20.
+    /// Imposta il nome applicando la allowlist e il limite di lunghezza.
+    /// Sostituisce i caratteri non consentiti con uno spazio e tronca a `maxNameLength`.
+    func setName(_ raw: String) {
+        let filtered = raw.unicodeScalars
+            .map { Pet.allowedCharacters.contains($0) ? Character($0) : Character(" ") }
+            .reduce(into: "") { $0.append($1) }
+        let trimmed = filtered.trimmingCharacters(in: .whitespaces)
+        let result  = String(trimmed.prefix(Pet.maxNameLength))
+        if result != raw {
+            Pet.petLogger.info("Pet name sanitized: '\(raw)' → '\(result)'")
+        }
+        name = result.isEmpty ? "MeTime" : result
+    }
+
+    /// Display-safe name: rimuove eventuali caratteri di controllo Unicode residui.
     var sanitizedName: String {
         let stripped = name.unicodeScalars
             .filter { !$0.properties.isDefaultIgnorableCodePoint }
             .reduce(into: "") { $0.append(Character($1)) }
-        return String(stripped.prefix(20))
+        return String(stripped.prefix(Pet.maxNameLength))
     }
 
     // MARK: - Init

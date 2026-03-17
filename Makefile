@@ -4,7 +4,7 @@ SIM     := platform=iOS Simulator,name=iPhone 15
 XBUILD  := xcodebuild -project METIME.xcodeproj -scheme $(SCHEME) -sdk iphonesimulator \
             -destination '$(SIM)' CODE_SIGNING_ALLOWED=NO
 
-.PHONY: setup generate build open test test-unit test-ui
+.PHONY: setup generate build open test test-unit test-ui lint lint-fix
 
 # ── Bootstrap ────────────────────────────────────────────────────────────────
 setup:
@@ -37,3 +37,12 @@ test-unit:
 test-ui:
 	xcodebuild test -project METIME.xcodeproj -scheme METIMEUITests \
 	  -sdk iphonesimulator -destination '$(SIM)' CODE_SIGNING_ALLOWED=NO
+
+# ── Lint ──────────────────────────────────────────────────────────────────────
+## Analisi statica con SwiftLint (sicurezza: force_try, force_cast, force_unwrapping)
+lint:
+	swiftlint lint --config .swiftlint.yml
+
+## Corregge automaticamente le violazioni correggibili
+lint-fix:
+	swiftlint lint --fix --config .swiftlint.yml

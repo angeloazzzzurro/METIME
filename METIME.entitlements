@@ -4,5 +4,14 @@
 <dict>
   <key>aps-environment</key>
   <string>development</string>
+
+  <!--
+      Data Protection — NSFileProtectionCompleteUnlessOpen
+      I file dell'app (incluso il database SwiftData) vengono cifrati
+      con una chiave derivata dal passcode dell'utente.
+      Accessibile dopo il primo sblocco del dispositivo (necessario per SwiftData in background).
+  -->
+  <key>com.apple.developer.default-data-protection</key>
+  <string>NSFileProtectionCompleteUnlessOpen</string>
 </dict>
 </plist>

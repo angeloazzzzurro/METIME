@@ -26,3 +26,16 @@
 2026-03-17 07:18:24,442  INFO      Modifica rilevata: audit_homepage.md  [closed_no_write]
 2026-03-17 07:18:24,443  INFO      Modifica rilevata: presentation_content.md  [opened]
 2026-03-17 07:18:24,443  INFO      Modifica rilevata: presentation_content.md  [closed_no_write]
+2026-03-17 07:18:29,465  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 07:18:33,249  INFO      Push completato → origin/main  [EADME.md, audit_finale.md, audit_homepage.md, mockup_architecture.png, mockup_hero.png, mockup_screens.png, presentation_content.md, preview_care.png, preview_gallery.png, preview_house.png, preview_isometric.png, preview_journal.png, preview_kawaii_main.png, preview_main.png, preview_store.png, scripts/]
+2026-03-17 07:18:37,185  ERROR     git push failed: remote: Bypassed rule violations for refs/heads/main:        
+remote: 
+remote: - Changes must be made through a pull request.        
+remote: 
+remote: - Required status check "Build iOS App" is expected.        
+remote: 
+To https://github.com/angeloazzzzurro/METIME.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at d465e820cf53612b90812e129a7e1df7e8a21b72 but expected b125f6af265d096606366f5789afc31968a9b241)
+error: failed to push some refs to 'https://github.com/angeloazzzzurro/METIME.git'
+2026-03-17 11:18:15,598  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:18:15,599  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]

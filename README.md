@@ -159,3 +159,5 @@ Open `UI/Mockups/MockupGalleryView.swift` in Xcode and use Canvas Preview to ins
 Made with care · iOS 17+ · Swift 5.9+
 
 </div>
+
+<- Tech Stack, Security, Getting Started, Project Structure, auto-commit test Tue Mar 17 07:18:17 EDT 2026 -->

@@ -1,0 +1,18 @@
+nohup: ignoring input
+2026-03-17 07:17:55,899  INFO      METIME Auto-Commit Watcher avviato — monitorando /home/ubuntu/METIME
+2026-03-17 07:17:55,899  INFO      Estensioni monitorate: .entitlements, .md, .plist, .swift, .xcprivacy, .yml
+2026-03-17 07:17:55,899  INFO      Debounce: 5s  |  Log: /home/ubuntu/METIME/scripts/auto_commit.log
+2026-03-17 07:18:17,894  INFO      Modifica rilevata: README.md  [opened]
+2026-03-17 07:18:17,895  INFO      Modifica rilevata: README.md  [modified]
+2026-03-17 07:18:17,896  INFO      Modifica rilevata: README.md  [closed]
+2026-03-17 07:18:17,896  INFO      Modifica rilevata: README.md  [opened]
+2026-03-17 07:18:17,897  INFO      Modifica rilevata: README.md  [modified]
+2026-03-17 07:18:17,898  INFO      Modifica rilevata: README.md  [closed]
+2026-03-17 07:18:22,912  INFO      Modifica rilevata: README.md  [opened]
+2026-03-17 07:18:22,912  INFO      Modifica rilevata: README.md  [closed_no_write]
+2026-03-17 07:18:22,913  INFO      Modifica rilevata: audit_finale.md  [opened]
+2026-03-17 07:18:22,914  INFO      Modifica rilevata: audit_finale.md  [closed_no_write]
+2026-03-17 07:18:22,914  INFO      Modifica rilevata: audit_homepage.md  [opened]
+2026-03-17 07:18:22,915  INFO      Modifica rilevata: audit_homepage.md  [closed_no_write]
+2026-03-17 07:18:22,953  INFO      Modifica rilevata: presentation_content.md  [opened]
+2026-03-17 07:18:22,954  INFO      Modifica rilevata: presentation_content.md  [closed_no_write]

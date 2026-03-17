@@ -39,3 +39,16 @@ To https://github.com/angeloazzzzurro/METIME.git
 error: failed to push some refs to 'https://github.com/angeloazzzzurro/METIME.git'
 2026-03-17 11:18:15,598  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
 2026-03-17 11:18:15,599  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:18:20,625  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:18:20,972  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:19:21,344  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,346  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:21,347  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:19:21,348  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,348  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:19:21,349  INFO      Modifica rilevata: UI/MainPetView.swift  [closed]
+2026-03-17 11:19:21,350  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,350  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:21,352  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,352  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]

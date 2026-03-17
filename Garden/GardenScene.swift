@@ -6,7 +6,6 @@ final class GardenScene: SKScene {
 
     var mood: PetMood = .calm {
         didSet {
-            updateBackground()
             pet.setMood(mood)
             updateWeather()
         }
@@ -15,19 +14,27 @@ final class GardenScene: SKScene {
     // MARK: - Lifecycle
 
     override func didMove(to view: SKView) {
-        updateBackground()
+        // Sfondo trasparente: il gradiente kawaii di SwiftUI è visibile sotto
+        backgroundColor = .clear
 
-        let ground = SKShapeNode(rectOf: CGSize(width: size.width,
-                                                height: size.height * 0.25),
-                                 cornerRadius: 8)
-        ground.fillColor = .systemGreen
-        ground.strokeColor = .clear
-        ground.position = CGPoint(x: size.width / 2, y: size.height * 0.15)
+        // Terreno kawaii: erba verde pastello arrotondata
+        let ground = SKShapeNode(rectOf: CGSize(width: size.width * 1.2,
+                                                height: size.height * 0.28),
+                                 cornerRadius: size.height * 0.14)
+        ground.fillColor   = UIColor(red: 0.72, green: 0.94, blue: 0.72, alpha: 0.85)
+        ground.strokeColor = UIColor(red: 0.55, green: 0.85, blue: 0.55, alpha: 0.5)
+        ground.lineWidth   = 2
+        ground.position    = CGPoint(x: size.width / 2, y: size.height * 0.10)
         addChild(ground)
 
-        pet.position = CGPoint(x: size.width / 2, y: size.height * 0.45)
+        // Piccoli fiorellini decorativi sul terreno
+        addFlowers()
+
+        // Pet centrato
+        pet.position = CGPoint(x: size.width / 2, y: size.height * 0.42)
         addChild(pet)
 
+        // Particelle ambientali leggere
         let ambient = ParticleFactory.ambient(size: size)
         ambient.position = CGPoint(x: size.width / 2, y: size.height)
         addChild(ambient)
@@ -41,12 +48,7 @@ final class GardenScene: SKScene {
         pet.bounce()
     }
 
-    // MARK: - Private
-
-    private func updateBackground() {
-        let colorName = ColorResource.background(for: mood).rawValue
-        backgroundColor = UIColor(named: colorName) ?? .systemMint
-    }
+    // MARK: - Weather
 
     private func updateWeather() {
         weather?.removeFromParent()
@@ -58,15 +60,47 @@ final class GardenScene: SKScene {
             rain.position = CGPoint(x: size.width / 2, y: size.height)
             addChild(rain)
             weather = rain
-
         case .happy, .evolving:
             let sparkle = ParticleFactory.sparkle(size: size)
-            sparkle.position = CGPoint(x: size.width / 2, y: size.height * 0.6)
+            sparkle.position = CGPoint(x: size.width / 2, y: size.height * 0.65)
             addChild(sparkle)
             weather = sparkle
-
         default:
             break
+        }
+    }
+
+    // MARK: - Decorazioni
+
+    private func addFlowers() {
+        let positions: [CGPoint] = [
+            CGPoint(x: size.width * 0.18, y: size.height * 0.24),
+            CGPoint(x: size.width * 0.30, y: size.height * 0.22),
+            CGPoint(x: size.width * 0.68, y: size.height * 0.23),
+            CGPoint(x: size.width * 0.82, y: size.height * 0.25),
+        ]
+        let colors: [UIColor] = [
+            UIColor(red: 1.0, green: 0.6, blue: 0.75, alpha: 0.9),
+            UIColor(red: 1.0, green: 0.9, blue: 0.4, alpha: 0.9),
+            UIColor(red: 0.8, green: 0.6, blue: 1.0, alpha: 0.9),
+            UIColor(red: 1.0, green: 0.7, blue: 0.4, alpha: 0.9),
+        ]
+        for (i, pos) in positions.enumerated() {
+            let flower = SKShapeNode(circleOfRadius: 6)
+            flower.fillColor   = colors[i % colors.count]
+            flower.strokeColor = .clear
+            flower.position    = pos
+            addChild(flower)
+
+            // Gambo
+            let stem = SKShapeNode()
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: pos.x, y: pos.y - 6))
+            path.addLine(to: CGPoint(x: pos.x, y: pos.y - 16))
+            stem.path        = path
+            stem.strokeColor = UIColor(red: 0.4, green: 0.75, blue: 0.4, alpha: 0.8)
+            stem.lineWidth   = 2
+            addChild(stem)
         }
     }
 }

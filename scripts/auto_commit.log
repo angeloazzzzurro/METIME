@@ -165,3 +165,12 @@ fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/
 2026-03-17 11:35:12,855  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed]
 2026-03-17 11:35:12,856  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
 2026-03-17 11:35:12,857  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:17,874  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:17,875  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:17,885  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:17,886  INFO      Commit: auto: update GameStore.swift, auto_commit.log, watcher.out
+2026-03-17 11:35:17,887  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:17,888  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:17,890  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:18,197  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'

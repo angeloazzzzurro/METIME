@@ -26,14 +26,14 @@ final class PetNode: SKNode {
         startIdle()
     }
 
-    required init?(coder: NSCoder) { fatalError("init(coder:) not implemented") }
+    required init?(coder: NSCoder) { return nil }
 
     // MARK: - Mood
 
     func setMood(_ mood: PetMood) {
         let targetColor: UIColor
         switch mood {
-        case .calm:     targetColor = UIColor(red: 0.95, green: 0.80, blue: 0.95, alpha: 1) // lilla
+        case .calm:     targetColor = UIColor(red: 0.98, green: 0.95, blue: 0.93, alpha: 1) // bianco/crema (default)
         case .happy:    targetColor = UIColor(red: 1.00, green: 0.90, blue: 0.55, alpha: 1) // giallo
         case .anxious:  targetColor = UIColor(red: 1.00, green: 0.75, blue: 0.60, alpha: 1) // pesca
         case .sleepy:   targetColor = UIColor(red: 0.75, green: 0.88, blue: 1.00, alpha: 1) // azzurro
@@ -68,8 +68,9 @@ final class PetNode: SKNode {
         let path = CGMutablePath()
         path.addEllipse(in: CGRect(x: -46, y: -40, width: 92, height: 82))
         body.path        = path
-        body.fillColor   = UIColor(red: 0.95, green: 0.80, blue: 0.95, alpha: 1)
-        body.strokeColor = UIColor(red: 0.85, green: 0.60, blue: 0.90, alpha: 0.6)
+        // Colore bianco/crema come nel mockup originale
+        body.fillColor   = UIColor(red: 0.98, green: 0.95, blue: 0.93, alpha: 1)
+        body.strokeColor = UIColor(red: 0.90, green: 0.75, blue: 0.80, alpha: 0.5)
         body.lineWidth   = 2
         addChild(body)
     }

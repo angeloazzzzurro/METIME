@@ -40,7 +40,11 @@ struct METIMEApp: App {
             // INJ-03: fallback in-memory invece di fatalError
             logger.error("Primary ModelContainer failed: \(error.localizedDescription) — falling back to in-memory")
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-            return try! ModelContainer(for: schema, configurations: [fallback])
+            do {
+                return try ModelContainer(for: schema, configurations: [fallback])
+            } catch {
+                fatalError("Failed to create fallback in-memory container: \(error.localizedDescription)")
+            }
         }
     }()
 

@@ -32,7 +32,7 @@ final class IslandMapScene: SKScene {
     // MARK: – Touch
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let pos = touches.first.map({ convert($0.location(in: view!), from: nil) }) else { return }
+        guard let view, let pos = touches.first.map({ $0.location(in: view) }) else { return }
         for (zone, node) in zoneNodes {
             if node.contains(pos) {
                 animateTap(node)

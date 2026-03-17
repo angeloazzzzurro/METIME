@@ -26,7 +26,7 @@ final class BedNode: SKNode {
         buildBed()
     }
 
-    required init?(coder aDecoder: NSCoder) { fatalError() }
+    required init?(coder aDecoder: NSCoder) { return nil }
 
     // MARK: – Costruzione
 

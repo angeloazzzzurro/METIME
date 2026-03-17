@@ -87,7 +87,8 @@ struct HouseSectionView: View {
                     let phases = ["Inspira", "Tieni", "Espira", "Pausa"]
                     let durations: [Double] = [4, 4, 4, 2]
                     breathTimer?.invalidate()
-                    breathTimer = Timer.scheduledTimer(withTimeInterval: durations[0], repeats: true) { t in
+                    breathTimer = Timer.scheduledTimer(withTimeInterval: durations[0], repeats: true) { [weak self] t in
+                        guard let self else { t.invalidate(); return }
                         cycleStep = (cycleStep + 1) % 4
                         breathPhase = phases[cycleStep]
                     }
@@ -156,7 +157,8 @@ struct SeaSectionView: View {
                         running.toggle()
                         if running {
                             appState.mood = .calm
-                            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+                                guard let self else { return }
                                 seconds += 1
                             }
                         } else {

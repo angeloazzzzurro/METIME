@@ -33,6 +33,6 @@ jobs:
           xcodebuild \
             -project METIME.xcodeproj \
             -scheme METIME \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=26.2' \
             CODE_SIGNING_ALLOWED=NO \
             build

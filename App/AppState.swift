@@ -54,6 +54,8 @@ final class Pet {
     var stage: Int
     var food: Int
     var moodRaw: String
+    /// Indice del colore corrente nella palette PetColor (persistito)
+    var colorIndex: Int
 
     @Relationship(deleteRule: .cascade) var needs: PetNeeds
 
@@ -103,12 +105,14 @@ final class Pet {
          stage: Int = 0,
          food: Int = 3,
          mood: PetMood = .calm,
+         colorIndex: Int = 0,
          needs: PetNeeds = PetNeeds()) {
-        self.name    = name
-        self.stage   = stage
-        self.food    = food
-        self.moodRaw = mood.rawValue
-        self.needs   = needs
+        self.name       = name
+        self.stage      = stage
+        self.food       = food
+        self.moodRaw    = mood.rawValue
+        self.colorIndex = colorIndex
+        self.needs      = needs
     }
 }
 

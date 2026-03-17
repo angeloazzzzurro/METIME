@@ -108,3 +108,12 @@ fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/
 2026-03-17 11:34:18,276  INFO      Modifica rilevata: App/AppState.swift  [closed]
 2026-03-17 11:34:18,277  INFO      Modifica rilevata: App/AppState.swift  [opened]
 2026-03-17 11:34:18,278  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,295  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:23,296  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,306  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:23,307  INFO      Commit: auto: update AppState.swift, auto_commit.log, watcher.out
+2026-03-17 11:34:23,308  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,308  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:23,309  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,605  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'

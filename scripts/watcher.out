@@ -146,3 +146,12 @@ fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/
 2026-03-17 11:34:54,481  INFO      Modifica rilevata: Creature/PetNode.swift  [closed]
 2026-03-17 11:34:54,482  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
 2026-03-17 11:34:54,483  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,501  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:59,501  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,507  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:59,508  INFO      Commit: auto: update PetNode.swift, auto_commit.log, watcher.out
+2026-03-17 11:34:59,509  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,510  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:59,511  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,808  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'

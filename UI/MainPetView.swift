@@ -119,6 +119,15 @@ struct MainPetView: View {
                     HomePetNavButton(icon: "sparkles.rectangle.stack.fill", label: "Me Time", color: Color(hex: "#F59E0B")) {
                         navigationState.activeSection = .meTime
                     }
+                        Menu {
+                            ForEach(sections, id: \.self) { section in
+                                Button(action: { navigationState.activeSection = section }) {
+                                    Text(section.label)
+                                }
+                            }
+                        } label: {
+                            HomePetNavButton(icon: "ellipsis.circle", label: "Altro", color: Color(hex: "#10B981")) {}
+                        }
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 8)

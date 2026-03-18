@@ -49,9 +49,8 @@ struct HouseView: View {
                         }
                 }
                 .frame(height: 320)
-                .onChange(of: gameStore.pet?.moodRaw) { _, newVal in
-                    if let raw = newVal,
-                       let mood = PetMood(rawValue: raw) {
+                .onChange(of: gameStore.pet.moodRaw) { _, newVal in
+                    if let mood = PetMood(rawValue: newVal) {
                         scene.mood = mood
                     }
                 }

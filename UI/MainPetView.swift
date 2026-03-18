@@ -26,17 +26,17 @@ struct MainPetView: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                // ── Sfondo rosa → lavanda ────────────────────────────────
-                LinearGradient(
-                    colors: [
-                        Color(hex: "#FFD6E0"),
-                        Color(hex: "#E8D5F5")
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
+            ZStack(alignment: .bottom) {
+                kawaiiBg.ignoresSafeArea()
+                KawaiiDecorations().ignoresSafeArea()
+
+                // Scena isometrica: occupa la fascia centrale della schermata
+                // lasciando spazio all'HUD in alto e all'action bar in basso.
+                SpriteView(scene: scene, options: [.allowsTransparency])
+                    .frame(width: geo.size.width,
+                           height: geo.size.height * 0.58)
+                    .offset(y: geo.size.height * 0.04)
+                    .ignoresSafeArea()
 
                 VStack(spacing: 0) {
 

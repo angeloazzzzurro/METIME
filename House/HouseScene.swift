@@ -30,7 +30,8 @@ final class HouseScene: SKScene {
         case .calm:    return UIColor(red: 0.88, green: 0.85, blue: 0.98, alpha: 1)
         case .anxious: return UIColor(red: 1.00, green: 0.90, blue: 0.85, alpha: 1)
         case .sleepy:  return UIColor(red: 0.80, green: 0.88, blue: 0.95, alpha: 1)
-        case .sad:     return UIColor(red: 0.85, green: 0.88, blue: 0.92, alpha: 1)
+        case .sick:    return UIColor(red: 0.85, green: 0.88, blue: 0.92, alpha: 1)
+        case .evolving:return UIColor(red: 0.92, green: 0.86, blue: 1.00, alpha: 1)
         }
     }
 
@@ -40,7 +41,8 @@ final class HouseScene: SKScene {
         case .calm:    return UIColor(red: 0.78, green: 0.72, blue: 0.96, alpha: 1)
         case .anxious: return UIColor(red: 1.00, green: 0.78, blue: 0.72, alpha: 1)
         case .sleepy:  return UIColor(red: 0.70, green: 0.80, blue: 0.92, alpha: 1)
-        case .sad:     return UIColor(red: 0.75, green: 0.80, blue: 0.88, alpha: 1)
+        case .sick:    return UIColor(red: 0.75, green: 0.80, blue: 0.88, alpha: 1)
+        case .evolving:return UIColor(red: 0.86, green: 0.74, blue: 0.98, alpha: 1)
         }
     }
 

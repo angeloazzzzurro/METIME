@@ -1,5 +1,6 @@
 import SpriteKit
 
+@MainActor
 enum ParticleFactory {
     static func ambient(size: CGSize) -> SKEmitterNode {
         let e = SKEmitterNode()

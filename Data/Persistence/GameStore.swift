@@ -31,9 +31,9 @@ final class GameStore: ObservableObject {
             self.pet = existing
         } else {
             let newPet = Pet()
+            self.pet = newPet
             modelContext.insert(newPet)
             save()
-            self.pet = newPet
         }
     }
 
@@ -90,10 +90,10 @@ final class GameStore: ObservableObject {
 
     func applyBoost(hunger: Double, happiness: Double, calm: Double, energy: Double) {
         objectWillChange.send()
-        pet.needs.hunger    = min(1, pet.needs.hunger    + hunger)
-        pet.needs.happiness = min(1, pet.needs.happiness + happiness)
-        pet.needs.calm      = min(1, pet.needs.calm      + calm)
-        pet.needs.energy    = min(1, pet.needs.energy    + energy)
+        pet.needs.hunger    = min(1, pet.needs.hunger    + Float(hunger))
+        pet.needs.happiness = min(1, pet.needs.happiness + Float(happiness))
+        pet.needs.calm      = min(1, pet.needs.calm      + Float(calm))
+        pet.needs.energy    = min(1, pet.needs.energy    + Float(energy))
         syncMood()
         save()
     }

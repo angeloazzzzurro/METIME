@@ -3,99 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>METIME - Journal</title>
-  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <title>METIME – Journal</title>
   <style>
-    .journal-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px; }
-    .panel { padding: 18px; }
-    .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
-    .metric { border-radius: 14px; border: 1px solid #fff; background: #ffffffbf; padding: 12px; }
-    .metric small { color: var(--muted); text-transform: uppercase; font-size: 11px; font-weight: 700; }
-    .metric strong { display: block; margin-top: 3px; font-size: 22px; }
-    textarea {
-      width: 100%;
-      min-height: 128px;
-      border: 1px solid #fff;
-      border-radius: 14px;
-      background: #ffffffcf;
-      padding: 12px;
-      font: inherit;
-      color: #364066;
-      resize: vertical;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      font-family: "Avenir Next", "SF Pro Rounded", "Trebuchet MS", sans-serif;
+      background: #b8cce8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 14px 0 32px;
     }
-    .save { margin-top: 10px; background: linear-gradient(145deg, #ffe5f3, #ffd0e9); }
-    .entries { margin-top: 12px; display: grid; gap: 10px; }
-    .entry-card { border-radius: 14px; border: 1px solid #fff; background: #ffffffbf; padding: 12px; }
-    .entry-card b { color: #344061; }
-    @media (max-width: 920px) { .journal-layout { grid-template-columns: 1fr; } }
+
+    .phone {
+      width: min(390px, 96vw);
+      min-height: calc(100dvh - 28px);
+      background: linear-gradient(180deg, #e8f0ff 0%, #dce8ff 100%);
+      border-radius: 52px;
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 32px 72px rgba(60,100,180,0.22), inset 0 2px 0 rgba(255,255,255,0.85);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notch {
+      width: 36%; height: 28px;
+      background: #1a0f2e;
+      border-radius: 0 0 18px 18px;
+      margin: 0 auto;
+      flex-shrink: 0;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px 0;
+      position: relative;
+    }
+    .back-link {
+      position: absolute;
+      left: 20px;
+      font-size: 20px;
+      color: #4a5a80;
+      text-decoration: none;
+      font-weight: 300;
+    }
+    .bar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #3a4a70;
+    }
+
+    /* Main title */
+    h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: #1a2040;
+      margin: 14px 20px 16px;
+    }
+
+    /* Cards row */
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 0 20px 20px;
+    }
+    .stat-card {
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .sc-streak {
+      background: linear-gradient(135deg, #c8dcff, #a8c8ff);
+    }
+    .sc-mood {
+      background: linear-gradient(135deg, #c0f0e0, #90d8c0);
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #4a5a80;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sc-mood .card-label {
+      color: #1a6050;
+    }
+    .card-value {
+      font-size: 26px;
+      font-weight: 900;
+      color: #1a2a60;
+      margin-top: 4px;
+    }
+    .sc-mood .card-value {
+      font-size: 22px;
+      color: #0a4030;
+    }
+
+    /* Section title */
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a2040;
+      margin: 0 20px 12px;
+    }
+
+    /* Entry list */
+    .entry-list {
+      margin: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .entry-card {
+      background: white;
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(60,80,140,0.08);
+    }
+    .entry-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a2040;
+      margin-bottom: 4px;
+    }
+    .entry-sub {
+      font-size: 12px;
+      color: #6a7a9a;
+    }
   </style>
 </head>
 <body>
-  <div class="clouds"></div>
-  <div class="sparkles"></div>
-  <main class="wrap">
-    <nav class="top-nav">
-      <a class="nav-link" href="home-pet.html">Pet</a>
-      <a class="nav-link" href="care-ritual.html">Rituale</a>
-      <a class="nav-link active" href="journal.html">Diario</a>
-      <a class="nav-link" href="garden-plants.html">Giardino</a>
-      <a class="nav-link" href="token-games.html">Giochi</a>
-      <a class="nav-link" href="../index.html">Casa</a>
-      <a class="nav-link" href="hub.html">🍳 Ristorante</a>
-    </nav>
+<div class="phone">
+  <div class="notch"></div>
 
-    <section class="hero">
-      <div class="tag">mockup pagina separata</div>
-      <h1>Journal e Insights</h1>
-      <p class="subtitle">Pagina dedicata a note quotidiane, streak, trend umore e riflessioni.</p>
-    </section>
+  <div class="top-bar">
+    <a class="back-link" href="../index.html">‹</a>
+    <span class="bar-title">Journal</span>
+  </div>
 
-    <section class="journal-layout">
-      <article class="card panel">
-        <h2 style="margin:0;font-size:30px;">Insight Snapshot</h2>
-        <div class="metric-grid">
-          <div class="metric"><small>Streak</small><strong>9 giorni</strong></div>
-          <div class="metric"><small>Mood medio</small><strong>Sereno</strong></div>
-          <div class="metric"><small>Sessioni cura</small><strong>14</strong></div>
-          <div class="metric"><small>Piante vive</small><strong>5/6</strong></div>
-        </div>
-        <div class="timeline" style="margin-top:12px;">
-          <div class="entry"><strong>Trend</strong>Calm in crescita negli ultimi 5 giorni.</div>
-          <div class="entry"><strong>Consiglio</strong>Continua i rituali serali da 4 minuti.</div>
-        </div>
-      </article>
+  <h1>Journal &amp; Insights</h1>
 
-      <aside class="side">
-        <section class="card panel">
-          <h3 style="margin:0 0 8px;font-size:24px;">Nuova nota</h3>
-          <textarea id="noteInput" placeholder="Scrivi una riflessione breve su come ti senti oggi..."></textarea>
-          <button class="btn save" id="saveBtn">Salva nota</button>
-        </section>
-        <section class="card panel">
-          <h3 style="margin:0;font-size:24px;">Ultime riflessioni</h3>
-          <div class="entries" id="entries">
-            <div class="entry-card"><b>Oggi</b><br/>Passeggiata breve e pet piu calmo.</div>
-            <div class="entry-card"><b>Ieri</b><br/>Meditazione completata prima di dormire.</div>
-          </div>
-        </section>
-      </aside>
-    </section>
-  </main>
+  <div class="cards-row">
+    <div class="stat-card sc-streak">
+      <div class="card-label">Streak</div>
+      <div class="card-value">9 giorni</div>
+    </div>
+    <div class="stat-card sc-mood">
+      <div class="card-label">Mood Medio</div>
+      <div class="card-value">Sereno</div>
+    </div>
+  </div>
 
-  <script>
-    const saveBtn = document.getElementById("saveBtn");
-    const noteInput = document.getElementById("noteInput");
-    const entries = document.getElementById("entries");
+  <div class="section-title">Ultime riflessioni</div>
 
-    saveBtn.addEventListener("click", () => {
-      const text = noteInput.value.trim();
-      if (!text) return;
-      const card = document.createElement("div");
-      card.className = "entry-card";
-      card.innerHTML = `<b>Nuova nota</b><br/>${text}`;
-      entries.prepend(card);
-      noteInput.value = "";
-    });
-  </script>
+  <div class="entry-list">
+    <div class="entry-card">
+      <div class="entry-title">Oggi ho dato acqua al pet prima di lavorare</div>
+      <div class="entry-sub">Molto presente</div>
+    </div>
+    <div class="entry-card">
+      <div class="entry-title">Ho fatto 6 minuti di meditazione guidata</div>
+      <div class="entry-sub">Più calma</div>
+    </div>
+    <div class="entry-card">
+      <div class="entry-title">Passeggiata breve nel pomeriggio</div>
+      <div class="entry-sub">Energia in risalita</div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -1,140 +1,320 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>METIME — Negozio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/game.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME – Store</title>
   <style>
-    .shop-grid{gap:8px}
-    .pagination{display:flex;justify-content:center;gap:6px;margin-top:14px}
-    .dot{width:8px;height:8px;border-radius:50%;background:var(--border-lt);opacity:.4;cursor:pointer;transition:opacity .2s,background .2s}
-    .dot.active{opacity:1;background:var(--orange)}
-    .coins-hud{text-align:right;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:8px}
-    .item-card{transition:transform .15s;cursor:pointer}
-    .item-card:hover{transform:translateY(-2px)}
-    .item-card.bought .thumb::after{content:'✅';position:absolute;inset:0;display:grid;place-items:center;font-size:28px;background:rgba(255,255,255,.7);border-radius:inherit}
-    .item-card .thumb{position:relative}
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
-    .toast.show{transform:translateX(-50%) translateY(0)}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      font-family: "Avenir Next", "SF Pro Rounded", "Trebuchet MS", sans-serif;
+      background: #c0a8e0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 14px 0 32px;
+    }
+
+    .phone {
+      width: min(390px, 96vw);
+      min-height: calc(100dvh - 28px);
+      background: linear-gradient(180deg, #f0e8ff 0%, #e4d8ff 100%);
+      border-radius: 52px;
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 32px 72px rgba(100,60,180,0.3), inset 0 2px 0 rgba(255,255,255,0.85);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notch {
+      width: 36%; height: 28px;
+      background: #1a0f2e;
+      border-radius: 0 0 18px 18px;
+      margin: 0 auto;
+      flex-shrink: 0;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 0;
+    }
+    .gem-btn {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .store-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #2d1855;
+    }
+    .close-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b5a8e;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Currency row */
+    .currency-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      padding: 10px 0;
+    }
+    .currency-pill {
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .pill-coins {
+      background: #fbbf24;
+      color: #78350f;
+    }
+    .pill-gems {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: white;
+    }
+
+    /* Category tabs */
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0 14px 12px;
+      overflow-x: auto;
+    }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .cat-tab {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: transform 0.1s;
+    }
+    .cat-tab:active { transform: scale(0.96); }
+    .cat-tab.active {
+      background: #a78bfa;
+      color: white;
+    }
+    .cat-tab:not(.active) {
+      background: rgba(200,180,240,0.3);
+      color: #6b5a8e;
+    }
+
+    /* Items grid */
+    .items-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 14px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Item card */
+    .item-card {
+      background: white;
+      border-radius: 20px;
+      padding: 14px;
+      box-shadow: 0 4px 16px rgba(140,80,200,0.1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a0a30;
+      margin-bottom: 2px;
+    }
+    .item-emoji {
+      font-size: 48px;
+      text-align: center;
+      display: block;
+      margin: 8px 0;
+    }
+    .item-desc {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 8px;
+      flex: 1;
+    }
+    .stat-badge {
+      display: inline-block;
+      background: rgba(220,250,220,0.8);
+      color: #16a34a;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+    .item-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1a0a30;
+    }
+    .buy-btn {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.1s;
+    }
+    .buy-btn:active { transform: scale(0.95); }
+
+    /* Rare badge */
+    .rare-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #a78bfa;
+      color: white;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30,15,60,0.85);
+      color: white;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+      white-space: nowrap;
+      z-index: 99;
+    }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
-<div class="toast" id="toast"></div>
-<main class="phone">
-  <div class="screen">
+<div class="phone">
+  <div class="notch"></div>
 
-    <div class="page-hdr">
-      <h1 class="page-title">Negozio</h1>
-      <button class="close-btn" onclick="history.back()">✕</button>
-    </div>
-
-    <div class="coins-hud">🪙 <span id="coins">5000</span></div>
-
-    <div class="tabs" id="shopTabs">
-      <div class="tab active" data-cat="0">🌾 Fattoria</div>
-      <div class="tab" data-cat="1">🍳 Cucina</div>
-      <div class="tab" data-cat="2">🪑 Arredo</div>
-      <div class="tab" data-cat="3">💎 Premium</div>
-    </div>
-
-    <div class="panel panel--wood panel--fancy">
-      <div class="grid-3 shop-grid" id="shopGrid"></div>
-      <div class="pagination" id="pagination"></div>
-    </div>
+  <div class="header">
+    <button class="gem-btn">💎 Acquista Gemme</button>
+    <span class="store-title">🛍 Store</span>
+    <a class="close-link" href="../index.html">Chiudi</a>
   </div>
 
-  <nav class="tab-bar">
-    <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
-    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
-    <a class="tab-link active" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
-    <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
-    <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
-  </nav>
-</main>
+  <div class="currency-row">
+    <span class="currency-pill pill-coins">🪙 100</span>
+    <span class="currency-pill pill-gems">💎 5</span>
+  </div>
+
+  <div class="category-tabs">
+    <button class="cat-tab active" onclick="selectCat(this)">Cibo</button>
+    <button class="cat-tab" onclick="selectCat(this)">Essenziali</button>
+    <button class="cat-tab" onclick="selectCat(this)">Decorazioni</button>
+    <button class="cat-tab" onclick="selectCat(this)">Speciali</button>
+  </div>
+
+  <div class="items-grid">
+    <!-- Carota -->
+    <div class="item-card">
+      <span class="item-name">Carota</span>
+      <span class="item-emoji">🥕</span>
+      <span class="item-desc">Un gustoso spuntino salutare.</span>
+      <span class="stat-badge">+30% 🍖</span>
+      <div class="price-row">
+        <span class="item-price">🪙 15</span>
+        <button class="buy-btn" onclick="buy(this, 15)">Acquista</button>
+      </div>
+    </div>
+
+    <!-- Biscotto -->
+    <div class="item-card">
+      <span class="item-name">Biscotto</span>
+      <span class="item-emoji">🍪</span>
+      <span class="item-desc">Perfetto per una pausa dolce.</span>
+      <span class="stat-badge">+20% 😊</span>
+      <div class="price-row">
+        <span class="item-price">🪙 25</span>
+        <button class="buy-btn" onclick="buy(this, 25)">Acquista</button>
+      </div>
+    </div>
+
+    <!-- Torta -->
+    <div class="item-card">
+      <span class="rare-badge">Raro</span>
+      <span class="item-name">Torta</span>
+      <span class="item-emoji">🎂</span>
+      <span class="item-desc">Una festa per il palato!</span>
+      <span class="stat-badge">+40% 🍖 +30% 😊</span>
+      <div class="price-row">
+        <span class="item-price">🪙 60</span>
+        <button class="buy-btn" onclick="buy(this, 60)">Acquista</button>
+      </div>
+    </div>
+
+    <!-- Tè -->
+    <div class="item-card">
+      <span class="item-name">Tè</span>
+      <span class="item-emoji">🍵</span>
+      <span class="item-desc">Rilassante e rigenerante.</span>
+      <span class="stat-badge">+25% 🌿</span>
+      <div class="price-row">
+        <span class="item-price">🪙 30</span>
+        <button class="buy-btn" onclick="buy(this, 30)">Acquista</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-(function(){
-  const catalog=[
-    {cat:0,items:[
-      {emoji:'🌽',name:'Mais',price:80},{emoji:'🥕',name:'Carote',price:60},{emoji:'🍅',name:'Pomodori',price:90},
-      {emoji:'🌶️',name:'Peperoncini',price:120},{emoji:'🧅',name:'Cipolle',price:50},{emoji:'🥬',name:'Lattuga',price:45},
-      {emoji:'🍆',name:'Melanzane',price:75},{emoji:'🥑',name:'Avocado',price:200,lock:30},{emoji:'🫐',name:'Mirtilli',price:180,lock:35}
-    ]},
-    {cat:1,items:[
-      {emoji:'🍳',name:'Padella',price:300},{emoji:'🔪',name:'Coltello',price:250},{emoji:'🥄',name:'Mestolo',price:100},
-      {emoji:'🫕',name:'Pentola',price:400},{emoji:'🧊',name:'Frigo',price:800},{emoji:'⏲️',name:'Timer Pro',price:500,lock:25}
-    ]},
-    {cat:2,items:[
-      {emoji:'🪑',name:'Sedia',price:150},{emoji:'🛋️',name:'Divano',price:600},{emoji:'🪴',name:'Pianta',price:80},
-      {emoji:'🖼️',name:'Quadro',price:200},{emoji:'🕯️',name:'Candela',price:60},{emoji:'🧸',name:'Peluche',price:350,lock:28}
-    ]},
-    {cat:3,items:[
-      {emoji:'👑',name:'Corona VIP',price:2000},{emoji:'✨',name:'Aura Magica',price:1500},{emoji:'🌈',name:'Arcobaleno',price:3000},
-      {emoji:'💎',name:'Diamante',price:5000,lock:40}
-    ]}
-  ];
-
-  let coins=5000,currentCat=0,currentPage=0,bought=new Set();
-  const PER_PAGE=9;
-  const $=s=>document.querySelector(s);
-  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
-
-  function render(){
-    const items=catalog[currentCat].items;
-    const pages=Math.ceil(items.length/PER_PAGE);
-    currentPage=Math.min(currentPage,pages-1);
-    const start=currentPage*PER_PAGE;
-    const pageItems=items.slice(start,start+PER_PAGE);
-
-    $('#shopGrid').innerHTML=pageItems.map((it,i)=>{
-      const idx=start+i;
-      const key=currentCat+'-'+idx;
-      const locked=it.lock&&it.lock>24;
-      const isBought=bought.has(key);
-      return `<div class="item-card${locked?' locked':''}${isBought?' bought':''}" data-key="${key}" data-idx="${idx}">
-        <div class="thumb"${locked?' data-lock="Sblocca a Lv.'+it.lock+'"':''}>${it.emoji}</div>
-        <button class="price-btn" ${locked||isBought?'disabled style="opacity:.5"':''}>${locked?'🔒 Lv.'+it.lock:isBought?'✅ Comprato':'🪙 '+it.price}</button>
-      </div>`;
-    }).join('');
-
-    $('#pagination').innerHTML=Array.from({length:pages},(_,i)=>
-      `<div class="dot${i===currentPage?' active':''}" data-page="${i}"></div>`
-    ).join('');
-
-    $('#coins').textContent=coins.toLocaleString('it-IT');
-
-    // Buy handlers
-    document.querySelectorAll('.item-card:not(.locked):not(.bought)').forEach(card=>{
-      card.addEventListener('click',()=>{
-        const idx=+card.dataset.idx;
-        const it=catalog[currentCat].items[idx];
-        if(coins<it.price){toast('🪙 Monete insufficienti!');return}
-        coins-=it.price;
-        bought.add(card.dataset.key);
-        toast('🛒 '+it.name+' acquistato!');
-        render();
-      });
-    });
-
-    // Pagination handlers
-    document.querySelectorAll('.dot').forEach(d=>d.addEventListener('click',()=>{
-      currentPage=+d.dataset.page;render();
-    }));
+  function selectCat(el) {
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
   }
 
-  // Tab switching
-  document.querySelectorAll('#shopTabs .tab').forEach(tab=>{
-    tab.addEventListener('click',()=>{
-      document.querySelectorAll('#shopTabs .tab').forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
-      currentCat=+tab.dataset.cat;currentPage=0;render();
-    });
-  });
-
-  render();
-})();
+  function buy(btn, price) {
+    const t = document.getElementById('toast');
+    t.textContent = 'Acquistato! -' + price + ' 🪙';
+    t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.classList.remove('show'), 1800);
+  }
 </script>
 </body>
 </html>

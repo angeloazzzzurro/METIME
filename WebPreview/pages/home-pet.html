@@ -3,251 +3,315 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>METIME - Home Pet</title>
-  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <title>METIME – La tua Casa</title>
   <style>
-    .pet-zone { padding: 18px; }
-    .pet-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .pet-header h2 { margin: 0; font-size: 30px; }
-    .badge { background: #ffffffcf; border: 1px solid #fff; border-radius: 999px; padding: 7px 11px; font-weight: 700; font-size: 12px; color: #516090; }
-    .world {
-      position: relative;
-      border-radius: 24px;
-      min-height: 370px;
-      padding: 16px;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      font-family: "Avenir Next", "SF Pro Rounded", "Trebuchet MS", sans-serif;
+      background: #c0a0d8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 14px 0 32px;
+    }
+
+    .phone {
+      width: min(390px, 96vw);
+      min-height: calc(100dvh - 28px);
+      background: linear-gradient(160deg, #ffd8e8 0%, #f4c8f4 35%, #dcc0f4 70%, #caacea 100%);
+      border-radius: 52px;
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 32px 72px rgba(120,80,180,0.32), inset 0 2px 0 rgba(255,255,255,0.85);
       overflow: hidden;
-      background: linear-gradient(180deg, var(--sky-1) 0%, var(--mint-1) 56%, #c6efd7 100%);
-    }
-    .world::after {
-      content: "";
-      position: absolute;
-      left: -12%;
-      right: -12%;
-      bottom: -62px;
-      height: 140px;
-      border-radius: 50%;
-      background: linear-gradient(180deg, #9ee4b8, #77cf99);
-    }
-    .pet {
-      --body: #ffffff;
+      display: flex;
+      flex-direction: column;
       position: relative;
-      width: 172px;
-      height: 172px;
-      margin: 36px auto 8px;
-      border-radius: 50%;
-      background: var(--body);
-      box-shadow: 0 14px 24px rgba(85, 88, 145, 0.18);
-      z-index: 1;
-      animation: float 2.3s ease-in-out infinite;
-      transition: width 0.2s ease, height 0.2s ease, background 0.3s ease;
     }
-    .pet::before, .pet::after {
-      content: "";
-      position: absolute;
-      width: 44px;
-      height: 54px;
-      border-radius: 24px;
-      background: var(--body);
-      top: -20px;
-    }
-    .pet::before { left: 30px; transform: rotate(-28deg); }
-    .pet::after { right: 30px; transform: rotate(28deg); }
-    .eyes { position: absolute; left: 50%; top: 74px; width: 90px; transform: translateX(-50%); display: flex; justify-content: space-between; }
-    .eye { width: 14px; height: 18px; border-radius: 12px; background: #2b2d43; }
-    .mouth {
-      position: absolute;
-      left: 50%;
-      top: 108px;
-      width: 34px;
-      height: 18px;
-      border-bottom: 4px solid #2d3049;
+
+    .notch {
+      width: 36%; height: 28px;
+      background: #1a0f2e;
       border-radius: 0 0 18px 18px;
-      transform: translateX(-50%);
+      margin: 0 auto;
+      flex-shrink: 0;
     }
-    .mood { margin-top: 10px; text-align: center; font-weight: 700; color: #4f5f90; }
-    .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
-    .stat { border-radius: 14px; background: #ffffffbf; border: 1px solid #fff; padding: 10px; }
-    .stat small { color: var(--muted); font-weight: 700; text-transform: uppercase; font-size: 11px; }
-    .stat strong { display: block; font-size: 18px; margin-top: 2px; }
-    .actions { margin-top: 12px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-    .feed { background: linear-gradient(145deg, #fff2dc, #ffe5be); }
-    .play { background: linear-gradient(145deg, #ffe5f3, #ffd0e9); }
-    .meditate { background: linear-gradient(145deg, #e4fff5, #c8f9e8); }
-    .rest { background: linear-gradient(145deg, #e8f2ff, #d8e8ff); }
-    .stage-egg { width: 136px; height: 162px; border-radius: 50% 50% 44% 44%; }
-    .stage-egg .eyes, .stage-egg .mouth, .stage-egg::before, .stage-egg::after { opacity: 0; }
-    .stage-baby { width: 150px; height: 150px; }
-    .stage-teen { width: 172px; height: 172px; }
-    .stage-adult { width: 194px; height: 194px; }
-    .mood-happy .mouth { width: 36px; height: 20px; }
-    .mood-calm .mouth { width: 30px; height: 10px; border-bottom-width: 3px; }
-    .mood-tired .mouth { width: 30px; height: 8px; border-bottom-width: 3px; border-radius: 18px 18px 0 0; transform: translateX(-50%) translateY(10px); }
-    .mood-anxious .mouth { width: 12px; height: 16px; border: 3px solid #2d3049; border-top: 0; border-radius: 0 0 12px 12px; }
-    @keyframes float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
-    @media (max-width: 780px) { .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 0;
+    }
+    .bar-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #2d1855;
+    }
+    .currencies {
+      display: flex;
+      gap: 6px;
+    }
+    .currency-pill {
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .pill-coins {
+      background: #fbbf24;
+      color: #78350f;
+    }
+    .pill-gems {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: white;
+    }
+
+    /* SVG wrap */
+    .room-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      padding: 8px 0;
+      position: relative;
+    }
+    .room-svg {
+      width: 100%;
+      max-width: 340px;
+      overflow: visible;
+      filter: drop-shadow(0 12px 24px rgba(120,80,180,0.22));
+    }
+
+    /* Pet animation */
+    @keyframes petBounce {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-8px); }
+    }
+    .pet-anim { animation: petBounce 2.5s ease-in-out infinite; }
+
+    /* Floating deco stars */
+    .deco-star {
+      position: absolute;
+      font-size: 14px;
+      opacity: 0.5;
+      animation: deco-float 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes deco-float {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-8px); }
+    }
+
+    /* Action buttons */
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0 16px 8px;
+    }
+    .act-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.12s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .act-btn:active { transform: scale(0.95); }
+    .btn-store  { background: linear-gradient(135deg, #f9a8d4, #ec4899); }
+    .btn-zaino  { background: linear-gradient(135deg, #93c5fd, #3b82f6); }
+    .btn-decora { background: linear-gradient(135deg, #c4b5fd, #8b5cf6); }
+
+    /* Bottom tab nav */
+    .tab-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(255,255,255,0.9);
+      border-radius: 28px;
+      margin: 8px 16px 20px;
+      padding: 10px;
+    }
+    .tab-item {
+      text-decoration: none;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6b7280;
+      border-radius: 18px;
+      transition: background 0.15s;
+    }
+    .tab-item.active {
+      color: #8b5cf6;
+      background: rgba(139,92,246,0.1);
+    }
   </style>
 </head>
 <body>
-  <div class="clouds"></div>
-  <div class="sparkles"></div>
-  <main class="wrap">
-    <nav class="top-nav">
-      <a class="nav-link active" href="home-pet.html">Pet</a>
-      <a class="nav-link" href="care-ritual.html">Rituale</a>
-      <a class="nav-link" href="journal.html">Diario</a>
-      <a class="nav-link" href="garden-plants.html">Giardino</a>
-      <a class="nav-link" href="token-games.html">Giochi</a>
-      <a class="nav-link" href="../index.html">Casa</a>
-      <a class="nav-link" href="hub.html">🍳 Ristorante</a>
-    </nav>
+<div class="phone">
+  <div class="notch"></div>
 
-    <section class="hero">
-      <div class="tag">mockup pagina separata</div>
-      <h1>Home Pet Kawaii</h1>
-      <p class="subtitle">Pagina principale stile tamagotchi. La creatura evolve e cambia mood in base alle tue azioni.</p>
-    </section>
+  <!-- Decorative floating stars -->
+  <div class="deco-star" style="top:80px;left:14px;">⭐</div>
+  <div class="deco-star" style="top:130px;left:12px;animation-delay:0.5s;">💜</div>
+  <div class="deco-star" style="top:85px;right:14px;animation-delay:0.3s;">🌟</div>
+  <div class="deco-star" style="top:165px;right:12px;animation-delay:0.9s;">💗</div>
+  <div class="deco-star" style="top:290px;left:10px;animation-delay:0.7s;font-size:10px;">✦</div>
+  <div class="deco-star" style="top:320px;right:10px;animation-delay:1.2s;font-size:10px;">✦</div>
 
-    <section class="grid-2">
-      <article class="card pet-zone">
-        <div class="pet-header">
-          <h2>Mimi</h2>
-          <div class="badge" id="stageText">Stage Egg</div>
-        </div>
-        <div class="world">
-          <div class="pet stage-egg mood-calm" id="pet">
-            <div class="eyes"><span class="eye"></span><span class="eye"></span></div>
-            <span class="mouth"></span>
-          </div>
-          <div class="mood" id="moodText">Mood calm</div>
-        </div>
+  <div class="top-bar">
+    <span class="bar-title">🏠 La tua Casa</span>
+    <div class="currencies">
+      <span class="currency-pill pill-coins">🪙 100</span>
+      <span class="currency-pill pill-gems">💎 5</span>
+    </div>
+  </div>
 
-        <div class="stats">
-          <div class="stat"><small>Hunger</small><strong id="hungerTxt">52</strong></div>
-          <div class="stat"><small>Happiness</small><strong id="happinessTxt">54</strong></div>
-          <div class="stat"><small>Calm</small><strong id="calmTxt">58</strong></div>
-          <div class="stat"><small>Energy</small><strong id="energyTxt">48</strong></div>
-        </div>
+  <div class="room-wrap">
+    <svg class="room-svg" viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="petBodyH" cx="36%" cy="30%" r="68%">
+          <stop offset="0%"  stop-color="#f0e8ff"/>
+          <stop offset="60%" stop-color="#c4a8f8"/>
+          <stop offset="100%" stop-color="#9060d8"/>
+        </radialGradient>
+        <radialGradient id="petHaloH" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"  stop-color="#c4a8f8" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#c4a8f8" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
 
-        <div class="actions">
-          <button class="btn feed" data-action="feed">Feed</button>
-          <button class="btn play" data-action="play">Play</button>
-          <button class="btn meditate" data-action="meditate">Meditate</button>
-          <button class="btn rest" data-action="rest">Rest</button>
-        </div>
-      </article>
+      <!-- ===== FLOOR (isometric 3x3 checkerboard) ===== -->
+      <!-- halfW=44, halfH=22, origin=(150,60) -->
+      <!-- Tile(c,r): cx=150+(c-r)*44, cy=60+(c+r)*22 -->
+      <!-- (0,0):cx=150 cy=60 | (1,0):cx=194 cy=82 | (2,0):cx=238 cy=104 -->
+      <!-- (0,1):cx=106 cy=82 | (1,1):cx=150 cy=104 | (2,1):cx=194 cy=126 -->
+      <!-- (0,2):cx=62 cy=104 | (1,2):cx=106 cy=126 | (2,2):cx=150 cy=148 -->
 
-      <aside class="side">
-        <section class="card mini">
-          <h3>Evolution rules</h3>
-          <p>XP soglie: Baby da 20, Teen da 45, Adult da 75. Se calm o energy scendono troppo, mood peggiora.</p>
-        </section>
-        <section class="card mini">
-          <h3>Attivita recenti</h3>
-          <div class="timeline" id="log">
-            <div class="entry"><strong>Start</strong>La creatura aspetta le tue cure.</div>
-          </div>
-        </section>
-      </aside>
-    </section>
-  </main>
+      <!-- c+r=0: (0,0) light -->
+      <polygon points="150,38 194,60 150,82 106,60" fill="#f0e0b0"/>
 
-  <script>
-    const state = { hunger: 52, happiness: 54, calm: 58, energy: 48, xp: 0, stage: "egg", mood: "calm" };
-    const stages = [
-      { key: "egg", minXp: 0, label: "Egg", body: "#ffffff" },
-      { key: "baby", minXp: 20, label: "Baby", body: "#fff6ff" },
-      { key: "teen", minXp: 45, label: "Teen", body: "#f6fff8" },
-      { key: "adult", minXp: 75, label: "Adult", body: "#fffef2" }
-    ];
+      <!-- c+r=1: (1,0) dark, (0,1) dark -->
+      <polygon points="194,60 238,82 194,104 150,82" fill="#e0cc98"/>
+      <polygon points="106,60 150,82 106,104 62,82"  fill="#e0cc98"/>
 
-    const clamp = (v) => Math.max(0, Math.min(100, v));
-    const pet = document.getElementById("pet");
-    const moodText = document.getElementById("moodText");
-    const stageText = document.getElementById("stageText");
-    const log = document.getElementById("log");
+      <!-- c+r=2: (2,0) light, (1,1) light, (0,2) light -->
+      <polygon points="238,82 282,104 238,126 194,104" fill="#f0e0b0"/>
+      <polygon points="150,82 194,104 150,126 106,104" fill="#f0e0b0"/>
+      <polygon points="62,82 106,104 62,126 18,104"   fill="#f0e0b0"/>
 
-    function addLog(title, text) {
-      const item = document.createElement("div");
-      item.className = "entry";
-      item.innerHTML = `<strong>${title}</strong>${text}`;
-      log.prepend(item);
-      while (log.children.length > 5) log.removeChild(log.lastElementChild);
-    }
+      <!-- c+r=3: (2,1) dark, (1,2) dark -->
+      <polygon points="194,104 238,126 194,148 150,126" fill="#e0cc98"/>
+      <polygon points="106,104 150,126 106,148 62,126"  fill="#e0cc98"/>
 
-    function updateMood() {
-      const avg = (state.hunger + state.happiness + state.calm + state.energy) / 4;
-      if (state.energy < 26 || state.hunger < 26) state.mood = "tired";
-      else if (state.calm < 30) state.mood = "anxious";
-      else if (avg > 70) state.mood = "happy";
-      else state.mood = "calm";
-    }
+      <!-- c+r=4: (2,2) light -->
+      <polygon points="150,126 194,148 150,170 106,148" fill="#f0e0b0"/>
 
-    function updateStage() {
-      let next = stages[0];
-      for (const s of stages) if (state.xp >= s.minXp) next = s;
-      if (next.key !== state.stage) {
-        state.stage = next.key;
-        addLog("Evolution", `Mimi reached ${next.label}.`);
-      }
-      stageText.textContent = `Stage ${next.label}`;
-      pet.style.setProperty("--body", next.body);
-    }
+      <!-- ===== LEFT WALL (pink striped) ===== -->
+      <polygon points="62,104 62,50 150,6 150,60" fill="#f8c8b8"/>
+      <!-- Stripes on left wall -->
+      <line x1="76" y1="97" x2="97" y2="14" stroke="rgba(255,200,180,0.5)" stroke-width="8"/>
+      <line x1="90" y1="101" x2="111" y2="18" stroke="rgba(255,200,180,0.5)" stroke-width="8"/>
+      <line x1="104" y1="105" x2="125" y2="22" stroke="rgba(255,200,180,0.5)" stroke-width="8"/>
+      <line x1="118" y1="108" x2="139" y2="25" stroke="rgba(255,200,180,0.5)" stroke-width="8"/>
 
-    function render() {
-      updateMood();
-      updateStage();
-      document.getElementById("hungerTxt").textContent = String(Math.round(state.hunger));
-      document.getElementById("happinessTxt").textContent = String(Math.round(state.happiness));
-      document.getElementById("calmTxt").textContent = String(Math.round(state.calm));
-      document.getElementById("energyTxt").textContent = String(Math.round(state.energy));
-      moodText.textContent = `Mood ${state.mood} | XP ${state.xp}`;
-      pet.className = `pet stage-${state.stage} mood-${state.mood}`;
-    }
+      <!-- ===== RIGHT WALL ===== -->
+      <polygon points="238,104 238,50 150,6 150,60" fill="#f0b8a8"/>
+      <!-- Stripes on right wall -->
+      <line x1="224" y1="97" x2="203" y2="14" stroke="rgba(255,190,170,0.4)" stroke-width="8"/>
+      <line x1="210" y1="101" x2="189" y2="18" stroke="rgba(255,190,170,0.4)" stroke-width="8"/>
+      <line x1="196" y1="105" x2="175" y2="22" stroke="rgba(255,190,170,0.4)" stroke-width="8"/>
+      <line x1="182" y1="108" x2="161" y2="25" stroke="rgba(255,190,170,0.4)" stroke-width="8"/>
 
-    function act(action) {
-      if (action === "feed") {
-        state.hunger = clamp(state.hunger + 18);
-        state.happiness = clamp(state.happiness + 5);
-        state.energy = clamp(state.energy + 3);
-        state.calm = clamp(state.calm - 2);
-        state.xp += 8;
-        addLog("Feed", "Snack time complete.");
-      }
-      if (action === "play") {
-        state.happiness = clamp(state.happiness + 16);
-        state.energy = clamp(state.energy - 8);
-        state.calm = clamp(state.calm - 3);
-        state.hunger = clamp(state.hunger - 4);
-        state.xp += 10;
-        addLog("Play", "Great fun in the garden.");
-      }
-      if (action === "meditate") {
-        state.calm = clamp(state.calm + 18);
-        state.happiness = clamp(state.happiness + 7);
-        state.energy = clamp(state.energy + 2);
-        state.hunger = clamp(state.hunger - 3);
-        state.xp += 9;
-        addLog("Meditate", "Breathing ritual done.");
-      }
-      if (action === "rest") {
-        state.energy = clamp(state.energy + 20);
-        state.calm = clamp(state.calm + 8);
-        state.happiness = clamp(state.happiness - 2);
-        state.hunger = clamp(state.hunger - 5);
-        state.xp += 7;
-        addLog("Rest", "Nap restored energy.");
-      }
-      state.hunger = clamp(state.hunger - 1);
-      state.energy = clamp(state.energy - 1);
-      state.calm = clamp(state.calm - 0.5);
-      render();
-    }
+      <!-- ===== WINDOW on left wall ===== -->
+      <rect x="85" y="30" width="40" height="50" rx="20" fill="#a8d8f0" stroke="#7ab0d0" stroke-width="2"/>
+      <!-- Window panes -->
+      <line x1="105" y1="30" x2="105" y2="80" stroke="#7ab0d0" stroke-width="1.5"/>
+      <line x1="85" y1="55" x2="125" y2="55" stroke="#7ab0d0" stroke-width="1.5"/>
+      <!-- Window shine -->
+      <rect x="88" y="33" width="10" height="20" rx="5" fill="rgba(255,255,255,0.4)"/>
 
-    document.querySelectorAll("[data-action]").forEach((button) => {
-      button.addEventListener("click", () => act(button.dataset.action));
-    });
+      <!-- ===== PLANT (left corner of floor) ===== -->
+      <rect x="28" y="116" width="14" height="16" rx="4" fill="#d4784a"/>
+      <circle cx="35" cy="114" r="12" fill="#4a8040"/>
+      <circle cx="27" cy="110" r="8"  fill="#5a9850" opacity="0.85"/>
+      <circle cx="43" cy="108" r="7"  fill="#5a9850" opacity="0.7"/>
 
-    render();
-  </script>
+      <!-- ===== LAMP (right corner) ===== -->
+      <rect x="246" y="118" width="8" height="22" rx="3" fill="#c8a880"/>
+      <!-- Shade -->
+      <ellipse cx="250" cy="146" rx="16" ry="5" fill="#c8a880"/>
+      <ellipse cx="250" cy="116" rx="20" ry="14" fill="#f8e0b0" stroke="#d4b870" stroke-width="1.5"/>
+      <!-- Lamp glow -->
+      <ellipse cx="250" cy="132" rx="26" ry="16" fill="rgba(255,220,120,0.15)"/>
+
+      <!-- ===== RUG (center of room) ===== -->
+      <ellipse cx="150" cy="140" rx="52" ry="14" fill="#c8b0e0" stroke="#b098cc" stroke-width="1.5"/>
+      <ellipse cx="150" cy="140" rx="36" ry="9" fill="#d8c0f0" opacity="0.6"/>
+
+      <!-- ===== PET (tile 1,1 center: cx=150 cy=100) ===== -->
+      <!-- Shadow -->
+      <ellipse cx="150" cy="122" rx="24" ry="7" fill="rgba(80,20,140,0.18)"/>
+
+      <g class="pet-anim">
+        <!-- Halo -->
+        <circle cx="150" cy="100" r="32" fill="url(#petHaloH)"/>
+        <!-- Ears -->
+        <ellipse cx="134" cy="78" rx="7" ry="9" fill="#c0a0f0" stroke="rgba(200,180,240,0.35)" stroke-width="1.5"/>
+        <ellipse cx="166" cy="78" rx="7" ry="9" fill="#c0a0f0" stroke="rgba(200,180,240,0.35)" stroke-width="1.5"/>
+        <ellipse cx="134" cy="79" rx="3.5" ry="5" fill="white" opacity="0.5"/>
+        <ellipse cx="166" cy="79" rx="3.5" ry="5" fill="white" opacity="0.5"/>
+        <!-- Body -->
+        <circle cx="150" cy="100" r="24" fill="url(#petBodyH)" stroke="rgba(200,180,240,0.4)" stroke-width="2"/>
+        <!-- Highlight -->
+        <ellipse cx="143" cy="92" rx="8" ry="6" fill="white" opacity="0.3"/>
+        <!-- Eyes -->
+        <ellipse cx="143" cy="97" rx="4.5" ry="5.5" fill="#2a1f4e"/>
+        <ellipse cx="157" cy="97" rx="4.5" ry="5.5" fill="#2a1f4e"/>
+        <circle cx="144.5" cy="94" r="2" fill="white" opacity="0.9"/>
+        <circle cx="158.5" cy="94" r="2" fill="white" opacity="0.9"/>
+        <!-- Cat mouth (omega style) -->
+        <path d="M 143 106 Q 147 112 150 108 Q 153 112 157 106" stroke="#2a1f4e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Blush -->
+        <ellipse cx="133" cy="102" rx="8" ry="4.5" fill="#f9a8d4" opacity="0.7"/>
+        <ellipse cx="167" cy="102" rx="8" ry="4.5" fill="#f9a8d4" opacity="0.7"/>
+      </g>
+
+      <!-- Sparkles -->
+      <text x="52"  y="76" font-size="12" fill="#d4a0ff" text-anchor="middle">
+        ✦<animate attributeName="opacity" values="0;1;0" dur="2.1s" begin="0s" repeatCount="indefinite"/>
+      </text>
+      <text x="248" y="72" font-size="11" fill="#d4a0ff" text-anchor="middle">
+        ✦<animate attributeName="opacity" values="0;1;0" dur="2.5s" begin="0.7s" repeatCount="indefinite"/>
+      </text>
+      <text x="38"  y="140" font-size="10" fill="#d4a0ff" text-anchor="middle">
+        ✦<animate attributeName="opacity" values="0;1;0" dur="1.9s" begin="1.3s" repeatCount="indefinite"/>
+      </text>
+      <text x="262" y="136" font-size="10" fill="#d4a0ff" text-anchor="middle">
+        ✦<animate attributeName="opacity" values="0;1;0" dur="2.3s" begin="0.4s" repeatCount="indefinite"/>
+      </text>
+    </svg>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="actions">
+    <button class="act-btn btn-store"  onclick="window.location.href='shop.html'">🛍 Store</button>
+    <button class="act-btn btn-zaino">🎒 Zaino</button>
+    <button class="act-btn btn-decora">✨ Decora</button>
+  </div>
+
+  <!-- Bottom tab nav -->
+  <div class="tab-nav">
+    <a class="tab-item" href="../index.html">🌿 Giardino</a>
+    <a class="tab-item active">🏠 Casa</a>
+  </div>
+</div>
 </body>
 </html>

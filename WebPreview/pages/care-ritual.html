@@ -3,143 +3,239 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>METIME - Care Ritual</title>
-  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <title>METIME – Rituale di Cura</title>
   <style>
-    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .panel { padding: 18px; }
-    .breath {
-      width: min(280px, 74vw);
-      aspect-ratio: 1 / 1;
-      margin: 14px auto;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #fff7eb 10%, #f2a044 70%);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 18px 26px rgba(127, 67, 16, 0.24);
-      animation: pulse 6s ease-in-out infinite;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      font-family: "Avenir Next", "SF Pro Rounded", "Trebuchet MS", sans-serif;
+      background: #f0c898;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 14px 0 32px;
+    }
+
+    .phone {
+      width: min(390px, 96vw);
+      min-height: calc(100dvh - 28px);
+      background: linear-gradient(180deg, #fff8f0 0%, #fdecd8 40%, #fad8b8 100%);
+      border-radius: 52px;
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 32px 72px rgba(180,100,40,0.28), inset 0 2px 0 rgba(255,255,255,0.85);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .notch {
+      width: 36%; height: 28px;
+      background: #1a0f2e;
+      border-radius: 0 0 18px 18px;
+      margin: 0 auto;
+      flex-shrink: 0;
+    }
+
+    /* Top nav */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px 0;
+    }
+    .top-nav .nav-left {
+      font-size: 12px;
+      font-family: "Courier New", monospace;
+      color: #5a3a10;
+      font-weight: 600;
+    }
+    .top-nav .nav-center {
+      font-size: 15px;
+      font-weight: 600;
+      color: #3a2010;
+    }
+    .top-nav .nav-right {
+      font-size: 12px;
+      color: #5a3a10;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 20px 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: #1a0a00;
       text-align: center;
+      margin-bottom: 6px;
     }
-    .breath strong { display: block; font-size: 44px; line-height: 1; }
-    .steps { display: grid; gap: 10px; margin-top: 10px; }
-    .step { border-radius: 12px; background: #ffffffbf; border: 1px solid #fff; padding: 11px; }
-    .step b { color: #364066; }
-    .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .start { background: linear-gradient(145deg, #e4fff5, #c8f9e8); }
-    .skip { background: linear-gradient(145deg, #e8f2ff, #d8e8ff); }
-    @keyframes pulse {
-      0%,100% { transform: scale(1); }
-      45% { transform: scale(1.08); }
-      65% { transform: scale(0.98); }
+
+    .subtitle {
+      font-size: 13px;
+      color: #8a5030;
+      text-align: center;
+      max-width: 260px;
+      line-height: 1.5;
+      margin-bottom: 28px;
     }
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    /* Timer circle */
+    .circle-wrap {
+      margin-bottom: 28px;
+    }
+    .circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffe8c0, #f5c060 50%, #e0a030);
+      box-shadow: 0 0 0 12px rgba(245,192,96,0.2), 0 8px 32px rgba(200,130,30,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: breathe 4s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.03); box-shadow: 0 0 0 16px rgba(245,192,96,0.25), 0 12px 40px rgba(200,130,30,0.35); }
+    }
+    .phase-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #5a3010;
+      margin-bottom: 4px;
+    }
+    .timer-display {
+      font-size: 44px;
+      font-weight: 900;
+      color: #2a1500;
+      letter-spacing: -0.02em;
+    }
+
+    /* Stats card */
+    .stats-card {
+      background: white;
+      border-radius: 20px;
+      padding: 18px 22px;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 4px 20px rgba(180,100,30,0.12);
+      margin-bottom: 28px;
+      display: grid;
+      gap: 14px;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f5f0e8;
+      padding-bottom: 14px;
+    }
+    .stats-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .row-key {
+      color: #888;
+      font-size: 14px;
+    }
+    .row-val {
+      color: #f97316;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* End button */
+    .btn-end {
+      background: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 16px 40px;
+      font-size: 16px;
+      font-weight: 800;
+      width: calc(100% - 40px);
+      max-width: 300px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      font-family: inherit;
+      margin: 0 20px 28px;
+      transition: transform 0.12s;
+    }
+    .btn-end:active { transform: scale(0.97); }
   </style>
 </head>
 <body>
-  <div class="clouds"></div>
-  <div class="sparkles"></div>
-  <main class="wrap">
-    <nav class="top-nav">
-      <a class="nav-link" href="home-pet.html">Pet</a>
-      <a class="nav-link active" href="care-ritual.html">Rituale</a>
-      <a class="nav-link" href="journal.html">Diario</a>
-      <a class="nav-link" href="garden-plants.html">Giardino</a>
-      <a class="nav-link" href="token-games.html">Giochi</a>
-      <a class="nav-link" href="../index.html">Casa</a>
-      <a class="nav-link" href="hub.html">🍳 Ristorante</a>
-    </nav>
+<div class="phone">
+  <div class="notch"></div>
 
-    <section class="hero">
-      <div class="tag">mockup pagina separata</div>
-      <h1>Care Ritual</h1>
-      <p class="subtitle">Sessione guidata per calmare pet e player. Visual timer, step rituali e ricompensa finale.</p>
-    </section>
+  <div class="top-nav">
+    <span class="nav-left">9:41</span>
+    <span class="nav-center">Care</span>
+    <span class="nav-right">📶 🔋</span>
+  </div>
 
-    <section class="layout">
-      <article class="card panel">
-        <h2 style="margin:0;font-size:30px;">Rituale del respiro</h2>
-        <p style="margin:6px 0 0;color:var(--muted);">4 minuti consigliati per recuperare calma.</p>
-        <div class="breath">
-          <div>
-            Inspira
-            <strong id="timer">03:12</strong>
-            espira lentamente
-          </div>
-        </div>
-        <div class="cta">
-          <button class="btn start" id="startBtn">Start Ritual</button>
-          <button class="btn skip" id="skipBtn">Skip</button>
-        </div>
-      </article>
+  <div class="content">
+    <h1>Rituale di Cura</h1>
+    <p class="subtitle">Rituale di Cura — 4 minuti di respiro guidato per calmare il tuo pet</p>
 
-      <aside class="side">
-        <section class="card mini">
-          <h3>Flow</h3>
-          <div class="steps">
-            <div class="step"><b>1. Grounding</b><br/>Siediti e rilassa le spalle.</div>
-            <div class="step"><b>2. Breathing</b><br/>Inspira 4 sec, espira 6 sec.</div>
-            <div class="step"><b>3. Gratitude</b><br/>Scrivi una cosa positiva.</div>
-          </div>
-        </section>
-        <section class="card mini">
-          <h3>Reward</h3>
-          <p>Completando la sessione: Calm +18, Happiness +7, 2 semi sereni.</p>
-        </section>
-        <section class="card mini">
-          <h3>Session log</h3>
-          <div class="timeline" id="sessionLog">
-            <div class="entry"><strong>Ready</strong>In attesa di avvio.</div>
-          </div>
-        </section>
-      </aside>
-    </section>
-  </main>
+    <div class="circle-wrap">
+      <div class="circle">
+        <span class="phase-label" id="phase">Inspira</span>
+        <span class="timer-display" id="timer">03:12</span>
+      </div>
+    </div>
 
-  <script>
-    let seconds = 192;
-    let timer = null;
-    const timerNode = document.getElementById("timer");
-    const log = document.getElementById("sessionLog");
+    <div class="stats-card">
+      <div class="stats-row">
+        <span class="row-key">Frequenza</span>
+        <span class="row-val">6 respiri/min</span>
+      </div>
+      <div class="stats-row">
+        <span class="row-key">Mood previsto</span>
+        <span class="row-val">Calmo +18%</span>
+      </div>
+      <div class="stats-row">
+        <span class="row-key">Ricompensa</span>
+        <span class="row-val">+2 Semi Sereni</span>
+      </div>
+    </div>
+  </div>
 
-    function fmt(s) {
-      const m = String(Math.floor(s / 60)).padStart(2, "0");
-      const ss = String(s % 60).padStart(2, "0");
-      return `${m}:${ss}`;
-    }
+  <button class="btn-end" onclick="concludi()">Concludi Sessione</button>
+</div>
 
-    function addLog(title, text) {
-      const item = document.createElement("div");
-      item.className = "entry";
-      item.innerHTML = `<strong>${title}</strong>${text}`;
-      log.prepend(item);
-      while (log.children.length > 5) log.removeChild(log.lastElementChild);
-    }
+<script>
+  let sec = 192;
+  const phases = ["Inspira", "Tieni", "Espira", "Pausa"];
+  let pi = 0;
 
-    function tick() {
-      if (seconds <= 0) {
-        clearInterval(timer);
-        timer = null;
-        addLog("Completed", "Ritual complete. Reward unlocked.");
-        return;
-      }
-      seconds -= 1;
-      timerNode.textContent = fmt(seconds);
-      if (seconds % 30 === 0) addLog("Breath", "Mantieni ritmo lento e regolare.");
-    }
+  const timerEl = document.getElementById('timer');
+  const phaseEl = document.getElementById('phase');
 
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (timer) return;
-      addLog("Start", "Sessione avviata.");
-      timer = setInterval(tick, 1000);
-    });
+  setInterval(() => {
+    if (sec > 0) sec--;
+    else { alert('Sessione completata! +2 Semi Sereni 🌱'); sec = 0; }
+    timerEl.textContent =
+      String(Math.floor(sec / 60)).padStart(2, '0') + ':' +
+      String(sec % 60).padStart(2, '0');
+  }, 1000);
 
-    document.getElementById("skipBtn").addEventListener("click", () => {
-      clearInterval(timer);
-      timer = null;
-      seconds = 90;
-      timerNode.textContent = fmt(seconds);
-      addLog("Skip", "Sessione ridotta in modalita rapida.");
-    });
-  </script>
+  setInterval(() => {
+    phaseEl.textContent = phases[pi++ % phases.length];
+  }, 4000);
+
+  function concludi() {
+    alert('Sessione completata! +2 Semi Sereni 🌱');
+  }
+</script>
 </body>
 </html>

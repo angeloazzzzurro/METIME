@@ -27,3 +27,226 @@ nohup: ignoring input
 2026-03-17 07:18:24,442  INFO      Modifica rilevata: audit_homepage.md  [closed_no_write]
 2026-03-17 07:18:24,443  INFO      Modifica rilevata: presentation_content.md  [opened]
 2026-03-17 07:18:24,443  INFO      Modifica rilevata: presentation_content.md  [closed_no_write]
+2026-03-17 07:18:29,465  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 07:18:33,249  INFO      Push completato → origin/main  [EADME.md, audit_finale.md, audit_homepage.md, mockup_architecture.png, mockup_hero.png, mockup_screens.png, presentation_content.md, preview_care.png, preview_gallery.png, preview_house.png, preview_isometric.png, preview_journal.png, preview_kawaii_main.png, preview_main.png, preview_store.png, scripts/]
+2026-03-17 07:18:37,185  ERROR     git push failed: remote: Bypassed rule violations for refs/heads/main:        
+remote: 
+remote: - Changes must be made through a pull request.        
+remote: 
+remote: - Required status check "Build iOS App" is expected.        
+remote: 
+To https://github.com/angeloazzzzurro/METIME.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at d465e820cf53612b90812e129a7e1df7e8a21b72 but expected b125f6af265d096606366f5789afc31968a9b241)
+error: failed to push some refs to 'https://github.com/angeloazzzzurro/METIME.git'
+2026-03-17 11:18:15,598  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:18:15,599  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:18:20,625  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:18:20,972  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:19:21,344  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,346  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:21,347  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:19:21,348  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,348  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:19:21,349  INFO      Modifica rilevata: UI/MainPetView.swift  [closed]
+2026-03-17 11:19:21,350  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,350  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:21,352  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:21,352  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,369  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:26,370  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,378  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:26,380  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,380  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:19:26,381  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:19:26,381  INFO      Commit: auto: update MainPetView.swift, auto_commit.log, watcher.out
+2026-03-17 11:19:26,688  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:19:31,407  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:19:31,678  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:19:40,260  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:40,261  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:19:45,287  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:19:45,582  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:19:52,169  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:52,170  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:19:52,172  INFO      Modifica rilevata: Creature/PetNode.swift  [modified]
+2026-03-17 11:19:52,173  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:52,174  INFO      Modifica rilevata: Creature/PetNode.swift  [modified]
+2026-03-17 11:19:52,176  INFO      Modifica rilevata: Creature/PetNode.swift  [closed]
+2026-03-17 11:19:52,176  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:52,177  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:19:57,193  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:57,195  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:19:57,202  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:57,202  INFO      Commit: auto: update PetNode.swift, auto_commit.log, watcher.out
+2026-03-17 11:19:57,203  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:19:57,205  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:19:57,206  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:19:57,497  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:20:02,230  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:20:02,389  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:20:02,390  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:20:02,553  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:20:07,417  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:20:07,740  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:33:46,552  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:33:46,553  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:33:51,743  INFO      Commit: auto: update auto_commit.log, watcher.out, preview_home_original.png
+2026-03-17 11:33:53,051  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:34:18,272  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:18,272  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:18,274  INFO      Modifica rilevata: App/AppState.swift  [modified]
+2026-03-17 11:34:18,274  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:18,275  INFO      Modifica rilevata: App/AppState.swift  [modified]
+2026-03-17 11:34:18,276  INFO      Modifica rilevata: App/AppState.swift  [closed]
+2026-03-17 11:34:18,277  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:18,278  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,295  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:23,296  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,306  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:23,307  INFO      Commit: auto: update AppState.swift, auto_commit.log, watcher.out
+2026-03-17 11:34:23,308  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,308  INFO      Modifica rilevata: App/AppState.swift  [opened]
+2026-03-17 11:34:23,309  INFO      Modifica rilevata: App/AppState.swift  [closed_no_write]
+2026-03-17 11:34:23,605  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:34:28,336  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:34:28,675  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:34:39,772  INFO      Modifica rilevata: App/PetColor.swift  [created]
+2026-03-17 11:34:39,772  INFO      Modifica rilevata: App/PetColor.swift  [opened]
+2026-03-17 11:34:39,773  INFO      Modifica rilevata: App/PetColor.swift  [modified]
+2026-03-17 11:34:39,774  INFO      Modifica rilevata: App/PetColor.swift  [closed]
+2026-03-17 11:34:39,774  INFO      Modifica rilevata: App/PetColor.swift  [opened]
+2026-03-17 11:34:39,775  INFO      Modifica rilevata: App/PetColor.swift  [closed_no_write]
+2026-03-17 11:34:39,775  INFO      Modifica rilevata: App/PetColor.swift  [opened]
+2026-03-17 11:34:39,776  INFO      Modifica rilevata: App/PetColor.swift  [closed_no_write]
+2026-03-17 11:34:44,794  INFO      Modifica rilevata: App/PetColor.swift  [opened]
+2026-03-17 11:34:44,794  INFO      Modifica rilevata: App/PetColor.swift  [closed_no_write]
+2026-03-17 11:34:44,801  INFO      Modifica rilevata: App/PetColor.swift  [opened]
+2026-03-17 11:34:44,802  INFO      Commit: auto: update auto_commit.log, watcher.out, PetColor.swift
+2026-03-17 11:34:44,802  INFO      Modifica rilevata: App/PetColor.swift  [closed_no_write]
+2026-03-17 11:34:45,105  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:34:49,830  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:34:50,125  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:34:54,477  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:54,478  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:54,479  INFO      Modifica rilevata: Creature/PetNode.swift  [modified]
+2026-03-17 11:34:54,480  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:54,481  INFO      Modifica rilevata: Creature/PetNode.swift  [modified]
+2026-03-17 11:34:54,481  INFO      Modifica rilevata: Creature/PetNode.swift  [closed]
+2026-03-17 11:34:54,482  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:54,483  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,501  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:59,501  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,507  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:59,508  INFO      Commit: auto: update PetNode.swift, auto_commit.log, watcher.out
+2026-03-17 11:34:59,509  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,510  INFO      Modifica rilevata: Creature/PetNode.swift  [opened]
+2026-03-17 11:34:59,511  INFO      Modifica rilevata: Creature/PetNode.swift  [closed_no_write]
+2026-03-17 11:34:59,808  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:04,538  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:35:04,835  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:12,852  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:12,852  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:12,854  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [modified]
+2026-03-17 11:35:12,854  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:12,855  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [modified]
+2026-03-17 11:35:12,855  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed]
+2026-03-17 11:35:12,856  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:12,857  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:17,874  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:17,875  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:17,885  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:17,886  INFO      Commit: auto: update GameStore.swift, auto_commit.log, watcher.out
+2026-03-17 11:35:17,887  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:17,888  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [opened]
+2026-03-17 11:35:17,890  INFO      Modifica rilevata: Data/Persistence/GameStore.swift  [closed_no_write]
+2026-03-17 11:35:18,197  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:22,917  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:35:23,229  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:24,231  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:24,232  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:29,258  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:35:29,539  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:32,386  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:32,387  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:37,413  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:35:37,703  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:42,427  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:42,428  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:42,429  INFO      Modifica rilevata: Garden/GardenScene.swift  [modified]
+2026-03-17 11:35:42,430  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:42,431  INFO      Modifica rilevata: Garden/GardenScene.swift  [modified]
+2026-03-17 11:35:42,431  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed]
+2026-03-17 11:35:42,433  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:42,434  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:47,452  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:47,455  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:47,462  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:47,463  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:47,463  INFO      Commit: auto: update GardenScene.swift, auto_commit.log, watcher.out
+2026-03-17 11:35:47,465  INFO      Modifica rilevata: Garden/GardenScene.swift  [opened]
+2026-03-17 11:35:47,466  INFO      Modifica rilevata: Garden/GardenScene.swift  [closed_no_write]
+2026-03-17 11:35:47,762  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:35:52,492  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:35:52,774  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:36:02,250  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:02,251  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:02,253  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:36:02,254  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:02,255  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:36:02,255  INFO      Modifica rilevata: UI/MainPetView.swift  [closed]
+2026-03-17 11:36:02,257  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:02,258  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:07,274  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:07,276  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:07,286  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:07,287  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:07,288  INFO      Commit: auto: update MainPetView.swift, auto_commit.log, watcher.out
+2026-03-17 11:36:07,289  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:07,289  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:07,580  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:36:11,934  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:11,935  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:16,960  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:36:17,248  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:36:21,357  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:21,358  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:21,359  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:36:21,360  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:21,360  INFO      Modifica rilevata: UI/MainPetView.swift  [modified]
+2026-03-17 11:36:21,361  INFO      Modifica rilevata: UI/MainPetView.swift  [closed]
+2026-03-17 11:36:21,362  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:21,363  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:26,380  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:26,382  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:26,388  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:26,389  INFO      Commit: auto: update MainPetView.swift, auto_commit.log, watcher.out
+2026-03-17 11:36:26,390  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:26,391  INFO      Modifica rilevata: UI/MainPetView.swift  [opened]
+2026-03-17 11:36:26,391  INFO      Modifica rilevata: UI/MainPetView.swift  [closed_no_write]
+2026-03-17 11:36:26,658  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'
+2026-03-17 11:36:31,417  INFO      Commit: auto: update auto_commit.log, watcher.out
+2026-03-17 11:36:31,716  ERROR     git push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/angeloazzzzurro/METIME.git/'

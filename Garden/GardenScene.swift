@@ -30,8 +30,11 @@ final class GardenScene: SKScene {
 
     // MARK: - Nodi
     private let isoRoot  = SKNode()   // radice di tutto il mondo iso
-    private let petNode  = PetNode()
+    let petNode  = PetNode()          // internal: il cambio colore viene applicato da fuori
     private var weather: SKEmitterNode?
+
+    /// Callback chiamata quando l'utente tocca il pet
+    var onPetTapped: (() -> Void)?
 
     // MARK: - Mood
     var mood: PetMood = .calm {
@@ -69,7 +72,21 @@ final class GardenScene: SKScene {
     // MARK: - Touch
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        petNode.bounce()
+        guard let touch = touches.first else { return }
+        let loc = touch.location(in: isoRoot)
+        // Se il tocco è vicino al pet (raggio 60pt) cicla il colore, altrimenti bounce
+        let petPos = petNode.position
+        let dist = hypot(loc.x - petPos.x, loc.y - petPos.y)
+        if dist < 60 {
+            onPetTapped?()
+        } else {
+            petNode.bounce()
+        }
+    }
+
+    /// Applica il colore base al pet con animazione fluida.
+    func applyPetColor(_ color: PetColor, animated: Bool = true) {
+        petNode.setColor(color, animated: animated)
     }
 
     // MARK: - Ground (tile isometrici)

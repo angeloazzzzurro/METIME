@@ -75,6 +75,19 @@ final class GameStore: ObservableObject {
     }
 
     /// Applies stat boosts from a house item (cibo, essenziali, decorazioni).
+    /// Cicla al prossimo colore nella palette PetColor e persiste l'indice.
+    func cycleColor() {
+        objectWillChange.send()
+        let next = PetColor(rawValue: (pet.colorIndex + 1) % PetColor.allCases.count) ?? .cream
+        pet.colorIndex = next.rawValue
+        save()
+    }
+
+    /// Colore corrente del pet come PetColor.
+    var currentPetColor: PetColor {
+        PetColor(rawValue: pet.colorIndex) ?? .cream
+    }
+
     func applyBoost(hunger: Double, happiness: Double, calm: Double, energy: Double) {
         objectWillChange.send()
         pet.needs.hunger    = min(1, pet.needs.hunger    + hunger)

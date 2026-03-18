@@ -12,6 +12,7 @@ struct MainPetView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var store: GameStore
     @EnvironmentObject private var navigationState: NavigationState
+    @EnvironmentObject private var houseStore: HouseStore
 
     @State private var showJournal = false
     @State private var feedShake: CGFloat = 0
@@ -42,9 +43,9 @@ struct MainPetView: View {
                             .environmentObject(appState)
                             .environmentObject(store)
                     case .store:
-                        ShopSectionView()
-                            .environmentObject(appState)
-                            .environmentObject(store)
+                        StoreView()
+                            .environmentObject(houseStore)
+                            .environmentObject(navigationState)
                     case .inventory:
                         Text("Zaino")
                             .font(.largeTitle)

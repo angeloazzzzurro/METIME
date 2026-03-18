@@ -19,10 +19,10 @@ struct HouseView: View {
     @State private var showInventory = false
     @State private var selectedItem: OwnedItem? = nil
     @State private var showUseConfirm = false
+    @EnvironmentObject private var navigationState: NavigationState
 
     var body: some View {
-        ZStack {
-            // Sfondo gradiente kawaii
+        ZStack(alignment: .bottom) {
             LinearGradient(
                 colors: [
                     Color(red: 1.0, green: 0.92, blue: 0.96),
@@ -33,39 +33,96 @@ struct HouseView: View {
             )
             .ignoresSafeArea()
 
-            // Decorazioni sfondo
             backgroundDecorations
 
-            VStack(spacing: 0) {
-                // MARK: Top Bar
-                topBar
-
-                // MARK: Stanza isometrica
-                GeometryReader { geo in
-                    SpriteView(scene: scene, options: [.allowsTransparency])
-                        .frame(width: geo.size.width, height: geo.size.height)
-                        .onAppear {
-                            scene.size = CGSize(width: geo.size.width, height: geo.size.height)
+            switch navigationState.activeSection {
+            case .home:
+                VStack(spacing: 0) {
+                    topBar
+                    GeometryReader { geo in
+                        SpriteView(scene: scene, options: [.allowsTransparency])
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .onAppear {
+                                scene.size = CGSize(width: geo.size.width, height: geo.size.height)
+                            }
+                    }
+                    .frame(height: 320)
+                    .onChange(of: gameStore.pet.moodRaw) { _, newVal in
+                        if let mood = PetMood(rawValue: newVal) {
+                            scene.mood = mood
                         }
+                    }
+                    .onChange(of: houseStore.itemsPlacedInRoom()) { _, placed in
+                        scene.placedItems = placed.compactMap { item in
+                            guard let x = item.roomPositionX,
+                                  let y = item.roomPositionY else { return nil }
+                            return (itemID: item.itemID, position: CGPoint(x: x, y: y))
+                        }
+                    }
+                    actionBar
+                    Spacer()
                 }
-                .frame(height: 320)
-                .onChange(of: gameStore.pet.moodRaw) { _, newVal in
-                    if let mood = PetMood(rawValue: newVal) {
-                        scene.mood = mood
+            case .garden:
+                GardenSectionView()
+                    .environmentObject(gameStore)
+                    .environmentObject(houseStore)
+            case .store:
+                ShopSectionView()
+                    .environmentObject(gameStore)
+                    .environmentObject(houseStore)
+            case .inventory:
+                Text("Zaino")
+                    .font(.largeTitle)
+                    .foregroundColor(Color(hex: "#60A5FA"))
+                    .padding()
+            case .decorate:
+                Text("Decora")
+                    .font(.largeTitle)
+                    .foregroundColor(Color(hex: "#A78BFA"))
+                    .padding()
+            case .meTime:
+                NavigationStack {
+                    CareRitualMockupView()
+                }
+            }
+
+            VStack(spacing: 12) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        HomePetNavButton(icon: "bag.fill", label: "Store", color: Color(hex: "#F87171")) {
+                            navigationState.activeSection = .store
+                        }
+                        HomePetNavButton(icon: "backpack.fill", label: "Zaino", color: Color(hex: "#60A5FA")) {
+                            navigationState.activeSection = .inventory
+                        }
+                        HomePetNavButton(icon: "wand.and.stars", label: "Decora", color: Color(hex: "#A78BFA")) {
+                            navigationState.activeSection = .decorate
+                        }
+                        HomePetNavButton(icon: "sparkles.rectangle.stack.fill", label: "Me Time", color: Color(hex: "#F59E0B")) {
+                            navigationState.activeSection = .meTime
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 8)
+                }
+                .background(Color.white)
+                .cornerRadius(24)
+                .shadow(color: Color.black.opacity(0.08), radius: 8, y: 2)
+
+                HStack(spacing: 0) {
+                    HomePetTabButton(icon: "leaf", label: "Giardino", selected: navigationState.activeSection == .garden) {
+                        navigationState.activeSection = .garden
+                    }
+                    HomePetTabButton(icon: "house.fill", label: "Casa", selected: navigationState.activeSection == .home) {
+                        navigationState.activeSection = .home
                     }
                 }
-                .onChange(of: houseStore.itemsPlacedInRoom()) { _, placed in
-                    scene.placedItems = placed.compactMap { item in
-                        guard let x = item.roomPositionX,
-                              let y = item.roomPositionY else { return nil }
-                        return (itemID: item.itemID, position: CGPoint(x: x, y: y))
-                    }
-                }
-
-                // MARK: Action Bar
-                actionBar
-
-                Spacer()
+                .frame(height: 56)
+                .background(Color.white)
+                .cornerRadius(18)
+                .shadow(color: Color.black.opacity(0.06), radius: 6, y: 1)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 8)
             }
         }
         .sheet(isPresented: $showStore) {
@@ -185,6 +242,58 @@ struct HouseView: View {
                     .position(pos)
             }
         }
+    }
+}
+
+// MARK: - House Navigation Buttons
+
+private struct HomePetNavButton: View {
+    let icon: String
+    let label: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .background(color)
+                    .clipShape(Capsule())
+                Text(label)
+                    .font(.headline.weight(.semibold))
+                    .foregroundColor(color)
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .background(color.opacity(0.12))
+            .cornerRadius(18)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct HomePetTabButton: View {
+    let icon: String
+    let label: String
+    let selected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundColor(selected ? Color(hex: "#A78BFA") : Color.gray.opacity(0.6))
+                Text(label)
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(selected ? Color(hex: "#A78BFA") : Color.gray.opacity(0.6))
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
     }
 }
 

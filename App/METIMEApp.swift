@@ -7,6 +7,7 @@ import OSLog
 @main
 struct METIMEApp: App {
     @StateObject private var appState = AppState()
+    @StateObject private var navigationState = NavigationState()
 
     private static let isUITesting = CommandLine.arguments.contains("--uitesting")
 
@@ -42,6 +43,7 @@ struct METIMEApp: App {
         WindowGroup {
             ContentRoot()
                 .environmentObject(appState)
+                .environmentObject(navigationState)
                 .modelContainer(container)
                 .onAppear {
                     SoundscapeManager.shared.start(mood: .calm)
@@ -76,9 +78,11 @@ struct ContentRoot: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.modelContext) private var modelContext
 
+    @EnvironmentObject private var navigationState: NavigationState
     var body: some View {
         ContentRootInner(modelContext: modelContext)
             .environmentObject(appState)
+            .environmentObject(navigationState)
     }
 }
 
@@ -95,10 +99,12 @@ private struct ContentRootInner: View {
         _houseStore = StateObject(wrappedValue: hs)
     }
 
+    @EnvironmentObject private var navigationState: NavigationState
     var body: some View {
         AppTabView()
             .environmentObject(gameStore)
             .environmentObject(houseStore)
+            .environmentObject(navigationState)
     }
 }
 
@@ -109,19 +115,6 @@ struct AppTabView: View {
     @EnvironmentObject var houseStore: HouseStore
 
     var body: some View {
-        TabView {
-            MainPetView()
-                .tabItem {
-                    Label("Giardino", systemImage: "leaf.fill")
-                }
-                .tag(0)
-
-            HouseView()
-                .tabItem {
-                    Label("Casa", systemImage: "house.fill")
-                }
-                .tag(1)
-        }
-        .tint(Color(red: 0.6, green: 0.3, blue: 0.9))
+        MainPetView()
     }
 }

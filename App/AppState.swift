@@ -17,19 +17,22 @@ enum PetMood: String, CaseIterable, Codable {
 
 @Model
 final class PetNeeds {
-    var hunger: Float
-    var happiness: Float
+    var hunger: Float    // displayed as "Wellness"
+    var happiness: Float // displayed as "Mood"
     var calm: Float
-    var energy: Float
+    var energy: Float    // displayed as "Focus"
+    var sleep: Float     // displayed as "Sleep"
 
     init(hunger: Float = 0.8,
          happiness: Float = 0.8,
          calm: Float = 0.7,
-         energy: Float = 0.9) {
+         energy: Float = 0.9,
+         sleep: Float = 0.8) {
         self.hunger    = hunger
         self.happiness = happiness
         self.calm      = calm
         self.energy    = energy
+        self.sleep     = sleep
     }
 }
 

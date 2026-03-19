@@ -9,7 +9,7 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
-    TARGETED_DEVICE_FAMILY: "1"
+    TARGETED_DEVICE_FAMILY: "1,2"
     DEVELOPMENT_TEAM: ""
     # ── Strict Concurrency (sicurezza threading) ──────────────────────────────
     SWIFT_STRICT_CONCURRENCY: complete

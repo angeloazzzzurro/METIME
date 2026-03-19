@@ -56,8 +56,9 @@ struct MockupGalleryView: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text(title)
-                        .font(.system(size: 28, weight: .black, design: .rounded))
+                        .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundStyle(.white)
+                        .padding(.bottom, 2)
                     Spacer()
                     Image(systemName: "arrow.right.circle.fill")
                         .font(.title2)
@@ -65,7 +66,7 @@ struct MockupGalleryView: View {
                 }
 
                 Text(subtitle)
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .font(.system(size: 15, weight: .light, design: .rounded))
                     .foregroundStyle(.white.opacity(0.9))
                     .multilineTextAlignment(.leading)
             }
@@ -304,16 +305,25 @@ struct JournalInsightsMockupView: View {
     }
 
     private func insightCard(title: String, value: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.caption.weight(.semibold))
+                .font(.caption.weight(.regular))
                 .foregroundStyle(.secondary)
             Text(value)
-                .font(.title3.weight(.heavy))
+                .font(.title3.weight(.black))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(color.opacity(0.16), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(22)
+        .background(PetColor.cream.color, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .shadow(color: PetColor.peach.color.opacity(0.09), radius: 16, y: 3)
+        .overlay(
+            RoundedRectangle(cornerRadius: 26)
+                .stroke(PetColor.lilac.color.opacity(0.13), lineWidth: 1.2)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 26)
+                .fill(Color.white.opacity(0.07))
+        )
     }
 }
 
@@ -323,9 +333,9 @@ private struct StatChip: View {
     let tint: Color
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 4) {
             Text(title)
-                .font(.caption.weight(.semibold))
+                .font(.caption.weight(.regular))
                 .foregroundStyle(.secondary)
             Text(value)
                 .font(.headline.weight(.heavy))

@@ -1,3 +1,22 @@
+---
+
+## Comandi rapidi VS Code
+
+Per lavorare in modo più produttivo con METIME:
+
+| Azione                        | Shortcut                |
+|-------------------------------|-------------------------|
+| Apri terminale integrato      | Ctrl + `                |
+| Crea nuovo file               | Ctrl + N                |
+| Salva file                    | Ctrl + S                |
+| Apri palette comandi          | Ctrl + Shift + P        |
+| Split editor (HTML + CSS)     | Ctrl + \                |
+| Live Server                   | Ctrl + Shift + P → "Open with Live Server" |
+| Formatta codice               | Shift + Alt + F         |
+| Multi-cursore                 | Ctrl + D                |
+| Trova e sostituisci           | Ctrl + H                |
+
+---
 <div align="center">
 
 # METIME

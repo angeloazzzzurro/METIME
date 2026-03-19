@@ -10,8 +10,7 @@ struct METIMEApp: App {
     @StateObject private var navigationState = NavigationState()
 
     private static let isUITesting = CommandLine.arguments.contains("--uitesting")
-
-    private let container: ModelContainer = {
+    private let bootstrap: AppBootstrap = {
         let schema = Schema([Pet.self, PetNeeds.self, OwnedItem.self, Wallet.self])
         let logger = Logger(subsystem: "com.metime.app", category: "Container")
         let inMemory = METIMEApp.isUITesting
@@ -27,24 +26,27 @@ struct METIMEApp: App {
         do {
             let c = try ModelContainer(for: schema, configurations: [config])
             if !inMemory { applyDataProtection(to: c, logger: logger) }
-            return c
+            return .ready(c)
         } catch {
             logger.error("Primary ModelContainer failed: \(error.localizedDescription) — falling back to in-memory")
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             do {
-                return try ModelContainer(for: schema, configurations: [fallback])
+                return .ready(try ModelContainer(for: schema, configurations: [fallback]))
             } catch {
-                fatalError("Failed to create fallback in-memory container: \(error.localizedDescription)")
+                logger.fault("Fallback in-memory ModelContainer failed: \(error.localizedDescription)")
+                return .failed(
+                    "METIME non riesce a inizializzare i dati locali. " +
+                    "Chiudi e riapri l'app. Se il problema continua, reinstalla l'app o cancella i dati corrotti."
+                )
             }
         }
     }()
 
     var body: some Scene {
         WindowGroup {
-            ContentRoot()
+            RootScene(bootstrap: bootstrap)
                 .environmentObject(appState)
                 .environmentObject(navigationState)
-                .modelContainer(container)
                 .onAppear {
                     SoundscapeManager.shared.start(mood: .calm)
                 }
@@ -69,6 +71,58 @@ struct METIMEApp: App {
             }
         }
         logger.info("Data Protection applied to SwiftData store at \(directory.path)")
+    }
+}
+
+private enum AppBootstrap {
+    case ready(ModelContainer)
+    case failed(String)
+}
+
+private struct RootScene: View {
+    let bootstrap: AppBootstrap
+
+    var body: some View {
+        switch bootstrap {
+        case .ready(let container):
+            ContentRoot()
+                .modelContainer(container)
+        case .failed(let message):
+            StartupFailureView(message: message)
+        }
+    }
+}
+
+private struct StartupFailureView: View {
+    let message: String
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(red: 0.99, green: 0.92, blue: 0.95), Color(red: 0.94, green: 0.97, blue: 1.0)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.bubble.fill")
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundStyle(.pink)
+
+                Text("Avvio non riuscito")
+                    .font(.system(.title2, design: .rounded).weight(.bold))
+
+                Text(message)
+                    .font(.system(.body, design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+            }
+            .padding(24)
+            .background(.white.opacity(0.9), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .padding(24)
+        }
     }
 }
 
@@ -113,8 +167,19 @@ private struct ContentRootInner: View {
 struct AppTabView: View {
     @EnvironmentObject var gameStore: GameStore
     @EnvironmentObject var houseStore: HouseStore
+    @EnvironmentObject var navigationState: NavigationState
 
     var body: some View {
-        MainPetView()
+        if navigationState.activeSection == .home {
+            HouseView()
+                .environmentObject(gameStore)
+                .environmentObject(houseStore)
+                .environmentObject(navigationState)
+        } else {
+            MainPetView()
+                .environmentObject(gameStore)
+                .environmentObject(houseStore)
+                .environmentObject(navigationState)
+        }
     }
 }

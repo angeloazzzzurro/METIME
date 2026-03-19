@@ -1,5 +1,6 @@
 import AVFoundation
 
+@MainActor
 final class SoundscapeManager {
     static let shared = SoundscapeManager()
     private init() {}
@@ -36,6 +37,8 @@ final class SoundscapeManager {
         else { return }
 
         try? file.read(into: buffer)
+        engine.disconnectNodeOutput(player)
+        engine.connect(player, to: mixer, format: file.processingFormat)
         player.scheduleBuffer(buffer, at: nil, options: [], completionHandler: nil)
         if !player.isPlaying { player.play() }
     }
@@ -66,6 +69,8 @@ final class SoundscapeManager {
 
         try? file.read(into: buffer)
         player.stop()
+        engine.disconnectNodeOutput(player)
+        engine.connect(player, to: mixer, format: file.processingFormat)
         player.scheduleBuffer(buffer, at: nil, options: [.loops], completionHandler: nil)
         player.play()
     }

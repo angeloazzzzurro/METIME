@@ -74,6 +74,14 @@ final class GameStore: ObservableObject {
         save()
     }
 
+    func rest() {
+        objectWillChange.send()
+        pet.needs.sleep  = min(1, pet.needs.sleep  + 0.25)
+        pet.needs.energy = min(1, pet.needs.energy + 0.1)
+        syncMood()
+        save()
+    }
+
     /// Applies stat boosts from a house item (cibo, essenziali, decorazioni).
     /// Cicla al prossimo colore nella palette PetColor e persiste l'indice.
     func cycleColor() {
@@ -105,7 +113,7 @@ final class GameStore: ObservableObject {
     /// `appState.mood` directly without going through this method.
     func derivedMood() -> PetMood {
         let n = pet.needs
-        if n.energy < 0.2                          { return .sleepy   }  // BUG-03
+        if n.energy < 0.2 || n.sleep < 0.2        { return .sleepy   }
         if n.calm < 0.3                            { return .anxious  }
         if n.hunger < 0.2 || n.happiness < 0.2    { return .sick     }
         if n.happiness > 0.85 && n.calm > 0.75    { return .happy    }

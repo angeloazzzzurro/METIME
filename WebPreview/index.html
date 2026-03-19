@@ -43,6 +43,8 @@
     .nav-btn.zaino  .nav-icon { background: #3b82f6; }
     .nav-btn.decora { background: rgba(167,139,250,0.12); color: #8b5cf6; }
     .nav-btn.decora .nav-icon { background: #8b5cf6; }
+    .nav-btn.metime { background: rgba(245,158,11,0.12);  color: #d97706; }
+    .nav-btn.metime .nav-icon { background: #f59e0b; }
     .nav-tabs { display: flex; background: white; border-radius: 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); overflow: hidden; margin: 0 20px; }
     .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 0; border: none; background: transparent; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; color: rgba(120,120,140,0.7); transition: color 0.15s; }
     .nav-tab .tab-icon { font-size: 18px; }
@@ -91,6 +93,7 @@
       <button class="nav-btn store"  onclick="goSection('store')"><span class="nav-icon">🛍</span>Store</button>
       <button class="nav-btn zaino"  onclick="goSection('zaino')"><span class="nav-icon">🎒</span>Zaino</button>
       <button class="nav-btn decora" onclick="goSection('decora')"><span class="nav-icon">✨</span>Decora</button>
+      <button class="nav-btn metime" onclick="goSection('metime')"><span class="nav-icon">⭐</span>Me Time</button>
     </div>
     <div class="nav-tabs">
       <button class="nav-tab active" id="tab-garden" onclick="goTab('garden')"><span class="tab-icon">🌱</span>Giardino</button>
@@ -183,6 +186,11 @@
   <!-- DECORA -->
   <div class="section" id="section-decora">
     <div class="placeholder"><div class="p-emoji">✨</div><div class="p-title">Decora</div></div>
+  </div>
+
+  <!-- ME TIME -->
+  <div class="section" id="section-metime">
+    <div class="placeholder"><div class="p-emoji">⭐</div><div class="p-title">Me Time</div></div>
   </div>
 </div>
 

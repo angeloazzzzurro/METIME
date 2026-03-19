@@ -1,10 +1,10 @@
 SHELL   := /bin/zsh
 SCHEME  := METIME
-SIM     := platform=iOS Simulator,name=iPhone 15
+SIM     := platform=iOS Simulator,name=iPhone 17 Pro
 XBUILD  := xcodebuild -project METIME.xcodeproj -scheme $(SCHEME) -sdk iphonesimulator \
             -destination '$(SIM)' CODE_SIGNING_ALLOWED=NO
 
-.PHONY: setup generate build open test test-unit test-ui lint lint-fix
+.PHONY: setup generate build open preview test test-unit test-ui lint lint-fix
 
 # ── Bootstrap ────────────────────────────────────────────────────────────────
 setup:
@@ -21,6 +21,9 @@ build:
 # ── Open ──────────────────────────────────────────────────────────────────────
 open:
 	open METIME.xcodeproj
+
+preview:
+	open WebPreview/index.html
 
 # ── Test ──────────────────────────────────────────────────────────────────────
 ## Run all tests (unit + UI)

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 // MARK: - Store Color Tokens (file-private)
 
@@ -7,6 +8,9 @@ private extension Color {
     static let storePrimary   = Color(hex: "#7B5CC8")
     static let storeDark      = Color(hex: "#3D2080")
     static let storeBtn       = Color(hex: "#5C3D9E")
+    static let storeGoldBg    = Color(hex: "#FFF563")
+    static let storeGoldFg    = Color(hex: "#7A5200")
+    static let storeCard      = Color(hex: "#FAFAF7")
     static let statGreenBg    = Color(hex: "#C6F0D6")
     static let statGreenFg    = Color(hex: "#1A7A3A")
     static let statPinkBg     = Color(hex: "#FFD6E0")
@@ -42,8 +46,14 @@ struct StoreView: View {
     @EnvironmentObject private var houseStore: HouseStore
     @EnvironmentObject private var navigationState: NavigationState
 
+    private let onDismiss: (() -> Void)?
+
     @State private var selectedCategory: ItemCategory = .food
     @State private var showGemSheet = false
+
+    init(onDismiss: (() -> Void)? = nil) {
+        self.onDismiss = onDismiss
+    }
 
     private var filteredItems: [HouseItemDefinition] {
         HouseItemDefinition.catalog.filter { $0.category == selectedCategory }
@@ -54,8 +64,35 @@ struct StoreView: View {
             Color.storeBg.ignoresSafeArea()
 
             VStack(spacing: 0) {
+                HStack {
+                    Button {
+                        if let onDismiss {
+                            onDismiss()
+                        } else {
+                            navigationState.goBack()
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 13, weight: .black))
+                            Text(onDismiss == nil ? "Indietro" : "Chiudi")
+                                .font(.system(.subheadline, design: .rounded).weight(.bold))
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .background(.white, in: Capsule())
+                        .overlay(Capsule().strokeBorder(Color.storePrimary, lineWidth: 1.3))
+                        .foregroundStyle(Color.storePrimary)
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+
                 headerBar
-                    .padding(.top, 8)
+                    .padding(.top, 10)
 
                 currencyBar
                     .padding(.horizontal, 48)
@@ -100,16 +137,9 @@ struct StoreView: View {
 
             Spacer(minLength: 4)
 
-            // Right: Chiudi
-            Button("Chiudi") {
-                navigationState.activeSection = .home
-            }
-            .font(.system(.subheadline, design: .rounded).weight(.semibold))
-            .foregroundStyle(Color.storePrimary)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(.white, in: Capsule())
-            .overlay(Capsule().strokeBorder(Color.storePrimary, lineWidth: 1.5))
+            // Right spacer to keep title centered after moving back button out
+            Color.clear
+                .frame(width: 92, height: 1)
         }
         .padding(.horizontal, 16)
     }
@@ -123,14 +153,17 @@ struct StoreView: View {
                     .font(.system(size: 15))
                 Text("\(houseStore.wallet.coins)")
                     .font(.system(.subheadline, design: .rounded).weight(.bold))
-                    .foregroundStyle(Color.storeDark)
+                    .foregroundStyle(Color.storeGoldFg)
                     .contentTransition(.numericText())
             }
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 7)
+            .background(Color.storeGoldBg, in: Capsule())
 
             Rectangle()
                 .fill(Color.storePrimary.opacity(0.25))
                 .frame(width: 1, height: 20)
+                .padding(.horizontal, 6)
 
             HStack(spacing: 5) {
                 Text("💎")
@@ -142,7 +175,8 @@ struct StoreView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, 11)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
         .background(.white, in: Capsule())
         .shadow(color: Color.storePrimary.opacity(0.12), radius: 8, y: 3)
     }
@@ -176,7 +210,7 @@ struct StoreView: View {
                 spacing: 14
             ) {
                 ForEach(filteredItems) { item in
-                    StoreItemCard(item: item)
+                    KawaiiStoreCard(item: item)
                         .environmentObject(houseStore)
                 }
             }
@@ -217,13 +251,14 @@ private struct StoreCategoryTab: View {
     }
 }
 
-// MARK: - StoreItemCard
+// MARK: - KawaiiStoreCard
 
-struct StoreItemCard: View {
+private struct KawaiiStoreCard: View {
     let item: HouseItemDefinition
     @EnvironmentObject private var houseStore: HouseStore
 
     @State private var purchasing = false
+    @State private var purchasedFeedback = false
 
     private var emoji: String      { storeEmoji(for: item) }
     private var isRare: Bool       { item.rarity != .common }
@@ -232,8 +267,10 @@ struct StoreItemCard: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             cardContent
-                .background(.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .background(Color.storeCard, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .shadow(color: Color.storePrimary.opacity(0.09), radius: 8, y: 3)
+                .scaleEffect(purchasedFeedback ? 0.95 : 1)
+                .overlay(purchaseFeedbackOverlay)
 
             if isRare {
                 Text("💜 Raro")
@@ -244,6 +281,20 @@ struct StoreItemCard: View {
                     .foregroundStyle(.white)
                     .offset(x: 8, y: -8)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var purchaseFeedbackOverlay: some View {
+        if purchasedFeedback {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color.statGreenBg.opacity(0.85))
+                .overlay(
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundStyle(Color.statGreenFg)
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.8)))
         }
     }
 
@@ -259,9 +310,9 @@ struct StoreItemCard: View {
                     .lineLimit(1)
             }
 
-            // Large emoji
+            // Icona oggetto
             Text(emoji)
-                .font(.system(size: 54))
+                .font(.system(size: 46))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 2)
 
@@ -335,8 +386,15 @@ struct StoreItemCard: View {
                 .font(.system(size: 13))
             Text("\(item.price)")
                 .font(.system(.subheadline, design: .rounded).weight(.bold))
-                .foregroundStyle(Color.storeDark)
+                .foregroundStyle(item.currency == .coins ? Color.storeGoldFg : Color.storeDark)
         }
+        .padding(.horizontal, item.currency == .coins ? 8 : 0)
+        .padding(.vertical, item.currency == .coins ? 4 : 0)
+        .background(
+            item.currency == .coins
+                ? AnyView(Capsule().fill(Color.storeGoldBg))
+                : AnyView(EmptyView())
+        )
     }
 
     private var buyButton: some View {
@@ -369,12 +427,29 @@ struct StoreItemCard: View {
 
     private func doPurchase() async {
         guard canAfford, !purchasing else { return }
+        let result: PurchaseResult
         if item.currency == .coins {
-            _ = houseStore.purchase(item: item)
+            result = houseStore.purchase(item: item)
         } else {
             purchasing = true
-            _ = await houseStore.purchaseWithStoreKit(item: item)
+            result = await houseStore.purchaseWithStoreKit(item: item)
             purchasing = false
+        }
+        let success: Bool
+        switch result {
+        case .success:
+            success = true
+        default:
+            success = false
+        }
+        if success {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
+                purchasedFeedback = true
+            }
+            try? await Task.sleep(for: .milliseconds(900))
+            withAnimation(.easeOut(duration: 0.2)) {
+                purchasedFeedback = false
+            }
         }
     }
 }
@@ -483,4 +558,17 @@ private struct GemPackRow: View {
         .background(.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .shadow(color: Color.storePrimary.opacity(0.08), radius: 6, y: 2)
     }
+}
+
+// MARK: - Preview
+
+#Preview {
+    let schema = Schema([OwnedItem.self, Wallet.self])
+    let container = try! ModelContainer(for: schema,
+                                        configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    let houseStore = HouseStore(modelContext: container.mainContext)
+    let navigationState = NavigationState()
+    return StoreView()
+        .environmentObject(houseStore)
+        .environmentObject(navigationState)
 }

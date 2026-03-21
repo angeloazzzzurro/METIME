@@ -21,9 +21,19 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Build iOS App
+    name: Build iOS App (${{ matrix.destination_name }})
     runs-on: macos-15
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - destination_name: iOS Simulator
+            sdk: iphonesimulator
+            destination: "generic/platform=iOS Simulator"
+          - destination_name: iOS Device
+            sdk: iphoneos
+            destination: "generic/platform=iOS"
 
     steps:
       - name: Checkout
@@ -52,11 +62,12 @@ jobs:
       - name: Show available build destinations
         run: xcodebuild -showdestinations -project METIME.xcodeproj -scheme METIME
 
-      - name: Build for iOS Simulator
+      - name: Build for ${{ matrix.destination_name }}
         run: |
           xcodebuild \
             -project METIME.xcodeproj \
             -scheme METIME \
-            -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=16.4' \
+            -sdk ${{ matrix.sdk }} \
+            -destination '${{ matrix.destination }}' \
             CODE_SIGNING_ALLOWED=NO \
             build

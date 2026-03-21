@@ -10,67 +10,28 @@
 
 </div>
 
----
-
 ## Overview
 
-METIME is an iOS wellness app built around a virtual pet that reflects the user's actual wellbeing state. When you meditate, your pet becomes calmer. When you neglect yourself, it shows. The emotional feedback loop creates genuine engagement without gamification dark patterns.
+METIME is an iOS wellness app built around a virtual pet that reflects the user's wellbeing state. Meditation, care rituals, mood, inventory, and room interactions all feed the same pet state instead of living in disconnected flows.
 
-The pet's mood is not manually set — it is computed by `derivedMood()` from four real statistics (hunger, happiness, calm, energy), creating an honest mirror of the user's daily habits.
+The pet mood is derived from real stats through `derivedMood()` in [GameStore.swift](Data/Persistence/GameStore.swift), so UI state follows gameplay state instead of hardcoded mood transitions.
 
----
+## Current Product Areas
 
-## Screenshots
-
-![METIME Screens](Assets/Mockups/mockup_screens.png)
-
-| Screen | Description |
-| :--- | :--- |
-| **Garden Home** | Isometric kawaii garden with the pet, mood HUD, and action bar |
-| **Care Ritual** | Guided breathing session with circular timer and session metrics |
-| **Journal & Insights** | Diary entries, 7-day streak, and mood average |
-| **Mockup Gallery** | Navigation hub for all app sections |
-
----
-
-## Architecture
-
-![METIME Architecture](Assets/Mockups/mockup_architecture.png)
-
-The codebase is organized in five layers with zero circular dependencies:
-
-| Layer | Responsibility | Key Files |
-| :--- | :--- | :--- |
-| **Presentation** | SwiftUI views, SpriteKit scenes | `MainPetView`, `GardenScene`, `PetNode` |
-| **State Management** | App-wide state, game logic | `AppState`, `GameStore` |
-| **Domain** | Data models, mood derivation | `Pet @Model`, `PetNeeds @Model`, `derivedMood()` |
-| **Infrastructure** | Persistence, security, logging | `ModelContainer`, Data Protection, `OSLog` |
-| **Audio/Graphics** | Ambient audio, particles | `SoundscapeManager`, `ParticleFactory` |
-
----
+- Main pet home with mood HUD, actions, and color cycling
+- Garden and island navigation built with SpriteKit
+- Meditation and care ritual flows with SwiftData history
+- House/store systems with wallet, inventory, and placement
+- Web preview prototypes for screen exploration outside Xcode
 
 ## Tech Stack
 
-- **SwiftUI** — Declarative UI with `@EnvironmentObject` and `@Observable`
-- **SpriteKit** — Isometric garden scene with depth sorting, particles, and mood-reactive colors
-- **SwiftData** — Persistent pet state with `FileProtectionType.completeUnlessOpen` (AES-256)
-- **AVFoundation** — Dynamic ambient audio that changes with the pet's mood
-- **XcodeGen** — Reproducible project generation from `project.yml`
-
----
-
-## Security
-
-METIME implements the full iOS security stack from day one:
-
-- **Data at rest** — SwiftData encrypted with `FileProtectionType.completeUnlessOpen`
-- **Input validation** — `Pet.setName()` allowlist with `didSet` sanitization
-- **Privacy manifest** — `PrivacyInfo.xcprivacy` with full data taxonomy (iOS 17+ App Store requirement)
-- **Concurrency** — `SWIFT_STRICT_CONCURRENCY = complete` (Swift 6 ready)
-- **Code quality** — SwiftLint with `force_try`, `force_cast`, `force_unwrapping` rules
-- **Crash resilience** — All `fatalError` replaced with graceful fallbacks + `OSLog`
-
----
+- SwiftUI for app UI and navigation
+- SpriteKit for the interactive pet and island scenes
+- SwiftData for persistent pet, wallet, inventory, and session data
+- AVFoundation for ambient soundscapes
+- XcodeGen for reproducible project generation
+- SwiftLint for basic static checks
 
 ## Getting Started
 
@@ -78,86 +39,75 @@ METIME implements the full iOS security stack from day one:
 
 - Xcode 15+
 - iOS 17+ deployment target
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
-- [SwiftLint](https://github.com/realm/SwiftLint) (`brew install swiftlint`)
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+- [SwiftLint](https://github.com/realm/SwiftLint)
 
 ### Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/angeloazzzzurro/METIME.git
 cd METIME
-
-# Generate the Xcode project
 make setup
-
-# Open in Xcode
 open METIME.xcodeproj
 ```
 
-### Available Commands
+### Common Commands
 
 ```bash
-make setup      # Generate Xcode project with XcodeGen
-make test       # Run all tests (unit + UI)
-make test-unit  # Run unit tests only
-make test-ui    # Run UI tests only
-make lint       # Run SwiftLint
-make lint-fix   # Auto-fix SwiftLint violations
+make setup
+make test
+make test-unit
+make test-ui
+make lint
+make lint-fix
 ```
 
----
+## Repository Structure
 
-## Project Structure
-
-```
+```text
 METIME/
-├── App/
-│   ├── METIMEApp.swift       # Entry point, SwiftData container
-│   ├── AppState.swift        # Pet model, PetMood enum
-│   └── Resources.swift       # AudioResource, ColorResource enums
-├── UI/
-│   ├── MainPetView.swift     # Homepage (kawaii, isometric)
-│   └── Mockups/              # Xcode Preview mockups
-├── Garden/
-│   ├── GardenScene.swift     # SpriteKit isometric scene
-│   └── BedNode.swift         # Bed decoration node
-├── Creature/
-│   ├── PetNode.swift         # Kawaii pet with face and animations
-│   └── ParticleFactory.swift # Rain and sparkle effects
-├── Data/Persistence/
-│   └── GameStore.swift       # Game logic, derivedMood(), SwiftData
-├── Audio/
-│   └── SoundscapeManager.swift # Mood-reactive ambient audio
-├── Tests/
-│   ├── METIMETests/          # Unit tests (GameStore, SwiftData in-memory)
-│   └── METIMEUITests/        # UI tests (flows, buttons, sheet navigation)
-└── Assets/
-    └── Mockups/              # Professional App Store mockups
+├── App/                 App entry point, app state, models, app resources
+├── Audio/               Soundscape and audio helpers
+├── Creature/            Pet rendering and animation
+├── Data/                Persistence and game-state logic
+├── Garden/              SpriteKit garden and island scenes
+├── House/               House scene and room presentation
+├── Store/               Wallet, inventory, and item purchase logic
+├── UI/                  SwiftUI screens and reusable section views
+├── WebPreview/          HTML/CSS previews and prototype flows
+├── Resources/           App assets and bundled resources
+├── Tests/               Unit and UI tests
+├── docs/
+│   ├── images/          Static assets for docs site
+│   ├── presentations/   Deck content and exported mockups
+│   ├── previews/        Screenshot exports
+│   └── reviews/         Audit and analysis notes
+├── .github/workflows/   CI and Pages workflows
+└── project.yml          XcodeGen project definition
 ```
 
----
+## Documentation
 
-## SwiftUI Mockups
+- Product and repo notes live under [docs](docs)
+- Review and audit material lives under [docs/reviews](docs/reviews)
+- Presentation assets live under [docs/presentations](docs/presentations)
+- Preview exports live under [docs/previews](docs/previews)
 
-Open `UI/Mockups/MockupGalleryView.swift` in Xcode and use Canvas Preview to inspect all screens: `GardenHomeMockupView`, `CareRitualMockupView`, and `JournalInsightsMockupView`.
+## Screenshots
 
----
+![METIME Screens](Assets/Mockups/mockup_screens.png)
+
+![METIME Architecture](Assets/Mockups/mockup_architecture.png)
+
+## GitHub Hygiene
+
+- iOS CI is defined in [.github/workflows/ios-build.yml](.github/workflows/ios-build.yml)
+- GitHub Pages deployment is defined in [.github/workflows/pages.yml](.github/workflows/pages.yml)
+- Issue templates live in [.github/ISSUE_TEMPLATE](.github/ISSUE_TEMPLATE)
+- Pull request guidance lives in [.github/pull_request_template.md](.github/pull_request_template.md)
 
 ## Roadmap
 
-| Milestone | Description | Status |
-| :--- | :--- | :--- |
-| **iCloud Sync** | CloudKit Private Database for cross-device state | Planned |
-| **Apple Watch** | WKExtension with mood display and breathing session | Planned |
-| **Widgets** | WidgetKit lock screen widget showing pet mood | Planned |
-
----
-
-<div align="center">
-
-Made with care · iOS 17+ · Swift 5.9+
-
-</div>
-
-<- Tech Stack, Security, Getting Started, Project Structure, auto-commit test Tue Mar 17 07:18:17 EDT 2026 -->
+- iCloud sync for cross-device state
+- Apple Watch companion
+- Widgets for lock screen / home screen pet status

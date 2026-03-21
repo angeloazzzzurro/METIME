@@ -1,0 +1,38 @@
+name: Feature request
+description: Propose a product or developer-facing improvement
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are we trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the desired behavior or implementation direction.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - App
+        - Garden
+        - House
+        - Store
+        - Meditation
+        - WebPreview
+        - CI / GitHub
+        - Docs
+  - type: textarea
+    id: success
+    attributes:
+      label: Success criteria
+      description: How will we know this is done?

@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Build iOS App (${{ matrix.destination_name }})
+    name: Build iOS App
     runs-on: macos-15
     timeout-minutes: 20
     strategy:

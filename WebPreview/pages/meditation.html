@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Meditazione</title>
+  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <style>
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel { padding: 18px; }
+
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .mode-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: rgba(255,255,255,0.5);
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.3s;
+    }
+    .mode-tab.active {
+      background: linear-gradient(145deg, #f0dfc4, #e8d5b0);
+      border-color: #8b6340;
+      color: #5e4636;
+    }
+
+    .breath-circle {
+      width: min(260px, 70vw);
+      aspect-ratio: 1 / 1;
+      margin: 14px auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #f5ead8 10%, #8b6340 70%);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 26px rgba(139, 99, 64, 0.24);
+      animation: pulse-med 6s ease-in-out infinite;
+      text-align: center;
+      color: white;
+    }
+    .breath-circle strong { display: block; font-size: 44px; line-height: 1; }
+
+    .stars-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    .history-list { list-style: none; padding: 0; margin: 8px 0 0; }
+    .history-list li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 13px;
+    }
+
+    .reward-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .reward-row .val { font-weight: 700; color: #8b6340; }
+
+    .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .start { background: linear-gradient(145deg, #f0dfc4, #e8d5b0); }
+    .stop { background: linear-gradient(145deg, #f5ead8, #f0dfc4); }
+
+    @keyframes pulse-med {
+      0%,100% { transform: scale(1); }
+      40% { transform: scale(1.1); }
+      60% { transform: scale(0.95); }
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="stars-bg" id="starsContainer"></div>
+  <main class="wrap">
+    <nav class="top-nav">
+      <a class="nav-link" href="home-pet.html">Pet</a>
+      <a class="nav-link" href="care-ritual.html">Rituale</a>
+      <a class="nav-link active" href="meditation.html">Meditazione</a>
+      <a class="nav-link" href="journal.html">Diario</a>
+      <a class="nav-link" href="../index.html">Casa</a>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">Tempio Meditazione</div>
+      <h1>🧘 Meditazione</h1>
+      <p class="subtitle">Respiro guidato, meditazione libera e sessioni tracciate.</p>
+    </section>
+
+    <div class="mode-tabs">
+      <div class="mode-tab active" data-mode="breathing">🌬️ Respiro</div>
+      <div class="mode-tab" data-mode="guided">✨ Guidata</div>
+      <div class="mode-tab" data-mode="free">⏱️ Libera</div>
+    </div>
+
+    <section class="layout">
+      <article class="card panel" style="background: rgba(255,255,255,0.9);">
+        <h2 style="margin:0;font-size:26px;" id="modeTitle">Respiro Guidato</h2>
+        <p style="margin:6px 0 0;color:var(--muted);" id="modeDesc">Inspira ed espira con il cerchio</p>
+        <div class="breath-circle" id="breathCircle">
+          <div>
+            <span id="phaseText">Inspira</span>
+            <strong id="timer">00:00</strong>
+            <span style="font-size:12px;opacity:0.8;">espira lentamente</span>
+          </div>
+        </div>
+        <div class="cta">
+          <button class="btn start" id="startBtn">▶ Inizia</button>
+          <button class="btn stop" id="stopBtn">⏹ Termina</button>
+        </div>
+      </article>
+
+      <aside class="side">
+        <section class="card mini">
+          <h3>Tecniche di Respiro</h3>
+          <div style="display:grid;gap:8px;margin-top:8px;">
+            <div style="background:#f5ead8;padding:10px;border-radius:10px;">
+              <b style="color:#8b6340;">4-2-6-2</b><br/>
+              <small>Inspira 4s · Tieni 2s · Espira 6s · Pausa 2s</small>
+            </div>
+            <div style="background:#f0e8d0;padding:10px;border-radius:10px;">
+              <b style="color:#6b4a30;">Box Breathing</b><br/>
+              <small>4s per ogni fase: inspira, tieni, espira, tieni</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="card mini">
+          <h3>Ricompense Sessione</h3>
+          <div class="reward-row"><span>🫧 Calma</span><span class="val">+35%</span></div>
+          <div class="reward-row"><span>☀️ Felicità</span><span class="val">+15%</span></div>
+          <div class="reward-row"><span>⚡️ Energia</span><span class="val">+10%</span></div>
+        </section>
+
+        <section class="card mini">
+          <h3>Storico Sessioni</h3>
+          <ul class="history-list" id="historyList">
+            <li><span>🌬️ Respiro · 4:00</span><span style="color:var(--muted)">Oggi</span></li>
+            <li><span>✨ Guidata · 4:00</span><span style="color:var(--muted)">Ieri</span></li>
+            <li><span>⏱️ Libera · 7:22</span><span style="color:var(--muted)">2 giorni fa</span></li>
+          </ul>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // Stars
+    const sc = document.getElementById("starsContainer");
+    for (let i = 0; i < 40; i++) {
+      const s = document.createElement("div");
+      s.className = "star";
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 60 + "%";
+      s.style.animationDelay = Math.random() * 3 + "s";
+      s.style.width = s.style.height = (Math.random() * 2 + 1) + "px";
+      sc.appendChild(s);
+    }
+
+    // Timer
+    let seconds = 0, timerInterval = null, running = false;
+    const timerNode = document.getElementById("timer");
+    const phaseText = document.getElementById("phaseText");
+    const phases = ["Inspira", "Tieni", "Espira", "Pausa"];
+    const durations = [4, 2, 6, 2];
+    let phaseIdx = 0, phaseCountdown = durations[0];
+
+    function fmt(s) {
+      return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+    }
+
+    function tick() {
+      seconds++;
+      timerNode.textContent = fmt(seconds);
+      phaseCountdown--;
+      if (phaseCountdown <= 0) {
+        phaseIdx = (phaseIdx + 1) % 4;
+        phaseText.textContent = phases[phaseIdx];
+        phaseCountdown = durations[phaseIdx];
+      }
+    }
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      if (running) return;
+      running = true;
+      timerInterval = setInterval(tick, 1000);
+    });
+
+    document.getElementById("stopBtn").addEventListener("click", () => {
+      clearInterval(timerInterval);
+      running = false;
+      if (seconds > 5) {
+        alert("Sessione completata: " + fmt(seconds) + "\nCalma +35%, Felicità +15%");
+      }
+      seconds = 0; phaseIdx = 0; phaseCountdown = durations[0];
+      timerNode.textContent = "00:00";
+      phaseText.textContent = phases[0];
+    });
+
+    // Mode tabs
+    document.querySelectorAll(".mode-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".mode-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const titles = { breathing: "Respiro Guidato", guided: "Meditazione Guidata", free: "Meditazione Libera" };
+        const descs = { breathing: "Inspira ed espira con il cerchio", guided: "4 minuti di serenità guidata", free: "Medita al tuo ritmo" };
+        document.getElementById("modeTitle").textContent = titles[tab.dataset.mode];
+        document.getElementById("modeDesc").textContent = descs[tab.dataset.mode];
+      });
+    });
+  </script>
+</body>
+</html>

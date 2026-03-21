@@ -1,238 +1,9 @@
 import SwiftUI
-import SpriteKit
 
 // ──────────────────────────────────────────────────────────────────────────────
-// MARK: - GardenSectionView
-// Il giardino esistente con SpriteKit (GardenScene) + azioni rapide.
-// ──────────────────────────────────────────────────────────────────────────────
-
-struct GardenSectionView: View {
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var store: GameStore
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var scene: GardenScene = {
-        let s = GardenScene(size: UIScreen.main.bounds.size)
-        s.scaleMode = .resizeFill
-        return s
-    }()
-
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            SpriteView(scene: scene, options: [.allowsTransparency])
-                .ignoresSafeArea()
-                .onAppear { scene.mood = appState.mood }
-                .onChange(of: appState.mood) { _, m in scene.mood = m }
-
-            VStack(spacing: 0) {
-                sectionHeader(title: "🌿 Giardino", tint: .green)
-
-                HStack(spacing: 12) {
-                    SectionActionButton(icon: "leaf.fill",          label: "Annaffia", tint: .green)  { store.feed() }
-                    SectionActionButton(icon: "hare.fill",          label: "Gioca",    tint: .blue)   { store.play() }
-                }
-                .padding(.bottom, 34)
-                .padding(.horizontal, 20)
-            }
-        }
-    }
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// MARK: - HouseSectionView
-// Interno casa: cura del pet, rituale quotidiano, sezione Diario.
-// ──────────────────────────────────────────────────────────────────────────────
-
-struct HouseSectionView: View {
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var store: GameStore
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var breathPhase = ""
-    @State private var breathTimer: Timer?
-    @State private var breathing = false
-
-    var body: some View {
-        ZStack {
-            // Sfondo caldo
-            LinearGradient(
-                colors: [Color(red: 0.99, green: 0.93, blue: 0.86),
-                         Color(red: 0.93, green: 0.80, blue: 0.68)],
-                startPoint: .top, endPoint: .bottom
-            ).ignoresSafeArea()
-
-            VStack(spacing: 20) {
-                sectionHeader(title: "🏡 Casa", tint: .orange)
-
-                // Letto con ZZZ animate
-                BedPreview()
-
-                // Azioni cura
-                HStack(spacing: 12) {
-                    SectionActionButton(icon: "fork.knife",    label: "Nutri",   tint: .orange)  { store.feed() }
-                    SectionActionButton(icon: "sparkles",      label: "Medita",  tint: .indigo)  {
-                        appState.mood = .happy; store.meditate()
-                    }
-                    SectionActionButton(icon: "moon.zzz.fill", label: "Riposo",  tint: .purple)  {
-                        appState.mood = .sleepy
-                    }
-                }
-                .padding(.horizontal, 20)
-
-                // Respiro guidato mini
-                BreathWidget(phase: $breathPhase, active: $breathing) {
-                    breathPhase = "Inspira"
-                    breathing = true
-                    var cycleStep = 0
-                    let phases = ["Inspira", "Tieni", "Espira", "Pausa"]
-                    let durations: [Double] = [4, 4, 4, 2]
-                    breathTimer?.invalidate()
-                    breathTimer = Timer.scheduledTimer(withTimeInterval: durations[0], repeats: true) { _ in
-                        cycleStep = (cycleStep + 1) % 4
-                        breathPhase = phases[cycleStep]
-                    }
-                } onStop: {
-                    breathTimer?.invalidate()
-                    breathTimer = nil
-                    breathing = false
-                }
-
-                Spacer()
-            }
-        }
-    }
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// MARK: - SeaSectionView
-// Meditazione sulla riva del mare.
-// ──────────────────────────────────────────────────────────────────────────────
-
-struct SeaSectionView: View {
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var store: GameStore
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var waveOffset: CGFloat = 0
-    @State private var seconds: Int = 0
-    @State private var running = false
-    @State private var timer: Timer?
-
-    var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.64, green: 0.84, blue: 0.98),
-                         Color(red: 0.44, green: 0.66, blue: 0.94)],
-                startPoint: .top, endPoint: .bottom
-            ).ignoresSafeArea()
-
-            VStack(spacing: 24) {
-                sectionHeader(title: "🌊 Riva del Mare", tint: Color(red: 0.25, green: 0.56, blue: 0.84))
-
-                Spacer()
-
-                // Onde animate
-                WaveShape(offset: waveOffset)
-                    .fill(Color.white.opacity(0.35))
-                    .frame(height: 80)
-                    .onAppear {
-                        withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
-                            waveOffset = 1
-                        }
-                    }
-
-                // Timer meditazione
-                Text(timeString(seconds))
-                    .font(.system(size: 56, weight: .ultraLight, design: .rounded))
-                    .foregroundStyle(.white)
-                    .contentTransition(.numericText())
-
-                HStack(spacing: 16) {
-                    SectionActionButton(
-                        icon: running ? "pause.fill" : "play.fill",
-                        label: running ? "Pausa" : "Inizia",
-                        tint: .white
-                    ) {
-                        running.toggle()
-                        if running {
-                            appState.mood = .calm
-                            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                                seconds += 1
-                            }
-                        } else {
-                            timer?.invalidate()
-                        }
-                    }
-
-                    SectionActionButton(icon: "arrow.counterclockwise", label: "Reset", tint: .white.opacity(0.8)) {
-                        timer?.invalidate(); running = false; seconds = 0
-                    }
-                }
-
-                Text("Respira con il ritmo delle onde 〜")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.85))
-
-                Spacer()
-            }
-            .padding(.horizontal, 20)
-        }
-    }
-
-    private func timeString(_ s: Int) -> String {
-        String(format: "%02d:%02d", s / 60, s % 60)
-    }
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// MARK: - ShopSectionView
-// Negozio: acquista cibo e oggetti per il pet.
-// ──────────────────────────────────────────────────────────────────────────────
-
-struct ShopSectionView: View {
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var store: GameStore
-    @Environment(\.dismiss) private var dismiss
-
-    private let items: [(String, String, String)] = [
-        ("🍎", "Mela Rossa",    "+Fame"),
-        ("🍩", "Ciambella",     "+Felicità"),
-        ("🌿", "Infuso Verde",  "+Calma"),
-        ("⚡️", "Energy Drink", "+Energia"),
-    ]
-
-    var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(red: 0.99, green: 0.97, blue: 0.88),
-                         Color(red: 0.96, green: 0.88, blue: 0.68)],
-                startPoint: .top, endPoint: .bottom
-            ).ignoresSafeArea()
-
-            VStack(spacing: 20) {
-                sectionHeader(title: "🛒 Negozio", tint: Color(red: 0.80, green: 0.45, blue: 0.20))
-
-                Text("Cibo disponibile: \(store.pet.food)")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
-                    ForEach(items, id: \.1) { emoji, name, effect in
-                        ShopItemCard(emoji: emoji, name: name, effect: effect) {
-                            store.feed()
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-
-                Spacer()
-            }
-        }
-    }
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// MARK: - Componenti condivisi
+// MARK: - Componenti condivisi tra le sezioni
+// Ogni sezione (Garden, House, Sea, Shop, Meditation, CareRitual)
+// è ora nel proprio file. Qui restano i componenti riusabili.
 // ──────────────────────────────────────────────────────────────────────────────
 
 // Intestazione sezione con tasto "←" per tornare alla mappa
@@ -291,8 +62,9 @@ struct SectionActionButton: View {
     }
 }
 
-// ── Anteprima letto (SwiftUI, non SpriteKit) ───────────────────────────────
-private struct BedPreview: View {
+// MARK: - BedPreview
+
+struct BedPreview: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -314,8 +86,9 @@ private struct BedPreview: View {
     }
 }
 
-// ── Widget respiro ──────────────────────────────────────────────────────────
-private struct BreathWidget: View {
+// MARK: - BreathWidget
+
+struct BreathWidget: View {
     @Binding var phase: String
     @Binding var active: Bool
     let onStart: () -> Void
@@ -346,8 +119,9 @@ private struct BreathWidget: View {
     }
 }
 
-// ── Forma onda ──────────────────────────────────────────────────────────────
-private struct WaveShape: Shape {
+// MARK: - WaveShape
+
+struct WaveShape: Shape {
     var offset: CGFloat
     var animatableData: CGFloat {
         get { offset }
@@ -366,30 +140,5 @@ private struct WaveShape: Shape {
         path.addLine(to: CGPoint(x: 0, y: rect.maxY))
         path.closeSubpath()
         return path
-    }
-}
-
-// ── Scheda prodotto negozio ─────────────────────────────────────────────────
-private struct ShopItemCard: View {
-    let emoji: String
-    let name: String
-    let effect: String
-    let onBuy: () -> Void
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(emoji).font(.system(size: 36))
-            Text(name).font(.subheadline.weight(.semibold))
-            Text(effect).font(.caption).foregroundStyle(.secondary)
-            Button("Acquista") { onBuy() }
-                .font(.caption.weight(.bold))
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background(.orange, in: Capsule())
-                .foregroundStyle(.white)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(14)
-        .background(.white.opacity(0.8), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }

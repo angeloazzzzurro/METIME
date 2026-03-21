@@ -3,42 +3,157 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>METIME — Hub Principale</title>
+  <title>METIME — La Mia Casa</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../assets/game.css"/>
   <style>
-    .iso-room{min-height:300px;cursor:pointer}
-    .furniture{position:absolute;z-index:2;cursor:pointer;transition:transform .15s,box-shadow .15s}
-    .furniture:hover{transform:scale(1.08);filter:brightness(1.1)}
-    .furniture.bounce{animation:fBounce .35s}
-    @keyframes fBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-    .table{bottom:25%;left:20%;width:60px;height:35px;border-radius:6px;background:linear-gradient(180deg,#c8a878,#a88858);border:2px solid var(--border);box-shadow:0 4px 0 rgba(61,43,31,.2)}
-    .counter{bottom:20%;right:12%;width:70px;height:40px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#d8c8a8,#b8a888);border:2px solid var(--border)}
-    .stove{top:58%;left:55%;width:50px;height:50px;border-radius:8px;background:linear-gradient(180deg,#888,#666);border:2px solid #555;display:grid;place-items:center;font-size:22px}
-    .npc{position:absolute;z-index:3;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .15s}
-    .npc:hover{transform:scale(1.1)}
-    .npc-body{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);display:grid;place-items:center;font-size:18px;box-shadow:0 3px 6px rgba(61,43,31,.15);transition:box-shadow .15s}
-    .npc:hover .npc-body{box-shadow:0 4px 12px rgba(61,43,31,.3)}
-    .customer1{bottom:30%;left:18%}.customer1 .npc-body{background:linear-gradient(135deg,#f8d0d0,#e8a8a8)}
-    .customer2{bottom:28%;left:35%}.customer2 .npc-body{background:linear-gradient(135deg,#d0e8f0,#a8c8d8)}
-    .chef-npc{bottom:25%;right:18%}.chef-npc .npc-body{background:linear-gradient(135deg,#fff8e8,#f0e0c0)}
-    .npc-name{margin-top:2px;font-size:8px;font-weight:800;color:var(--ink);background:rgba(253,243,227,.85);padding:1px 5px;border-radius:4px}
-    .npc-bubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--panel);border:2px solid var(--border-lt);border-radius:10px;padding:6px 10px;font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;box-shadow:var(--shadow-sm);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10}
-    .npc-bubble.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
-    .npc-bubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--border-lt)}
-    .order-icon{position:absolute;top:-8px;right:-8px;font-size:16px;animation:pulse 1.5s infinite}
-    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
-    .toast.show{transform:translateX(-50%) translateY(0)}
-    .order-panel{margin-top:10px;border-radius:var(--radius);background:linear-gradient(135deg,#f0e8d4,#e8dcc4);border:2px solid var(--border-lt);padding:10px;display:none}
-    .order-panel.open{display:block}
-    .order-item{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;background:var(--panel);border:1px solid var(--border-lt);margin-bottom:6px}
-    .order-item .oi-emoji{font-size:24px}
-    .order-item .oi-info{flex:1;font-size:11px;font-weight:700;color:var(--ink)}
-    .order-item .oi-sub{font-size:9px;color:var(--ink-lt)}
-    .order-item .btn{font-size:10px;padding:4px 10px}
-    .stove.cooking{animation:cookGlow 1s infinite alternate}
-    @keyframes cookGlow{from{box-shadow:0 0 8px rgba(255,160,60,.3)}to{box-shadow:0 0 18px rgba(255,160,60,.7)}}
+    /* ── House Room ───────────────────── */
+    .house-wrap{perspective:600px;margin:0 auto;max-width:340px}
+    .house-room{
+      position:relative;width:100%;aspect-ratio:5/4.5;
+      border-radius:var(--radius-lg);border:3px solid var(--border);
+      overflow:hidden;box-shadow:var(--shadow),var(--inner-glow);
+    }
+    .house-wall{
+      position:absolute;top:0;left:0;right:0;height:34%;
+      background:linear-gradient(180deg,#e8ddd0,#f5efe6 80%,#d8cbb5);
+      border-bottom:4px solid var(--border);z-index:0;
+      box-shadow:inset 0 -16px 30px rgba(61,43,31,.05);
+    }
+    .wall-trim{
+      position:absolute;bottom:0;left:0;right:0;height:35%;
+      background:repeating-linear-gradient(90deg,transparent,transparent 32px,rgba(139,99,64,.07) 32px,rgba(139,99,64,.07) 33px);
+    }
+    .house-floor{
+      position:absolute;bottom:0;left:0;right:0;height:66%;
+      background:repeating-conic-gradient(#e4d4b8 0% 25%,#dccca8 0% 50%) 0 0/42px 42px;
+      z-index:0;
+    }
+    /* Wall slots */
+    .wall-slots{
+      position:absolute;top:3%;left:0;right:0;height:28%;
+      display:flex;justify-content:center;gap:14px;align-items:center;
+      z-index:2;pointer-events:none;
+    }
+    .wall-slot{
+      width:44px;height:44px;border-radius:var(--radius-sm);
+      display:grid;place-items:center;font-size:28px;
+      filter:drop-shadow(0 2px 4px rgba(61,43,31,.25));
+      transition:transform .2s var(--spring);
+      cursor:pointer;pointer-events:auto;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .wall-slot:hover{transform:scale(1.15) rotate(-3deg)}
+    .wall-slot.empty{
+      border:2px dashed rgba(139,99,64,.2);font-size:16px;color:var(--border-lt);
+      background:rgba(255,255,255,.3);display:none;
+    }
+    .house-room.edit-mode .wall-slot.empty{display:grid}
+    .house-room.edit-mode .wall-slot:not(.empty){animation:wiggle .6s infinite}
+    /* Floor grid */
+    .floor-grid{
+      position:absolute;bottom:0;left:0;right:0;height:66%;
+      display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,1fr);
+      z-index:1;pointer-events:none;
+    }
+    .house-room.edit-mode .floor-grid{pointer-events:auto}
+    .floor-cell{
+      border:1px dashed transparent;display:grid;place-items:center;
+      cursor:pointer;transition:background .12s,border-color .12s;
+      position:relative;
+    }
+    .house-room.edit-mode .floor-cell{border-color:rgba(139,99,64,.18)}
+    .house-room.edit-mode .floor-cell:hover{background:rgba(212,136,74,.12)}
+    .house-room.edit-mode .floor-cell.highlight{background:rgba(143,168,130,.2);border-color:var(--sage)}
+    .placed{
+      font-size:28px;cursor:pointer;
+      filter:drop-shadow(0 2px 3px rgba(61,43,31,.2));
+      transition:transform .2s var(--spring);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .placed:hover{transform:scale(1.15)}
+    .house-room.edit-mode .placed{animation:wiggle .6s infinite}
+    .house-room.edit-mode .placed:hover{animation:none;transform:scale(1.2)}
+    /* Edit toggle */
+    .edit-btn{
+      position:absolute;top:8px;right:8px;z-index:10;
+      width:36px;height:36px;border-radius:50%;
+      border:2.5px solid var(--border-lt);background:var(--panel);
+      display:grid;place-items:center;font-size:16px;cursor:pointer;
+      box-shadow:var(--shadow-sm);transition:transform .15s var(--spring),background .15s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .edit-btn:hover{transform:scale(1.1)}
+    .edit-btn.on{background:var(--orange);border-color:var(--orange)}
+    /* ── Inventory ────────────────────── */
+    .inv-panel{margin-top:8px;display:none}
+    .inv-panel.open{display:block}
+    .inv-scroll{
+      display:flex;gap:6px;overflow-x:auto;padding:8px 2px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .inv-tile{
+      flex-shrink:0;width:52px;height:52px;border-radius:var(--radius);
+      border:2.5px solid var(--border-lt);background:var(--panel);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      font-size:22px;cursor:pointer;position:relative;
+      transition:transform .15s var(--spring),border-color .15s,box-shadow .15s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .inv-tile:hover{transform:translateY(-3px) scale(1.08)}
+    .inv-tile:active{transform:scale(.9);transition-duration:.05s}
+    .inv-tile.sel{border-color:var(--orange);box-shadow:0 0 12px rgba(212,136,74,.4),var(--inner-glow)}
+    .inv-tile .iname{font-size:7px;font-weight:800;color:var(--ink-lt);margin-top:1px}
+    .inv-tile .iqty{
+      position:absolute;top:-4px;right:-4px;
+      background:var(--orange);color:#fff;font-size:9px;font-weight:900;
+      width:16px;height:16px;border-radius:50%;display:grid;place-items:center;
+      box-shadow:0 1px 3px rgba(0,0,0,.2);
+    }
+    .inv-plus{
+      flex-shrink:0;width:52px;height:52px;border-radius:var(--radius);
+      border:2px dashed var(--border-lt);display:grid;place-items:center;
+      font-size:20px;color:var(--border-lt);cursor:pointer;
+      transition:transform .15s var(--spring),border-color .15s;
+    }
+    .inv-plus:hover{transform:scale(1.05);border-color:var(--orange);color:var(--orange)}
+    /* ── Comfort meter ────────────────── */
+    .comfort{
+      display:flex;align-items:center;gap:8px;padding:8px 12px;
+      border-radius:var(--radius);background:linear-gradient(135deg,#f0e8d4,#e8dcc4);
+      border:2px solid var(--border-lt);margin-top:8px;
+    }
+    .comfort .c-label{font-size:12px;font-weight:800;color:var(--ink)}
+    .comfort .c-stars{font-size:16px;letter-spacing:2px}
+    .comfort .c-val{margin-left:auto;font-size:13px;font-weight:900;color:var(--orange)}
+    /* ── Visitor ──────────────────────── */
+    .visitor{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;
+      border-radius:var(--radius);
+      background:linear-gradient(135deg,rgba(143,168,130,.15),rgba(143,168,130,.08));
+      border:2px solid rgba(143,168,130,.3);margin-top:8px;
+      transition:transform .2s var(--spring);cursor:pointer;
+      animation:slideUp .4s var(--spring) both;
+    }
+    .visitor:hover{transform:translateY(-1px)}
+    .visitor .v-emo{font-size:28px}
+    .visitor .v-txt{flex:1}
+    .visitor .v-txt strong{display:block;font-size:12px;color:var(--ink)}
+    .visitor .v-txt span{font-size:11px;color:var(--ink-lt);font-weight:600;font-style:italic}
+    /* ── Shop Link ────────────────────── */
+    .shop-link{
+      display:flex;align-items:center;gap:8px;padding:10px 14px;
+      border-radius:var(--radius);
+      background:linear-gradient(135deg,rgba(212,136,74,.1),rgba(212,136,74,.05));
+      border:2px solid rgba(212,136,74,.25);margin-top:8px;
+      color:var(--ink);font-size:12px;font-weight:800;text-decoration:none;
+      transition:transform .15s var(--spring),background .15s;cursor:pointer;
+    }
+    .shop-link:hover{transform:translateY(-2px);background:rgba(212,136,74,.15)}
+    .shop-link .sl-arrow{margin-left:auto;font-size:14px}
+    /* ── Toast ─────────────────────────── */
+    .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,rgba(253,243,227,.98),rgba(245,234,216,.98));border:3px solid var(--border);border-radius:var(--radius-lg);padding:18px 30px;text-align:center;box-shadow:0 12px 48px rgba(61,43,31,.35),var(--inner-glow);z-index:200;opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s;backdrop-filter:blur(12px);font-size:13px;font-weight:800;color:var(--ink)}
+    .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
   </style>
 </head>
 <body>
@@ -58,56 +173,53 @@
     <div class="res-bar">
       <span class="res"><span class="icon">❤️</span> <span id="hp">87</span></span>
       <span class="res"><span class="icon">🪙</span> <span id="coins">12.450</span></span>
-      <span class="res"><span class="icon">⚡</span> <span id="energy">63</span></span>
+      <span class="res"><span class="icon">⭐</span> <span id="starCount">0</span></span>
     </div>
 
-    <div class="iso-room" id="room">
-      <div class="wall"></div>
-      <div class="iso-floor"></div>
-
-      <div class="furniture table" data-action="table" title="Clicca per servire"></div>
-      <div class="furniture counter" data-action="counter" title="Clicca per preparare"></div>
-      <div class="furniture stove" data-action="stove" title="Clicca per cucinare" id="stove">🍳</div>
-
-      <div class="npc customer1" data-customer="Mochi" data-order="🥞" data-want="Pancake al Miele">
-        <div class="npc-bubble" id="bubble-mochi"></div>
-        <span class="order-icon">❗</span>
-        <div class="npc-body">🐱</div>
-        <span class="npc-name">Mochi</span>
-      </div>
-      <div class="npc customer2" data-customer="Honey" data-order="🍰" data-want="Torta Morbida">
-        <div class="npc-bubble" id="bubble-honey"></div>
-        <span class="order-icon">❗</span>
-        <div class="npc-body">🐻</div>
-        <span class="npc-name">Honey</span>
-      </div>
-      <div class="npc chef-npc" id="chefNpc">
-        <div class="npc-bubble" id="bubble-chef"></div>
-        <div class="npc-body">🐰</div>
-        <span class="npc-name">Chef Tu</span>
+    <!-- ── The Room ─────────────────── -->
+    <div class="house-wrap">
+      <div class="house-room" id="room">
+        <button class="edit-btn" id="editBtn" title="Modifica stanza">✏️</button>
+        <div class="house-wall"><div class="wall-trim"></div></div>
+        <div class="wall-slots" id="wallSlots"></div>
+        <div class="house-floor"></div>
+        <div class="floor-grid" id="floorGrid"></div>
       </div>
     </div>
 
-    <!-- Pannello ordini -->
-    <div class="order-panel" id="orderPanel">
-      <span class="section-label">📋 Ordini in attesa</span>
-      <div id="orderList"></div>
+    <!-- Inventory (edit mode only) -->
+    <div class="panel inv-panel" id="invPanel">
+      <span class="section-label">🎒 Inventario</span>
+      <div class="inv-scroll" id="invBar"></div>
     </div>
 
-    <!-- Stato ristorante -->
-    <div style="padding:8px 4px">
-      <div class="flex items-center justify-between mb-8">
-        <span class="section-label" style="margin:0">Soddisfazione</span>
-        <span class="text-xs font-bold" id="satLabel" style="color:var(--ink-lt)">78%</span>
-      </div>
-      <div class="progress"><div class="progress-fill" id="satBar" style="width:78%"></div></div>
+    <!-- Comfort score -->
+    <div class="comfort">
+      <span class="c-label">🏠 Comfort</span>
+      <span class="c-stars" id="cStars">☆☆☆☆☆</span>
+      <span class="c-val" id="cVal">0/5</span>
     </div>
+
+    <!-- Visitor (appears when comfort ≥ 1) -->
+    <div class="visitor" id="visitor" style="display:none">
+      <span class="v-emo" id="vEmo">🐱</span>
+      <div class="v-txt">
+        <strong id="vName">Mochi sta visitando!</strong>
+        <span id="vMsg">"Che bella casa!"</span>
+      </div>
+    </div>
+
+    <!-- Shop shortcut -->
+    <a class="shop-link" href="shop.html">
+      🛒 Vai al Negozio per comprare nuovi mobili!
+      <span class="sl-arrow">→</span>
+    </a>
 
   </div>
 
   <nav class="tab-bar">
     <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
-    <a class="tab-link active" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link active" href="hub.html"><span class="tab-icon">🏠</span>Casa</a>
     <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
     <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
     <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
@@ -116,136 +228,206 @@
 
 <script>
 (function(){
-  const state = {
-    coins: 12450, hp: 87, energy: 63, satisfaction: 78, xp: 0,
-    orders: [
-      {id:1,customer:'Mochi',emoji:'🥞',dish:'Pancake al Miele',reward:150,done:false},
-      {id:2,customer:'Honey',emoji:'🍰',dish:'Torta Morbida',reward:200,done:false}
-    ],
-    cooking: false
+  /* ── Furniture catalogue (shared IDs with shop) ───── */
+  const FURN={
+    chair:{e:'🪑',n:'Sedia',w:false},
+    sofa:{e:'🛋️',n:'Divano',w:false},
+    plant:{e:'🪴',n:'Pianta',w:false},
+    painting:{e:'🖼️',n:'Quadro',w:true},
+    candle:{e:'🕯️',n:'Candela',w:false},
+    plushie:{e:'🧸',n:'Peluche',w:false},
+    bed:{e:'🛏️',n:'Letto',w:false},
+    lamp:{e:'🪔',n:'Lampada',w:false},
+    tv:{e:'📺',n:'TV',w:true},
+    bookshelf:{e:'📚',n:'Libreria',w:false},
+    clock:{e:'🕰️',n:'Orologio',w:true},
+    xtable:{e:'🪵',n:'Tavolino',w:false},
+    mirror:{e:'🪞',n:'Specchio',w:true},
+    rug:{e:'🟤',n:'Tappeto',w:false},
+    stove:{e:'🍳',n:'Fornello',w:false},
+    fridge:{e:'🧊',n:'Frigo',w:false}
   };
+  const COLS=5,ROWS=4,MAX_WALL=4;
 
-  const $ = s => document.querySelector(s);
-  const $$ = s => document.querySelectorAll(s);
+  /* ── Persistent state (localStorage) ──────────────── */
+  function load(k,fb){try{return JSON.parse(localStorage.getItem(k))}catch(e){}return fb}
+  let inv   = load('metime_inv',[]);          // array of ids in inventory
+  let floor = load('metime_floor',{});        // {"r-c":"id", ...}
+  let wall  = load('metime_wall',[]);         // [id, id, ...]
+  let coins = load('metime_coins',12450);
 
-  function toast(msg){
-    const t=$('#toast');t.textContent=msg;t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),2200);
+  let editing=false, selId=null;
+
+  const $=s=>document.querySelector(s);
+  function save(){
+    localStorage.setItem('metime_inv',JSON.stringify(inv));
+    localStorage.setItem('metime_floor',JSON.stringify(floor));
+    localStorage.setItem('metime_wall',JSON.stringify(wall));
+    localStorage.setItem('metime_coins',JSON.stringify(coins));
+  }
+  function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+
+  /* ── First visit: starter kit ─────────────────────── */
+  if(!localStorage.getItem('metime_inv')&&!localStorage.getItem('metime_floor')){
+    inv=['chair','plant','candle','rug'];
+    floor={'1-2':'xtable','3-0':'plant'};
+    wall=['painting'];
+    save();
   }
 
-  function updateUI(){
-    $('#coins').textContent=state.coins.toLocaleString('it-IT');
-    $('#hp').textContent=state.hp;
-    $('#energy').textContent=state.energy;
-    $('#satLabel').textContent=state.satisfaction+'%';
-    $('#satBar').style.width=state.satisfaction+'%';
-    renderOrders();
-  }
-
-  function renderOrders(){
-    const list=$('#orderList');
-    const pending=state.orders.filter(o=>!o.done);
-    if(!pending.length){list.innerHTML='<p style="text-align:center;font-size:11px;color:var(--ink-lt);font-weight:700;padding:8px">Nessun ordine in attesa! 🎉</p>';return}
-    list.innerHTML=pending.map(o=>`
-      <div class="order-item">
-        <span class="oi-emoji">${o.emoji}</span>
-        <div class="oi-info">${o.dish}<br><span class="oi-sub">da ${o.customer} — 🪙 ${o.reward}</span></div>
-        <button class="btn btn--primary btn--sm" onclick="cookOrder(${o.id})">Cucina!</button>
-      </div>`).join('');
-  }
-
-  window.cookOrder = function(id){
-    if(state.cooking){toast('⏳ Stai già cucinando!');return}
-    if(state.energy<10){toast('⚡ Energia insufficiente!');return}
-    const order=state.orders.find(o=>o.id===id);
-    if(!order||order.done)return;
-    state.cooking=true;state.energy-=10;
-    const stove=$('#stove');stove.classList.add('cooking');stove.textContent='🔥';
-    toast('🍳 Cucinando '+order.dish+'...');
-    updateUI();
-    setTimeout(()=>{
-      order.done=true;state.cooking=false;
-      state.coins+=order.reward;state.xp+=25;
-      state.satisfaction=Math.min(100,state.satisfaction+8);
-      state.hp=Math.min(100,state.hp+5);
-      stove.classList.remove('cooking');stove.textContent='🍳';
-      toast('✅ '+order.dish+' servito a '+order.customer+'! +🪙'+order.reward);
-
-      // hide order icon on NPC
-      const npcEl=[...$$('.npc[data-customer]')].find(n=>n.dataset.customer===order.customer);
-      if(npcEl){
-        const icon=npcEl.querySelector('.order-icon');if(icon)icon.style.display='none';
-        showBubble(npcEl,'Grazie! 😋💕');
+  /* ── Build floor grid ─────────────────────────────── */
+  function buildFloor(){
+    const g=$('#floorGrid');g.innerHTML='';
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const cell=document.createElement('div');
+        cell.className='floor-cell';
+        const pos=r+'-'+c, id=floor[pos];
+        if(id&&FURN[id]){
+          const s=document.createElement('span');
+          s.className='placed';s.textContent=FURN[id].e;s.title=FURN[id].n;
+          cell.appendChild(s);
+        }
+        cell.addEventListener('click',()=>tapFloor(r,c));
+        g.appendChild(cell);
       }
-
-      // spawn new order after a delay
-      setTimeout(()=>{
-        const newDishes=[
-          {emoji:'🍜',dish:'Ramen Speciale',reward:180},
-          {emoji:'🍣',dish:'Sushi Misto',reward:220},
-          {emoji:'🥧',dish:'Crostata di Frutta',reward:160},
-          {emoji:'🧁',dish:'Cupcake Magico',reward:130}
-        ];
-        const d=newDishes[Math.floor(Math.random()*newDishes.length)];
-        const names=['Mochi','Honey','Pip','Foxy','Lily'];
-        const name=names[Math.floor(Math.random()*names.length)];
-        state.orders.push({id:Date.now(),customer:name,emoji:d.emoji,dish:d.dish,reward:d.reward,done:false});
-        toast('📋 Nuovo ordine da '+name+'!');
-        updateUI();
-      },4000);
-
-      updateUI();
-    },3000);
-  };
-
-  function showBubble(npcEl,text){
-    const bubble=npcEl.querySelector('.npc-bubble');
-    if(!bubble)return;
-    bubble.textContent=text;bubble.classList.add('show');
-    setTimeout(()=>bubble.classList.remove('show'),2500);
+    }
   }
 
-  // NPC click — show speech bubble
-  $$('.npc[data-customer]').forEach(npc=>{
-    npc.addEventListener('click',()=>{
-      const order=state.orders.find(o=>o.customer===npc.dataset.customer&&!o.done);
-      if(order)showBubble(npc,'Vorrei '+order.dish+'! '+order.emoji);
-      else showBubble(npc,'Tutto delizioso! 😊');
-    });
-  });
-
-  // Chef NPC click
-  $('#chefNpc').addEventListener('click',()=>{
-    showBubble($('#chefNpc'),state.cooking?'Sto cucinando... 🔥':'Pronto a cucinare! 👨‍🍳');
-  });
-
-  // Furniture interactions
-  $$('.furniture').forEach(f=>{
-    f.addEventListener('click',()=>{
-      f.classList.add('bounce');setTimeout(()=>f.classList.remove('bounce'),350);
-      const action=f.dataset.action;
-      if(action==='stove'){
-        const pending=state.orders.find(o=>!o.done);
-        if(pending)cookOrder(pending.id);
-        else toast('📋 Nessun ordine da cucinare');
-      }else if(action==='table'){
-        toast('🍽️ Il tavolo è pronto per i clienti!');
-      }else if(action==='counter'){
-        $('#orderPanel').classList.toggle('open');
+  /* ── Build wall slots ─────────────────────────────── */
+  function buildWall(){
+    const w=$('#wallSlots');w.innerHTML='';
+    for(let i=0;i<MAX_WALL;i++){
+      const slot=document.createElement('div');
+      if(i<wall.length&&FURN[wall[i]]){
+        slot.className='wall-slot';
+        slot.textContent=FURN[wall[i]].e;
+        slot.title=FURN[wall[i]].n;
+        slot.addEventListener('click',()=>tapWall(i));
+      }else{
+        slot.className='wall-slot empty';
+        slot.textContent='+';
+        slot.addEventListener('click',()=>tapWallEmpty());
       }
-    });
-  });
+      w.appendChild(slot);
+    }
+  }
 
-  // Gear button
+  /* ── Build inventory ──────────────────────────────── */
+  function buildInv(){
+    const bar=$('#invBar');bar.innerHTML='';
+    const counts={};inv.forEach(id=>{counts[id]=(counts[id]||0)+1});
+    const seen=new Set();
+    inv.forEach(id=>{
+      if(seen.has(id))return;seen.add(id);
+      const f=FURN[id];if(!f)return;
+      const d=document.createElement('div');
+      d.className='inv-tile'+(selId===id?' sel':'');
+      d.innerHTML=f.e+'<span class="iname">'+f.n+'</span>'+(counts[id]>1?'<span class="iqty">'+counts[id]+'</span>':'');
+      d.addEventListener('click',()=>{
+        selId=selId===id?null:id;
+        buildInv();
+        if(selId){
+          const furn=FURN[selId];
+          toast(furn.w?'Tocca uno slot sulla parete':'Tocca una cella sul pavimento');
+        }
+      });
+      bar.appendChild(d);
+    });
+    const plus=document.createElement('div');
+    plus.className='inv-plus';plus.textContent='+';plus.title='Vai al Negozio';
+    plus.addEventListener('click',()=>location.href='shop.html');
+    bar.appendChild(plus);
+  }
+
+  /* ── Interactions ──────────────────────────────────── */
+  function tapFloor(r,c){
+    const pos=r+'-'+c;
+    if(!editing){
+      if(floor[pos])toast(FURN[floor[pos]].n);
+      return;
+    }
+    if(floor[pos]){
+      // pick up
+      const id=floor[pos];delete floor[pos];inv.push(id);
+      save();render();toast('↩️ '+FURN[id].n+' raccolto');
+    }else if(selId&&FURN[selId]&&!FURN[selId].w){
+      // place floor item
+      const idx=inv.indexOf(selId);if(idx<0)return;
+      floor[pos]=selId;inv.splice(idx,1);
+      if(!inv.includes(selId))selId=null;
+      save();render();toast('✅ '+FURN[floor[pos]].n+' posizionato!');
+    }
+  }
+  function tapWall(i){
+    if(!editing){toast(FURN[wall[i]].n);return}
+    const id=wall.splice(i,1)[0];inv.push(id);
+    save();render();toast('↩️ '+FURN[id].n+' rimosso dalla parete');
+  }
+  function tapWallEmpty(){
+    if(!editing||!selId||!FURN[selId]||!FURN[selId].w)return;
+    if(wall.length>=MAX_WALL){toast('🚫 Parete piena! (max '+MAX_WALL+')');return}
+    const idx=inv.indexOf(selId);if(idx<0)return;
+    wall.push(selId);inv.splice(idx,1);
+    if(!inv.includes(selId))selId=null;
+    save();render();toast('✅ Appeso alla parete!');
+  }
+
+  /* ── Comfort score ────────────────────────────────── */
+  function calcComfort(){
+    const n=Object.keys(floor).length+wall.length;
+    const stars=Math.min(5,Math.floor(n/2));
+    $('#cStars').textContent='⭐'.repeat(stars)+'☆'.repeat(5-stars);
+    $('#cVal').textContent=stars+'/5';
+    $('#starCount').textContent=stars;
+    return stars;
+  }
+
+  /* ── Random visitor ───────────────────────────────── */
+  function showVisitor(){
+    const s=calcComfort();
+    if(s<1){$('#visitor').style.display='none';return}
+    const pool=[
+      {e:'🐱',nm:'Mochi',m:'Che bella casa! Adoro la decorazione!'},
+      {e:'🐻',nm:'Honey',m:'Mi piace stare qui, è così accogliente!'},
+      {e:'🐥',nm:'Pip',m:'Wow, questa stanza è fantastica!'},
+      {e:'🦊',nm:'Foxy',m:'Bellissima! Posso venire più spesso?'},
+      {e:'🐸',nm:'Lily',m:'I mobili sono così carini!'},
+      {e:'🦉',nm:'Gufo',m:'Un nido perfetto, complimenti!'}
+    ];
+    const v=pool[Math.floor(Math.random()*Math.min(pool.length,s+2))];
+    $('#visitor').style.display='flex';
+    $('#vEmo').textContent=v.e;
+    $('#vName').textContent=v.nm+' sta visitando!';
+    $('#vMsg').textContent='"'+v.m+'"';
+  }
+
+  /* ── Toggle edit mode ─────────────────────────────── */
+  function toggleEdit(){
+    editing=!editing;selId=null;
+    $('#room').classList.toggle('edit-mode',editing);
+    $('#editBtn').classList.toggle('on',editing);
+    $('#invPanel').classList.toggle('open',editing);
+    render();
+    toast(editing?'✏️ Modalità modifica — sposta i mobili!':'✅ Modifiche salvate!');
+  }
+
+  /* ── Render ────────────────────────────────────────── */
+  function render(){
+    buildFloor();buildWall();
+    if(editing)buildInv();
+    showVisitor();
+    $('#coins').textContent=coins.toLocaleString('it-IT');
+  }
+
+  /* ── Events ────────────────────────────────────────── */
+  $('#editBtn').addEventListener('click',toggleEdit);
   $('#gearBtn').addEventListener('click',()=>toast('⚙ Impostazioni (in arrivo)'));
+  $('#visitor').addEventListener('click',()=>toast('💬 '+$('#vName').textContent));
 
-  // Toggle order panel from section label
-  $('#orderPanel').previousElementSibling || null;
-
-  updateUI();
-  // Auto-open orders
-  setTimeout(()=>$('#orderPanel').classList.add('open'),500);
+  render();
 })();
 </script>
 </body>
+</html>
 </html>

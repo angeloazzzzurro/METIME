@@ -116,6 +116,66 @@ final class Pet {
     }
 }
 
+// MARK: - MeditationSession (SwiftData)
+
+@Model
+final class MeditationSession {
+    var date: Date
+    var durationSeconds: Int
+    var type: String            // "breathing" | "guided" | "free"
+
+    init(date: Date = .now, durationSeconds: Int = 0, type: String = "free") {
+        self.date = date
+        self.durationSeconds = durationSeconds
+        self.type = type
+    }
+}
+
+// MARK: - GratitudeEntry (SwiftData)
+
+@Model
+final class GratitudeEntry {
+    var date: Date
+    var text: String
+
+    init(date: Date = .now, text: String = "") {
+        self.date = date
+        self.text = text
+    }
+}
+
+// MARK: - CareRitualStep
+
+enum CareRitualStep: Int, CaseIterable {
+    case grounding = 0
+    case breathing = 1
+    case gratitude = 2
+
+    var title: String {
+        switch self {
+        case .grounding: "Grounding"
+        case .breathing: "Breathing"
+        case .gratitude: "Gratitude"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .grounding: "leaf.fill"
+        case .breathing: "wind"
+        case .gratitude: "heart.fill"
+        }
+    }
+
+    var instruction: String {
+        switch self {
+        case .grounding: "Siediti comodo e rilassa le spalle. Senti i piedi a terra."
+        case .breathing: "Inspira per 4 secondi, espira per 6 secondi."
+        case .gratitude: "Scrivi una cosa positiva della tua giornata."
+        }
+    }
+}
+
 // MARK: - AppState
 
 final class AppState: ObservableObject {

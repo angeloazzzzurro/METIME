@@ -7,6 +7,8 @@ enum IslandZone: String {
     case house     = "Casa"
     case sea       = "Riva del Mare"
     case shop      = "Negozio"
+    case temple    = "Meditazione"
+    case care      = "Cura"
 }
 
 // MARK: - IslandMapScene
@@ -72,6 +74,12 @@ final class IslandMapScene: SKScene {
 
         // ── Negozio (destra-centro) ────────────────────────────────────────
         addShopZone(W: W, H: H)
+
+        // ── Tempio Meditazione (sinistra-alto) ─────────────────────────────
+        addTempleZone(W: W, H: H)
+
+        // ── Zona Cura (destra-alto) ────────────────────────────────────────
+        addCareZone(W: W, H: H)
 
         // ── Alberi decorativi ──────────────────────────────────────────────
         addTrees(W: W, H: H)
@@ -264,6 +272,101 @@ final class IslandMapScene: SKScene {
                  size: 11)
     }
 
+    // ── Tempio Meditazione (sinistra-alto) ──────────────────────────────
+    private func addTempleZone(W: CGFloat, H: CGFloat) {
+        let center = CGPoint(x: W * 0.18, y: H * 0.74)
+
+        // Base circolare in pietra
+        let base = SKShapeNode(circleOfRadius: W * 0.10)
+        base.fillColor = UIColor(red: 0.82, green: 0.78, blue: 0.88, alpha: 1)
+        base.strokeColor = UIColor(red: 0.62, green: 0.55, blue: 0.72, alpha: 1)
+        base.lineWidth = 2
+        base.position = center
+        addChild(base)
+
+        // Torii gate (arco giapponese stilizzato)
+        let pillarH = H * 0.07
+        let pillarW: CGFloat = 4
+        let gateW = W * 0.10
+        for xOff in [-gateW / 2, gateW / 2] as [CGFloat] {
+            let pillar = SKShapeNode(rectOf: CGSize(width: pillarW, height: pillarH), cornerRadius: 1)
+            pillar.fillColor = UIColor(red: 0.65, green: 0.35, blue: 0.55, alpha: 1)
+            pillar.strokeColor = .clear
+            pillar.position = CGPoint(x: center.x + xOff, y: center.y + pillarH * 0.3)
+            addChild(pillar)
+        }
+        let beam = SKShapeNode(rectOf: CGSize(width: gateW + 8, height: 4), cornerRadius: 2)
+        beam.fillColor = UIColor(red: 0.65, green: 0.35, blue: 0.55, alpha: 1)
+        beam.strokeColor = .clear
+        beam.position = CGPoint(x: center.x, y: center.y + pillarH * 0.8)
+        addChild(beam)
+
+        // Icona OM / lotus
+        let lotus = miniLabel("🧘", at: CGPoint(x: center.x, y: center.y - H * 0.01), size: 22)
+        lotus.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.6, duration: 2.0),
+            .fadeAlpha(to: 1.0, duration: 2.0)
+        ])))
+        addChild(lotus)
+
+        // Hit area
+        let hitArea = SKShapeNode(circleOfRadius: W * 0.12)
+        hitArea.fillColor = .clear
+        hitArea.strokeColor = .clear
+        hitArea.position = center
+        addChild(hitArea)
+        zoneNodes[.temple] = hitArea
+
+        addLabel("🧘 \(IslandZone.temple.rawValue)",
+                 at: CGPoint(x: center.x, y: center.y - H * 0.08),
+                 size: 10)
+    }
+
+    // ── Zona Cura (destra-alto) ─────────────────────────────────────────
+    private func addCareZone(W: CGFloat, H: CGFloat) {
+        let center = CGPoint(x: W * 0.82, y: H * 0.74)
+
+        // Prato fiorito a forma di cuore (approssimato con cerchio)
+        let meadow = SKShapeNode(circleOfRadius: W * 0.10)
+        meadow.fillColor = UIColor(red: 0.95, green: 0.85, blue: 0.90, alpha: 1)
+        meadow.strokeColor = UIColor(red: 0.80, green: 0.60, blue: 0.70, alpha: 1)
+        meadow.lineWidth = 2
+        meadow.position = center
+        addChild(meadow)
+
+        // Cuore pulsante
+        let heart = miniLabel("💖", at: CGPoint(x: center.x, y: center.y + H * 0.01), size: 24)
+        heart.run(.repeatForever(.sequence([
+            .scale(to: 1.2, duration: 0.8),
+            .scale(to: 0.9, duration: 0.8)
+        ])))
+        addChild(heart)
+
+        // Piccoli fiori attorno
+        let flowerRing: [(CGFloat, String)] = [
+            (0, "🌸"), (.pi * 0.5, "🌺"), (.pi, "🌼"), (.pi * 1.5, "🌷")
+        ]
+        let r = W * 0.08
+        for (angle, emoji) in flowerRing {
+            let fx = center.x + r * cos(angle)
+            let fy = center.y + r * sin(angle)
+            let f = miniLabel(emoji, at: CGPoint(x: fx, y: fy), size: 12)
+            addChild(f)
+        }
+
+        // Hit area
+        let hitArea = SKShapeNode(circleOfRadius: W * 0.12)
+        hitArea.fillColor = .clear
+        hitArea.strokeColor = .clear
+        hitArea.position = center
+        addChild(hitArea)
+        zoneNodes[.care] = hitArea
+
+        addLabel("💗 \(IslandZone.care.rawValue)",
+                 at: CGPoint(x: center.x, y: center.y - H * 0.08),
+                 size: 10)
+    }
+
     // MARK: – Sentieri
 
     private func addPaths(W: CGFloat, H: CGFloat) {
@@ -274,6 +377,10 @@ final class IslandMapScene: SKScene {
             (CGPoint(x: W * 0.66, y: H * 0.57), CGPoint(x: W * 0.66, y: H * 0.50)),
             // Dalla riva verso casa
             (CGPoint(x: W * 0.50, y: H * 0.27), CGPoint(x: W * 0.50, y: H * 0.55)),
+            // Dalla casa verso tempio meditazione
+            (CGPoint(x: W * 0.36, y: H * 0.63), CGPoint(x: W * 0.22, y: H * 0.74)),
+            // Dalla casa verso zona cura
+            (CGPoint(x: W * 0.66, y: H * 0.63), CGPoint(x: W * 0.78, y: H * 0.74)),
         ]
         for (a, b) in configs {
             let path = CGMutablePath()

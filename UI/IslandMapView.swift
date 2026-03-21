@@ -96,6 +96,14 @@ struct IslandMapView: View {
             ShopSectionView()
                 .environmentObject(appState)
                 .environmentObject(store)
+        case .temple:
+            MeditationSectionView()
+                .environmentObject(appState)
+                .environmentObject(store)
+        case .care:
+            CareRitualSectionView()
+                .environmentObject(appState)
+                .environmentObject(store)
         }
     }
 }

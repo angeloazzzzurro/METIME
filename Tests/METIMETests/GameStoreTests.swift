@@ -11,7 +11,7 @@ final class GameStoreTests: XCTestCase {
     private var store: GameStore!
 
     override func setUpWithError() throws {
-        let schema = Schema([Pet.self, PetNeeds.self])
+        let schema = Schema([Pet.self, PetNeeds.self, MeditationSession.self, GratitudeEntry.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         container = try ModelContainer(for: schema, configurations: [config])
         store = GameStore(modelContext: container.mainContext)

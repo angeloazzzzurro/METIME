@@ -12,7 +12,14 @@ struct METIMEApp: App {
     private static let isUITesting = CommandLine.arguments.contains("--uitesting")
 
     private let container: ModelContainer = {
-        let schema = Schema([Pet.self, PetNeeds.self, OwnedItem.self, Wallet.self])
+        let schema = Schema([
+            Pet.self,
+            PetNeeds.self,
+            OwnedItem.self,
+            Wallet.self,
+            MeditationSession.self,
+            GratitudeEntry.self,
+        ])
         let logger = Logger(subsystem: "com.metime.app", category: "Container")
         let inMemory = METIMEApp.isUITesting
 
@@ -25,11 +32,13 @@ struct METIMEApp: App {
         )
 
         do {
-            let c = try ModelContainer(for: schema, configurations: [config])
-            if !inMemory { applyDataProtection(to: c, logger: logger) }
-            return c
+            let container = try ModelContainer(for: schema, configurations: [config])
+            if !inMemory {
+                applyDataProtection(to: container, logger: logger)
+            }
+            return container
         } catch {
-            logger.error("Primary ModelContainer failed: \(error.localizedDescription) — falling back to in-memory")
+            logger.error("Primary ModelContainer failed: \(error.localizedDescription) - falling back to in-memory")
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             do {
                 return try ModelContainer(for: schema, configurations: [fallback])
@@ -55,9 +64,12 @@ struct METIMEApp: App {
         guard let storeURL = container.configurations.first?.url else { return }
         let directory = storeURL.deletingLastPathComponent()
         let fm = FileManager.default
-        guard let enumerator = fm.enumerator(at: directory,
-                                              includingPropertiesForKeys: [.fileProtectionKey],
-                                              options: [.skipsHiddenFiles]) else { return }
+        guard let enumerator = fm.enumerator(
+            at: directory,
+            includingPropertiesForKeys: [.fileProtectionKey],
+            options: [.skipsHiddenFiles]
+        ) else { return }
+
         for case let fileURL as URL in enumerator {
             do {
                 try fm.setAttributes(
@@ -68,6 +80,7 @@ struct METIMEApp: App {
                 logger.warning("Could not set Data Protection on \(fileURL.lastPathComponent): \(error.localizedDescription)")
             }
         }
+
         logger.info("Data Protection applied to SwiftData store at \(directory.path)")
     }
 }
@@ -77,8 +90,8 @@ struct METIMEApp: App {
 struct ContentRoot: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.modelContext) private var modelContext
-
     @EnvironmentObject private var navigationState: NavigationState
+
     var body: some View {
         ContentRootInner(modelContext: modelContext)
             .environmentObject(appState)
@@ -93,13 +106,14 @@ private struct ContentRootInner: View {
     @StateObject private var houseStore: HouseStore
 
     init(modelContext: ModelContext) {
-        let gs = GameStore(modelContext: modelContext)
-        let hs = HouseStore(modelContext: modelContext)
-        _gameStore  = StateObject(wrappedValue: gs)
-        _houseStore = StateObject(wrappedValue: hs)
+        let gameStore = GameStore(modelContext: modelContext)
+        let houseStore = HouseStore(modelContext: modelContext)
+        _gameStore = StateObject(wrappedValue: gameStore)
+        _houseStore = StateObject(wrappedValue: houseStore)
     }
 
     @EnvironmentObject private var navigationState: NavigationState
+
     var body: some View {
         AppTabView()
             .environmentObject(gameStore)
@@ -108,7 +122,7 @@ private struct ContentRootInner: View {
     }
 }
 
-// MARK: - AppTabView (navigazione principale)
+// MARK: - AppTabView
 
 struct AppTabView: View {
     @EnvironmentObject var gameStore: GameStore

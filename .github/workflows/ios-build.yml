@@ -3,9 +3,21 @@ name: iOS Build
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - "docs/**"
+      - "WebPreview/**"
+      - "*.md"
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - "docs/**"
+      - "WebPreview/**"
+      - "*.md"
   workflow_dispatch:
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-ios:
@@ -25,14 +37,26 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
       - name: Generate project
         run: xcodegen generate
+
+      - name: Lint
+        run: swiftlint
+
+      - name: List available simulators
+        run: xcrun simctl list devices
+
+      - name: Show available build destinations
+        run: xcodebuild -showdestinations -project METIME.xcodeproj -scheme METIME
 
       - name: Build for iOS Simulator
         run: |
           xcodebuild \
             -project METIME.xcodeproj \
             -scheme METIME \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=16.4' \
             CODE_SIGNING_ALLOWED=NO \
             build

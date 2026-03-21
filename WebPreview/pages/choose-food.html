@@ -15,22 +15,27 @@
     @media(min-width:400px){.cook-illust{display:flex;align-items:center;justify-content:center}.cook-illust .char-illust{width:100%;min-height:180px;font-size:48px}}
     .time-options{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
     .recipe-nav{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}
-    .recipe-btn{padding:6px 12px;border-radius:999px;border:2px solid var(--border-lt);background:var(--panel);font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s}
-    .recipe-btn.active{background:var(--orange);color:#fff;border-color:var(--orange)}
-    .ingredient{transition:transform .15s,opacity .15s;cursor:pointer}
-    .ingredient:hover{transform:scale(1.2)}
+    .recipe-btn{padding:6px 12px;border-radius:999px;border:2.5px solid var(--border-lt);background:var(--panel);font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s var(--spring);-webkit-tap-highlight-color:transparent;box-shadow:var(--shadow-sm)}
+    .recipe-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+    .recipe-btn:active{transform:scale(.92);transition-duration:.05s}
+    .recipe-btn.active{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 4px 12px rgba(212,136,74,.35)}
+    .ingredient{transition:transform .15s var(--spring),opacity .15s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .ingredient:hover{transform:scale(1.25) rotate(-5deg)}
+    .ingredient:active{transform:scale(.85);transition-duration:.05s}
     .ingredient.used{opacity:.35;transform:scale(.85)}
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
-    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,rgba(253,243,227,.98),rgba(245,234,216,.98));border:3px solid var(--border);border-radius:var(--radius-lg);padding:18px 30px;text-align:center;box-shadow:0 12px 48px rgba(61,43,31,.35),var(--inner-glow);z-index:200;opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s;backdrop-filter:blur(12px);font-size:13px;font-weight:800;color:var(--ink)}
+    .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
     .cook-btn{position:relative;overflow:hidden}
     .cook-btn.cooking{pointer-events:none;opacity:.8}
     .cook-btn .cook-progress{position:absolute;left:0;top:0;height:100%;background:rgba(255,255,255,.3);width:0;transition:width linear}
-    .chef-sidebar .avatar-circle{cursor:pointer;transition:transform .15s}
-    .chef-sidebar .avatar-circle:hover{transform:scale(1.1)}
-    .chef-sidebar .avatar-circle.selected{border:3px solid var(--orange);box-shadow:0 0 8px rgba(212,136,74,.4)}
+    .chef-sidebar .avatar-circle{cursor:pointer;transition:transform .15s var(--spring);-webkit-tap-highlight-color:transparent}
+    .chef-sidebar .avatar-circle:hover{transform:scale(1.12)}
+    .chef-sidebar .avatar-circle:active{transform:scale(.88);transition-duration:.05s}
+    .chef-sidebar .avatar-circle.selected{border:3px solid var(--orange);box-shadow:0 0 10px rgba(212,136,74,.4),var(--inner-glow)}
     .star-rating{cursor:pointer;user-select:none}
-    .star-rating span{transition:color .1s}
-    .recipe-card h4{transition:transform .2s}
+    .star-rating span{transition:transform .1s var(--spring),color .1s}
+    .star-rating span:hover{transform:scale(1.3)}
+    .recipe-card h4{transition:transform .2s var(--spring)}
   </style>
 </head>
 <body>
@@ -97,7 +102,7 @@
 
   <nav class="tab-bar">
     <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
-    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Casa</a>
     <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
     <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
     <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
@@ -117,7 +122,7 @@
   let currentRecipe=0,selectedTime=0,selectedChef=0,cooked=0,cooking=false;
 
   const $=s=>document.querySelector(s);
-  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)};
 
   function renderRecipeNav(){
     $('#recipeNav').innerHTML=recipes.map((r,i)=>

@@ -8,21 +8,26 @@
   <link rel="stylesheet" href="../assets/game.css"/>
   <style>
     .farm-tabs{margin-bottom:0}
-    .resource-preview{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--radius);background:linear-gradient(135deg,#f0e8d4,#e8dcc4);border:2px solid var(--border-lt);margin-bottom:12px;transition:background .3s}
-    .resource-icon{font-size:48px;transition:transform .3s}
+    .resource-preview{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--radius);background:linear-gradient(135deg,#f0e8d4,#e8dcc4);border:2.5px solid var(--border-lt);margin-bottom:12px;transition:background .3s,transform .2s var(--spring);box-shadow:var(--shadow-sm),var(--inner-glow)}
+    .resource-preview:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+    .resource-icon{font-size:48px;transition:transform .25s var(--spring)}
+    .resource-preview:hover .resource-icon{transform:scale(1.15) rotate(-8deg)}
     .resource-info h3{margin:0;font-size:18px;font-weight:900;color:var(--ink)}
     .resource-info p{margin:4px 0 0;font-size:13px;color:var(--ink-lt);font-weight:700}
-    .resource-qty{margin-left:auto;font-size:28px;font-weight:900;color:var(--orange);font-variant-numeric:tabular-nums;transition:transform .2s}
-    .resource-qty.bump{animation:bump .3s}
-    @keyframes bump{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+    .resource-qty{margin-left:auto;font-size:28px;font-weight:900;color:var(--orange);font-variant-numeric:tabular-nums;transition:transform .2s var(--spring)}
+    .resource-qty.bump{animation:harvestBump .4s var(--spring)}
+    @keyframes harvestBump{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-5deg)}70%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1)}}
     .chef-scroll{padding:6px 0 10px}
-    .avatar-circle{cursor:pointer;transition:transform .15s,border-color .15s}
-    .avatar-circle:hover{transform:scale(1.1)}
-    .avatar-circle.working{border-color:var(--orange)!important;box-shadow:0 0 6px rgba(212,136,74,.3)}
-    .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12px;font-weight:800;color:var(--ink);box-shadow:var(--shadow-md);z-index:100;transition:transform .3s var(--ease);pointer-events:none}
-    .toast.show{transform:translateX(-50%) translateY(0)}
+    .avatar-circle{cursor:pointer;transition:transform .15s var(--spring),border-color .15s;-webkit-tap-highlight-color:transparent}
+    .avatar-circle:hover{transform:scale(1.12)}
+    .avatar-circle:active{transform:scale(.9);transition-duration:.05s}
+    .avatar-circle.working{border-color:var(--orange)!important;box-shadow:0 0 8px rgba(212,136,74,.35),var(--inner-glow)}
+    .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,rgba(253,243,227,.98),rgba(245,234,216,.98));border:3px solid var(--border);border-radius:var(--radius-lg);padding:18px 30px;text-align:center;box-shadow:0 12px 48px rgba(61,43,31,.35),var(--inner-glow);z-index:200;opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s;backdrop-filter:blur(12px);font-size:13px;font-weight:800;color:var(--ink)}
+    .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
     .harvest-btn{margin-top:10px}
-    .char-illust{transition:opacity .3s}
+    .harvest-btn:not(:disabled):hover .resource-icon{animation:wiggle .4s}
+    .char-illust{transition:opacity .3s,transform .3s var(--spring)}
+    .char-illust:hover{transform:scale(1.05)}
   </style>
 </head>
 <body>
@@ -75,7 +80,7 @@
 
   <nav class="tab-bar">
     <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
-    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Hub</a>
+    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Casa</a>
     <a class="tab-link" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
     <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
     <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
@@ -98,7 +103,7 @@
   let current=0,timerEnd=null,timerInterval=null;
 
   const $=s=>document.querySelector(s);
-  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)};
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)};
 
   function startTimer(){
     const f=farms[current];

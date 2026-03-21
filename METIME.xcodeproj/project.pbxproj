@@ -36,6 +36,8 @@
 		EFB90F5486189C0C0E1F5D3D /* METIMEUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97799F0DC0CAF0F77FB58402 /* METIMEUITests.swift */; };
 		FCC883CDB3A718A2D6828717 /* ambient_calm.wav in Resources */ = {isa = PBXBuildFile; fileRef = 53168A29D2F451575F7A2018 /* ambient_calm.wav */; };
 		FF6639787893C0A041094DEA /* METIMEApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519202695227C6EE54A2A64A /* METIMEApp.swift */; };
+		AA1122334455667788990011 /* MeditationSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1122334455667788990011 /* MeditationSectionView.swift */; };
+		AA2233445566778899001122 /* CareRitualSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2233445566778899001122 /* CareRitualSectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +90,8 @@
 		ECCB30A5EDD189D19827303E /* METIMETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = METIMETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F22553E3DB9FE31B7AE9DFDF /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
 		F6A92BFC107BC53F29B01519 /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
+		BB1122334455667788990011 /* MeditationSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationSectionView.swift; sourceTree = "<group>"; };
+		BB2233445566778899001122 /* CareRitualSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareRitualSectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -128,8 +132,10 @@
 		23C036E160A277FB6F880E7C /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				BB2233445566778899001122 /* CareRitualSectionView.swift */,
 				60E42FFAF837DF47092F5762 /* IslandMapView.swift */,
 				93322C02B9A13F6223EAF383 /* MainPetView.swift */,
+				BB1122334455667788990011 /* MeditationSectionView.swift */,
 				DE6E8F4C98752221E08FA079 /* SectionViews.swift */,
 				F0E64F276DDEDB2D0B92CB3A /* Mockups */,
 			);
@@ -420,6 +426,8 @@
 				E57674FF2999B2D0DA863952 /* ParticleFactory.swift in Sources */,
 				E14191D9F9D4BA301D2E728C /* PetNode.swift in Sources */,
 				07F5B781C32DDAB6DAFF668B /* Resources.swift in Sources */,
+				AA2233445566778899001122 /* CareRitualSectionView.swift in Sources */,
+				AA1122334455667788990011 /* MeditationSectionView.swift in Sources */,
 				528F7AC404EC3DF89FD27016 /* SectionViews.swift in Sources */,
 				715C4C7A1DE46BB3EFB85FF8 /* SoundscapeManager.swift in Sources */,
 			);

@@ -9,12 +9,15 @@ import OSLog
 @MainActor
 final class GameStore: ObservableObject {
 
+    static let maxEvolutionStage = 4
+
     // MARK: - State
 
     private(set) var pet: Pet
 
     /// True when the last `feed()` call was blocked because food == 0.
     @Published private(set) var feedBlocked: Bool = false
+    @Published private(set) var evolutionTrigger: Int = 0
 
     // MARK: - Private
 
@@ -89,12 +92,25 @@ final class GameStore: ObservableObject {
     /// Applies stat boosts from a house item or a reward.
     func applyBoost(hunger: Double, happiness: Double, calm: Double, energy: Double) {
         objectWillChange.send()
-        pet.needs.hunger = min(1, pet.needs.hunger + Float(hunger))
-        pet.needs.happiness = min(1, pet.needs.happiness + Float(happiness))
-        pet.needs.calm = min(1, pet.needs.calm + Float(calm))
-        pet.needs.energy = min(1, pet.needs.energy + Float(energy))
+        pet.needs.hunger = clamp(pet.needs.hunger + Float(hunger))
+        pet.needs.happiness = clamp(pet.needs.happiness + Float(happiness))
+        pet.needs.calm = clamp(pet.needs.calm + Float(calm))
+        pet.needs.energy = clamp(pet.needs.energy + Float(energy))
         syncMood()
         save()
+    }
+
+    /// Applies or removes the passive comfort bonus of a placed room item.
+    func applyRoomPlacementEffect(for item: HouseItemDefinition, isAdding: Bool) {
+        guard item.isPlaceable else { return }
+
+        let multiplier: Double = isAdding ? 0.35 : -0.35
+        applyBoost(
+            hunger: item.hungerBoost * multiplier,
+            happiness: item.happinessBoost * multiplier,
+            calm: item.calmBoost * multiplier,
+            energy: item.energyBoost * multiplier
+        )
     }
 
     /// Complete a timed meditation session; boosts calm proportional to duration.
@@ -131,8 +147,45 @@ final class GameStore: ObservableObject {
         save()
     }
 
+    /// Completes the main Me Time ritual with a single persisted session and optional gratitude entry.
+    func completeRelaxRitual(durationSeconds: Int, gratitudeText: String) {
+        objectWillChange.send()
+
+        let calmBonus = min(Float(durationSeconds) / 240.0, 1.0) * 0.32
+        let happinessBonus = min(Float(durationSeconds) / 360.0, 1.0) * 0.18
+        let energyBonus = min(Float(durationSeconds) / 360.0, 1.0) * 0.12
+
+        pet.needs.calm = min(1, pet.needs.calm + calmBonus)
+        pet.needs.happiness = min(1, pet.needs.happiness + happinessBonus)
+        pet.needs.energy = min(1, pet.needs.energy + energyBonus)
+
+        if !gratitudeText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let entry = GratitudeEntry(text: gratitudeText)
+            modelContext.insert(entry)
+        }
+
+        let session = MeditationSession(durationSeconds: durationSeconds, type: "care_ritual")
+        modelContext.insert(session)
+        syncMood()
+        save()
+    }
+
+    func writeDiaryEntry(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        objectWillChange.send()
+        let entry = GratitudeEntry(text: trimmed)
+        modelContext.insert(entry)
+
+        pet.needs.calm = min(1, pet.needs.calm + 0.18)
+        pet.needs.happiness = min(1, pet.needs.happiness + 0.06)
+        syncMood()
+        save()
+    }
+
     func recentSessions(limit: Int = 10) -> [MeditationSession] {
-        var descriptor = FetchDescriptor<MeditationSession>(
+    var descriptor = FetchDescriptor<MeditationSession>(
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
         descriptor.fetchLimit = limit
@@ -161,7 +214,18 @@ final class GameStore: ObservableObject {
     }
 
     private func syncMood() {
-        pet.mood = derivedMood()
+        let previousMood = pet.mood
+        let nextMood = derivedMood()
+
+        if previousMood != .evolving,
+           nextMood == .evolving,
+           pet.stage < Self.maxEvolutionStage {
+            pet.stage += 1
+            evolutionTrigger += 1
+            logger.info("Pet evolved to stage \(self.pet.stage)")
+        }
+
+        pet.mood = nextMood
     }
 
     // MARK: - Persistence
@@ -172,5 +236,9 @@ final class GameStore: ObservableObject {
         } catch {
             logger.error("SwiftData save failed: \(error.localizedDescription)")
         }
+    }
+
+    private func clamp(_ value: Float) -> Float {
+        min(1, max(0, value))
     }
 }

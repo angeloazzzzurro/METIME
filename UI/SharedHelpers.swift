@@ -37,16 +37,20 @@ let breathCyclePhases: [(name: String, duration: TimeInterval, scale: CGFloat)] 
 ]
 
 /// Avvia un ciclo di respiro ricorsivo. Chiama `onPhase` con ogni fase finché `isRunning()` è true.
+@MainActor
 func startBreathCycle(isRunning: @escaping () -> Bool,
                       onPhase: @escaping (String, CGFloat) -> Void) {
     var idx = 0
+    @MainActor
     func nextPhase() {
         guard isRunning() else { return }
         let phase = breathCyclePhases[idx]
         onPhase(phase.name, phase.scale)
         idx = (idx + 1) % breathCyclePhases.count
         DispatchQueue.main.asyncAfter(deadline: .now() + phase.duration) {
-            nextPhase()
+            Task { @MainActor in
+                nextPhase()
+            }
         }
     }
     nextPhase()

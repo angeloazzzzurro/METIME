@@ -34,8 +34,13 @@ struct GemPack: Identifiable {
 @MainActor
 final class HouseStore: ObservableObject {
 
+    static let baseGardenPlotCount = 3
+    static let maxGardenPlots = 8
+    static let maxGardenTerrainExpansions = 3
+
     // MARK: Published State
     @Published private(set) var wallet: Wallet
+    @Published private(set) var gardenState: GardenState
     @Published private(set) var inventory: [OwnedItem] = []
     @Published private(set) var storeKitProducts: [Product] = []
     @Published private(set) var isPurchasing: Bool = false
@@ -57,6 +62,16 @@ final class HouseStore: ObservableObject {
             let newWallet = Wallet(coins: 100, gems: 5)
             modelContext.insert(newWallet)
             self.wallet = newWallet
+            try? modelContext.save()
+        }
+
+        let gardenStates = (try? modelContext.fetch(FetchDescriptor<GardenState>())) ?? []
+        if let existingGarden = gardenStates.first {
+            self.gardenState = existingGarden
+        } else {
+            let newGardenState = GardenState(unlockedPlots: Self.baseGardenPlotCount)
+            modelContext.insert(newGardenState)
+            self.gardenState = newGardenState
             try? modelContext.save()
         }
 
@@ -193,14 +208,21 @@ final class HouseStore: ObservableObject {
 
     // MARK: - Room Placement
 
-    func place(item: OwnedItem, at position: CGPoint) {
+    func place(item: OwnedItem, at position: CGPoint, on gameStore: GameStore? = nil) {
+        let wasPlaced = item.isPlacedInRoom
         item.roomPositionX = position.x
         item.roomPositionY = position.y
         item.isPlacedInRoom = true
+        if !wasPlaced, let definition = item.definition {
+            gameStore?.applyRoomPlacementEffect(for: definition, isAdding: true)
+        }
         save()
     }
 
-    func removeFromRoom(item: OwnedItem) {
+    func removeFromRoom(item: OwnedItem, on gameStore: GameStore? = nil) {
+        if item.isPlacedInRoom, let definition = item.definition {
+            gameStore?.applyRoomPlacementEffect(for: definition, isAdding: false)
+        }
         item.roomPositionX = nil
         item.roomPositionY = nil
         item.isPlacedInRoom = false
@@ -215,6 +237,36 @@ final class HouseStore: ObservableObject {
         log.info("Rewarded \(amount) coins")
     }
 
+    func purchaseGardenPlot() -> PurchaseResult {
+        guard canPurchaseGardenPlot else { return .alreadyOwned }
+
+        let cost = nextGardenPlotCost
+        guard wallet.canAfford(price: cost, currency: .coins) else {
+            return .insufficientFunds(needed: cost, currency: .coins)
+        }
+
+        wallet.deduct(price: cost, currency: .coins)
+        gardenState.unlockedPlots += 1
+        save()
+        log.info("Purchased garden plot \(self.gardenState.unlockedPlots) for \(cost) coins")
+        return .success
+    }
+
+    func purchaseGardenTerrainExpansion() -> PurchaseResult {
+        guard canPurchaseGardenTerrain else { return .alreadyOwned }
+
+        let cost = nextGardenTerrainCost
+        guard wallet.canAfford(price: cost, currency: .coins) else {
+            return .insufficientFunds(needed: cost, currency: .coins)
+        }
+
+        wallet.deduct(price: cost, currency: .coins)
+        gardenState.terrainExpansionLevel += 1
+        save()
+        log.info("Purchased garden terrain expansion \(self.gardenState.terrainExpansionLevel) for \(cost) coins")
+        return .success
+    }
+
     // MARK: - Helpers
 
     func owns(itemID: String) -> Bool {
@@ -227,6 +279,31 @@ final class HouseStore: ObservableObject {
 
     func itemsPlacedInRoom() -> [OwnedItem] {
         inventory.filter { $0.isPlacedInRoom }
+    }
+
+    var unlockedGardenPlots: Int {
+        gardenState.unlockedPlots
+    }
+
+    var canPurchaseGardenPlot: Bool {
+        gardenState.unlockedPlots < Self.maxGardenPlots
+    }
+
+    var nextGardenPlotCost: Int {
+        let extraPlots = max(gardenState.unlockedPlots - Self.baseGardenPlotCount, 0)
+        return 25 + (extraPlots * 15)
+    }
+
+    var gardenTerrainExpansionLevel: Int {
+        gardenState.terrainExpansionLevel
+    }
+
+    var canPurchaseGardenTerrain: Bool {
+        gardenState.terrainExpansionLevel < Self.maxGardenTerrainExpansions
+    }
+
+    var nextGardenTerrainCost: Int {
+        55 + (gardenState.terrainExpansionLevel * 35)
     }
 
     // MARK: - Private

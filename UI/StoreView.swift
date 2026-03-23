@@ -18,22 +18,49 @@ private extension Color {
 // MARK: - Item Symbol Lookup
 
 private func storeSymbolName(for item: HouseItemDefinition) -> String {
-    switch item.id {
-    case "food_carrot":       return "carrot"
-    case "food_cookie":       return "birthday.cake"
-    case "food_cake":         return "birthday.cake"
-    case "food_tea":          return "cup.and.saucer.fill"
-    case "essential_bowl":    return "bowl.fill"
-    case "essential_cushion": return "sofa.fill"
-    case "essential_blanket": return "star.fill"
-    case "deco_plant":        return "leaf.fill"
-    case "deco_lamp":         return "lamp.desk.fill"
-    case "deco_rug":          return "paintpalette.fill"
-    case "special_crystal":   return "diamond.fill"
-    case "special_book":      return "book.fill"
-    case "special_candle":    return "flame.fill"
-    default:                  return "shippingbox.fill"
-    }
+    let id = item.id
+
+    if id.contains("carrot") { return "carrot" }
+    if id.contains("cookie") || id.contains("cake") || id.contains("pancakes") { return "birthday.cake" }
+    if id.contains("tea") || id.contains("milk") || id.contains("lemonade") || id.contains("smoothie") { return "cup.and.saucer.fill" }
+    if id.contains("strawberry") { return "heart.fill" }
+    if id.contains("toast") { return "takeoutbag.and.cup.and.straw.fill" }
+    if id.contains("bento") || id.contains("soup") { return "takeoutbag.and.cup.and.straw.fill" }
+    if id.contains("jam") { return "drop.fill" }
+    if id.contains("mochi") { return "sparkles" }
+
+    if id.contains("bowl") { return "bowl.fill" }
+    if id.contains("cushion") || id.contains("bed") || id.contains("hammock") { return "sofa.fill" }
+    if id.contains("blanket") { return "star.fill" }
+    if id.contains("bookshelf") || id.contains("desk") { return "books.vertical.fill" }
+    if id.contains("closet") || id.contains("nightstand") { return "cabinet.fill" }
+    if id.contains("bath") { return "drop.circle.fill" }
+    if id.contains("stool") { return "square.fill" }
+    if id.contains("mirror") { return "mirror.side.left.and.heat.waves" }
+    if id.contains("screen") { return "rectangle.portrait.on.rectangle.portrait.fill" }
+
+    if id.contains("plant") || id.contains("planter") { return "leaf.fill" }
+    if id.contains("lamp") || id.contains("garland") { return "lamp.desk.fill" }
+    if id.contains("rug") { return "paintpalette.fill" }
+    if id.contains("window") { return "window.vertical.closed" }
+    if id.contains("clock") { return "clock.fill" }
+    if id.contains("frame") || id.contains("painting") || id.contains("poster") { return "photo.fill" }
+    if id.contains("vase") { return "trophy.fill" }
+    if id.contains("plush") { return "heart.circle.fill" }
+    if id.contains("musicbox") || id.contains("mobile") { return "music.note" }
+
+    if id.contains("crystal") || id.contains("orb") { return "diamond.fill" }
+    if id.contains("book") || id.contains("map") { return "book.fill" }
+    if id.contains("candle") { return "flame.fill" }
+    if id.contains("lotus") { return "sparkles" }
+    if id.contains("moon_mirror") { return "moon.stars.fill" }
+    if id.contains("fountain") { return "drop.triangle.fill" }
+    if id.contains("fairy_jar") { return "lightbulb.max.fill" }
+    if id.contains("comet") { return "star.leadinghalf.filled" }
+    if id.contains("snow_globe") { return "snowflake" }
+    if id.contains("portal") { return "circle.hexagongrid.fill" }
+
+    return "shippingbox.fill"
 }
 
 private func storeSymbolColor(for item: HouseItemDefinition) -> Color {
@@ -59,22 +86,13 @@ struct StoreView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
+        ZStack {
             Color.storeBg.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                headerBar
-                    .padding(.top, 8)
-
-                currencyBar
-                    .padding(.horizontal, 48)
-                    .padding(.top, 12)
-
-                categoryTabBar
-                    .padding(.top, 14)
-
-                itemGrid
-            }
+            itemGrid
+        }
+        .safeAreaInset(edge: .top) {
+            stickyStoreHeader
         }
         .sheet(isPresented: $showGemSheet) {
             GemPackSheet()
@@ -103,7 +121,7 @@ struct StoreView: View {
             Spacer(minLength: 4)
 
             // Center: Title
-            Label("Store", systemImage: "bag.fill")
+            Label("Store", systemImage: "basket.fill")
                 .font(.system(.title3, design: .rounded).weight(.heavy))
                 .foregroundStyle(Color.storeDark)
 
@@ -183,21 +201,49 @@ struct StoreView: View {
 
     private var itemGrid: some View {
         ScrollView {
-            LazyVGrid(
-                columns: [GridItem(.flexible()), GridItem(.flexible())],
-                spacing: 14
-            ) {
-                ForEach(filteredItems) { item in
-                    StoreItemCard(item: item)
-                        .environmentObject(houseStore)
+            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                Section {
+                    LazyVGrid(
+                        columns: [GridItem(.flexible()), GridItem(.flexible())],
+                        spacing: 14
+                    ) {
+                        ForEach(filteredItems) { item in
+                            StoreItemCard(item: item)
+                                .environmentObject(houseStore)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 40)
+                } header: {
+                    Color.clear.frame(height: 1)
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-            .padding(.bottom, 40)
         }
         .animation(.easeInOut(duration: 0.25), value: selectedCategory)
         .padding(.top, 10)
+    }
+
+    private var stickyStoreHeader: some View {
+        VStack(spacing: 0) {
+            headerBar
+                .padding(.top, 8)
+
+            currencyBar
+                .padding(.horizontal, 48)
+                .padding(.top, 12)
+
+            categoryTabBar
+                .padding(.top, 14)
+                .padding(.bottom, 10)
+        }
+        .background(
+            LinearGradient(
+                colors: [Color.storeBg, Color.storeBg.opacity(0.95)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
 }
 

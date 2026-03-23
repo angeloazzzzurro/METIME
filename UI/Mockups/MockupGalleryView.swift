@@ -170,6 +170,15 @@ struct GardenHomeMockupView: View {
 }
 
 struct CareRitualMockupView: View {
+    @EnvironmentObject private var gameStore: GameStore
+    @EnvironmentObject private var houseStore: HouseStore
+
+    @State private var selectedDuration = 240
+    @State private var gratitudeText = ""
+    @State private var didComplete = false
+
+    private let durations = [120, 240, 360]
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -182,58 +191,170 @@ struct CareRitualMockupView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                Text("Rituale di Cura")
-                    .font(.system(size: 34, weight: .black, design: .rounded))
+            ScrollView {
+                VStack(spacing: 20) {
+                    breathingOrb
 
-                Text("4 minuti di respiro guidato per calmare il tuo pet")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
+                    durationPicker
 
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [Color.white, Color(red: 0.99, green: 0.70, blue: 0.34)],
-                            center: .center,
-                            startRadius: 10,
-                            endRadius: 120
-                        )
-                    )
-                    .frame(width: 240, height: 240)
-                    .overlay {
-                        VStack(spacing: 4) {
-                            Text("Inspira")
-                                .font(.title3.weight(.bold))
-                            Text("03:12")
-                                .font(.system(size: 46, weight: .heavy, design: .rounded))
-                        }
+                    VStack(spacing: 12) {
+                        metricRow(label: "Mood attuale", value: gameStore.pet.mood.rawValue.capitalized)
+                        metricRow(label: "Calma prevista", value: "+\(predictedCalmBoost)%")
+                        metricRow(label: "Ricompensa", value: "+\(coinReward) monete")
                     }
-                    .shadow(color: .orange.opacity(0.25), radius: 20, x: 0, y: 12)
+                    .padding(18)
+                    .background(.white.opacity(0.8), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
 
-                VStack(spacing: 12) {
-                    metricRow(label: "Frequenza", value: "6 respiri/min")
-                    metricRow(label: "Mood previsto", value: "Calmo +18%")
-                    metricRow(label: "Ricompensa", value: "+2 Semi Sereni")
-                }
-                .padding(18)
-                .background(.white.opacity(0.8), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Gratitudine finale")
+                            .font(.headline.weight(.bold))
+                        TextField("Scrivi una cosa positiva di oggi", text: $gratitudeText, axis: .vertical)
+                            .textFieldStyle(.roundedBorder)
+                            .lineLimit(3...5)
+                    }
+                    .padding(18)
+                    .background(.white.opacity(0.82), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
 
-                Button(action: {}) {
-                    Text("Concludi Sessione")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(.black)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    Button(action: completeRitual) {
+                        Text("Concludi Sessione")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(.black)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    }
                 }
+                .padding(20)
+                .padding(.top, 114)
             }
-            .padding(20)
+            .scrollBounceBehavior(.basedOnSize)
         }
         .navigationTitle("Care")
         .navigationBarTitleDisplayMode(.inline)
+        .safeAreaInset(edge: .top) {
+            careStickyHeader
+        }
+        .navigationDestination(isPresented: $didComplete) {
+            JournalInsightsMockupView()
+                .environmentObject(gameStore)
+        }
+    }
+
+    private var breathingOrb: some View {
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: [Color.white, Color(red: 0.99, green: 0.70, blue: 0.34)],
+                    center: .center,
+                    startRadius: 10,
+                    endRadius: 120
+                )
+            )
+            .frame(width: 240, height: 240)
+            .overlay {
+                VStack(spacing: 6) {
+                    Text(selectedDuration >= 240 ? "Inspira ed espira" : "Respira piano")
+                        .font(.title3.weight(.bold))
+                    Text(durationLabel(selectedDuration))
+                        .font(.system(size: 42, weight: .heavy, design: .rounded))
+                    Text(gameStore.pet.mood == .anxious ? "Riduci l'ansia del pet" : "Mantieni il ritmo")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .shadow(color: .orange.opacity(0.25), radius: 20, x: 0, y: 12)
+            .scaleEffect(selectedDuration == 360 ? 1.04 : 1)
+            .animation(.easeInOut(duration: 0.28), value: selectedDuration)
+    }
+
+    private var durationPicker: some View {
+        HStack(spacing: 10) {
+            ForEach(durations, id: \.self) { duration in
+                Button {
+                    withAnimation(.snappy(duration: 0.2)) {
+                        selectedDuration = duration
+                    }
+                } label: {
+                    VStack(spacing: 4) {
+                        Text(durationLabel(duration))
+                            .font(.system(size: 15, weight: .bold, design: .rounded))
+                        Text(duration == 120 ? "Quick" : duration == 240 ? "Care" : "Deep")
+                            .font(.caption.weight(.bold))
+                    }
+                    .foregroundStyle(selectedDuration == duration ? .white : .brown)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(selectedDuration == duration ? Color.black : Color.white.opacity(0.78))
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .animation(.snappy(duration: 0.22), value: selectedDuration)
+    }
+
+    private var careStickyHeader: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Rituale di Cura")
+                        .font(.system(size: 30, weight: .black, design: .rounded))
+                    Text("Un micro-rituale reale che calma il pet, migliora l'umore e salva la sessione.")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(gameStore.pet.mood.rawValue.capitalized)
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(.white.opacity(0.85), in: Capsule())
+                    Text(durationLabel(selectedDuration))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(.brown)
+                }
+            }
+
+            durationPicker
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
+        .padding(.bottom, 12)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.99, green: 0.93, blue: 0.86),
+                    Color(red: 0.97, green: 0.88, blue: 0.78)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+    }
+
+    private var predictedCalmBoost: Int {
+        Int(min(Double(selectedDuration) / 240.0, 1.0) * 35)
+    }
+
+    private var coinReward: Int {
+        max(2, selectedDuration / 120)
+    }
+
+    private func durationLabel(_ duration: Int) -> String {
+        let minutes = duration / 60
+        return "\(minutes) min"
+    }
+
+    private func completeRitual() {
+        gameStore.completeRelaxRitual(durationSeconds: selectedDuration, gratitudeText: gratitudeText)
+        houseStore.rewardCoins(coinReward)
+        didComplete = true
     }
 
     private func metricRow(label: String, value: String) -> some View {
@@ -249,11 +370,17 @@ struct CareRitualMockupView: View {
 }
 
 struct JournalInsightsMockupView: View {
-    private let entries = [
-        ("Oggi ho dato acqua al pet prima di lavorare", "Molto presente"),
-        ("Ho fatto 6 minuti di meditazione guidata", "Più calma"),
-        ("Passeggiata breve nel pomeriggio", "Energia in risalita")
-    ]
+    @EnvironmentObject private var gameStore: GameStore
+    @State private var journalText = ""
+    @State private var didSaveEntry = false
+
+    private var sessions: [MeditationSession] {
+        gameStore.recentSessions(limit: 3)
+    }
+
+    private var gratitudeEntries: [GratitudeEntry] {
+        gameStore.recentGratitude(limit: 3)
+    }
 
     var body: some View {
         ZStack {
@@ -272,21 +399,70 @@ struct JournalInsightsMockupView: View {
                     .font(.system(size: 32, weight: .black, design: .rounded))
 
                 HStack(spacing: 12) {
-                    insightCard(title: "Streak", value: "9 giorni", color: .blue)
-                    insightCard(title: "Mood Medio", value: "Sereno", color: .teal)
+                    insightCard(title: "Mood", value: gameStore.pet.mood.rawValue.capitalized, color: .blue)
+                    insightCard(title: "Stage", value: "Lv \(gameStore.pet.stage)", color: .teal)
                 }
 
-                Text("Ultime riflessioni")
-                    .font(.headline)
-                    .padding(.top, 6)
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Scrivi nel diario")
+                            .font(.headline)
+                        Spacer()
+                        Text("+18% calma")
+                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(.white.opacity(0.82), in: Capsule())
+                    }
 
-                ScrollView {
+                    TextField("Scrivi come ti senti o una riflessione breve", text: $journalText, axis: .vertical)
+                        .textFieldStyle(.roundedBorder)
+                        .lineLimit(4...7)
+
+                    Button {
+                        gameStore.writeDiaryEntry(journalText)
+                        journalText = ""
+                        withAnimation(.snappy(duration: 0.18)) {
+                            didSaveEntry = true
+                        }
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .seconds(1.4))
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                didSaveEntry = false
+                            }
+                        }
+                    } label: {
+                        Text("Salva nel diario")
+                            .font(.system(size: 15, weight: .black, design: .rounded))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                            .background(Color.black, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(journalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .opacity(journalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.55 : 1)
+
+                    if didSaveEntry {
+                        Text("Diario salvato. Il pet recupera calma.")
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .foregroundStyle(.blue)
+                    }
+                }
+                .padding(16)
+                .background(.white.opacity(0.78), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                if !sessions.isEmpty {
+                    Text("Ultime sessioni")
+                        .font(.headline)
+                        .padding(.top, 6)
+
                     VStack(spacing: 10) {
-                        ForEach(Array(entries.enumerated()), id: \.offset) { _, entry in
+                        ForEach(Array(sessions.enumerated()), id: \.offset) { _, session in
                             VStack(alignment: .leading, spacing: 6) {
-                                Text(entry.0)
+                                Text(session.type.replacingOccurrences(of: "_", with: " ").capitalized)
                                     .font(.subheadline.weight(.semibold))
-                                Text(entry.1)
+                                Text("\(session.durationSeconds / 60) min · \(session.date.formatted(date: .abbreviated, time: .shortened))")
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
                             }
@@ -295,6 +471,35 @@ struct JournalInsightsMockupView: View {
                             .background(.white.opacity(0.75), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                         }
                     }
+                }
+
+                if !gratitudeEntries.isEmpty {
+                    Text("Ultime riflessioni")
+                        .font(.headline)
+                        .padding(.top, 6)
+
+                    ScrollView {
+                        VStack(spacing: 10) {
+                            ForEach(Array(gratitudeEntries.enumerated()), id: \.offset) { _, entry in
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(entry.text)
+                                        .font(.subheadline.weight(.semibold))
+                                    Text(entry.date.formatted(date: .abbreviated, time: .omitted))
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(14)
+                                .background(.white.opacity(0.75), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            }
+                        }
+                    }
+                } else {
+                    Spacer()
+                    Text("Concludi un rituale con una nota di gratitudine per vedere i tuoi insight qui.")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
+                    Spacer()
                 }
             }
             .padding(20)

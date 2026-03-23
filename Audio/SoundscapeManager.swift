@@ -1,5 +1,6 @@
 import AVFoundation
 
+@MainActor
 final class SoundscapeManager {
     static let shared = SoundscapeManager()
     private init() {}

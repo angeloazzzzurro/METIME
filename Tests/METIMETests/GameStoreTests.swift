@@ -148,6 +148,71 @@ final class GameStoreTests: XCTestCase {
                        "pet.moodRaw should be synced with derivedMood after meditate()")
     }
 
+    func test_enteringEvolving_incrementsStageAndTrigger() {
+        store.pet.stage = 0
+        store.pet.needs.happiness = 0.95
+        store.pet.needs.calm = 0.7
+        store.pet.needs.energy = 0.6
+        store.pet.needs.hunger = 0.6
+
+        store.meditate()
+
+        XCTAssertEqual(store.pet.mood, .evolving)
+        XCTAssertEqual(store.pet.stage, 1)
+        XCTAssertEqual(store.evolutionTrigger, 1)
+    }
+
+    func test_stayingInEvolving_doesNotIncrementStageRepeatedly() {
+        store.pet.stage = 0
+        store.pet.needs.happiness = 0.95
+        store.pet.needs.calm = 0.95
+        store.pet.needs.energy = 0.6
+        store.pet.needs.hunger = 0.6
+
+        store.play()
+        store.meditate()
+
+        XCTAssertEqual(store.pet.mood, .evolving)
+        XCTAssertEqual(store.pet.stage, 1)
+        XCTAssertEqual(store.evolutionTrigger, 1)
+    }
+
+    func test_evolving_stageCapsAtMaxEvolutionStage() {
+        store.pet.stage = GameStore.maxEvolutionStage
+        store.pet.needs.happiness = 0.95
+        store.pet.needs.calm = 0.7
+        store.pet.needs.energy = 0.6
+        store.pet.needs.hunger = 0.6
+
+        store.meditate()
+
+        XCTAssertEqual(store.pet.stage, GameStore.maxEvolutionStage)
+        XCTAssertEqual(store.evolutionTrigger, 0)
+        XCTAssertEqual(store.pet.mood, .evolving)
+    }
+
+    func test_applyRoomPlacementEffect_addsPassiveComfortBonus() {
+        let item = HouseItemDefinition.item(for: "essential_cushion")!
+        let initialCalm = store.pet.needs.calm
+        let initialEnergy = store.pet.needs.energy
+
+        store.applyRoomPlacementEffect(for: item, isAdding: true)
+
+        XCTAssertGreaterThan(store.pet.needs.calm, initialCalm)
+        XCTAssertGreaterThan(store.pet.needs.energy, initialEnergy)
+    }
+
+    func test_applyRoomPlacementEffect_removesPassiveComfortBonus() {
+        let item = HouseItemDefinition.item(for: "special_candle")!
+        store.pet.needs.calm = 0.8
+
+        store.applyRoomPlacementEffect(for: item, isAdding: true)
+        let boostedCalm = store.pet.needs.calm
+        store.applyRoomPlacementEffect(for: item, isAdding: false)
+
+        XCTAssertLessThan(store.pet.needs.calm, boostedCalm)
+    }
+
     // MARK: - INJ-01: sanitizedName
 
     func test_sanitizedName_stripsControlCharacters() {

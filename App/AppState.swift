@@ -144,6 +144,17 @@ final class GratitudeEntry {
     }
 }
 
+@Model
+final class GardenState {
+    var unlockedPlots: Int
+    var terrainExpansionLevel: Int
+
+    init(unlockedPlots: Int = 3, terrainExpansionLevel: Int = 0) {
+        self.unlockedPlots = unlockedPlots
+        self.terrainExpansionLevel = terrainExpansionLevel
+    }
+}
+
 // MARK: - CareRitualStep
 
 enum CareRitualStep: Int, CaseIterable {

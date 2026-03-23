@@ -26,6 +26,15 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .specials:    return "✨"
         }
     }
+
+    var sfSymbol: String {
+        switch self {
+        case .food:        return "fork.knife"
+        case .essentials:  return "house.fill"
+        case .decorations: return "paintbrush.fill"
+        case .specials:    return "sparkles"
+        }
+    }
 }
 
 // MARK: - Item Rarity

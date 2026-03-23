@@ -63,7 +63,7 @@ struct HouseView: View {
     private var topBar: some View {
         HStack {
             // Titolo
-            Text("🏠 La tua Casa")
+            Label("La tua Casa", systemImage: "house.fill")
                 .font(.system(size: 22, weight: .black, design: .rounded))
                 .foregroundColor(Color(red: 0.4, green: 0.2, blue: 0.6))
 
@@ -71,8 +71,8 @@ struct HouseView: View {
 
             // Wallet
             HStack(spacing: 12) {
-                walletBadge(icon: "🪙", value: houseStore.wallet.coins, color: Color(red: 1.0, green: 0.75, blue: 0.2))
-                walletBadge(icon: "💎", value: houseStore.wallet.gems, color: Color(red: 0.5, green: 0.3, blue: 0.9))
+                walletBadge(icon: "dollarsign.circle.fill", value: houseStore.wallet.coins, color: Color(red: 1.0, green: 0.75, blue: 0.2))
+                walletBadge(icon: "diamond.fill",           value: houseStore.wallet.gems,  color: Color(red: 0.5, green: 0.3, blue: 0.9))
             }
         }
         .padding(.horizontal, 20)
@@ -82,8 +82,9 @@ struct HouseView: View {
 
     private func walletBadge(icon: String, value: Int, color: Color) -> some View {
         HStack(spacing: 4) {
-            Text(icon)
+            Image(systemName: icon)
                 .font(.system(size: 16))
+                .foregroundStyle(color)
             Text("\(value)")
                 .font(.system(size: 16, weight: .black, design: .rounded))
                 .foregroundColor(color)

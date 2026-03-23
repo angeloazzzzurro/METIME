@@ -65,16 +65,18 @@ struct MainPetView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        // ── Gesture swipe per navigazione tra sezioni ──
+        // ── Gesture swipe per navigazione tra sezioni (solo orizzontale) ──
         .gesture(
-            DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onEnded { value in
-                    let horizontal = value.translation.width
-                    guard abs(horizontal) > 30 else { return }
+                    let h = value.translation.width
+                    let v = value.translation.height
+                    // Attiva solo se lo swipe è prevalentemente orizzontale (ratio 2.5:1)
+                    guard abs(h) > abs(v) * 2.5, abs(h) > 40 else { return }
                     let currentIndex = sections.firstIndex(of: navigationState.activeSection) ?? 0
-                    if horizontal < 0, currentIndex < sections.count - 1 {
+                    if h < 0, currentIndex < sections.count - 1 {
                         navigationState.activeSection = sections[currentIndex + 1]
-                    } else if horizontal > 0, currentIndex > 0 {
+                    } else if h > 0, currentIndex > 0 {
                         navigationState.activeSection = sections[currentIndex - 1]
                     }
                 }

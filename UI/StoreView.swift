@@ -15,24 +15,33 @@ private extension Color {
     static let statTealFg     = Color(hex: "#1A6B5E")
 }
 
-// MARK: - Item Emoji Lookup
+// MARK: - Item Symbol Lookup
 
-private func storeEmoji(for item: HouseItemDefinition) -> String {
+private func storeSymbolName(for item: HouseItemDefinition) -> String {
     switch item.id {
-    case "food_carrot":       return "🥕"
-    case "food_cookie":       return "🍪"
-    case "food_cake":         return "🎂"
-    case "food_tea":          return "🍵"
-    case "essential_bowl":    return "🥣"
-    case "essential_cushion": return "🛋️"
-    case "essential_blanket": return "⭐️"
-    case "deco_plant":        return "🪴"
-    case "deco_lamp":         return "🌙"
-    case "deco_rug":          return "🎨"
-    case "special_crystal":   return "💜"
-    case "special_book":      return "📖"
-    case "special_candle":    return "🕯️"
-    default:                  return "📦"
+    case "food_carrot":       return "carrot"
+    case "food_cookie":       return "birthday.cake"
+    case "food_cake":         return "birthday.cake"
+    case "food_tea":          return "cup.and.saucer.fill"
+    case "essential_bowl":    return "bowl.fill"
+    case "essential_cushion": return "sofa.fill"
+    case "essential_blanket": return "star.fill"
+    case "deco_plant":        return "leaf.fill"
+    case "deco_lamp":         return "lamp.desk.fill"
+    case "deco_rug":          return "paintpalette.fill"
+    case "special_crystal":   return "diamond.fill"
+    case "special_book":      return "book.fill"
+    case "special_candle":    return "flame.fill"
+    default:                  return "shippingbox.fill"
+    }
+}
+
+private func storeSymbolColor(for item: HouseItemDefinition) -> Color {
+    switch item.category {
+    case .food:        return Color(hex: "#F97316")
+    case .essentials:  return Color(hex: "#3B82F6")
+    case .decorations: return Color(hex: "#8B5CF6")
+    case .specials:    return Color(hex: "#F59E0B")
     }
 }
 
@@ -80,8 +89,8 @@ struct StoreView: View {
             // Left: Acquista Gemme
             Button { showGemSheet = true } label: {
                 HStack(spacing: 4) {
-                    Text("💎")
-                        .font(.system(size: 13))
+                    Image(systemName: "diamond.fill")
+                        .font(.system(size: 12))
                     Text("Acquista Gemme")
                         .font(.system(.caption, design: .rounded).weight(.bold))
                 }
@@ -94,7 +103,7 @@ struct StoreView: View {
             Spacer(minLength: 4)
 
             // Center: Title
-            Text("🛍️ Store")
+            Label("Store", systemImage: "bag.fill")
                 .font(.system(.title3, design: .rounded).weight(.heavy))
                 .foregroundStyle(Color.storeDark)
 
@@ -119,8 +128,9 @@ struct StoreView: View {
     private var currencyBar: some View {
         HStack(spacing: 0) {
             HStack(spacing: 5) {
-                Text("🪙")
+                Image(systemName: "dollarsign.circle.fill")
                     .font(.system(size: 15))
+                    .foregroundStyle(Color(hex: "#F59E0B"))
                 Text("\(houseStore.wallet.coins)")
                     .font(.system(.subheadline, design: .rounded).weight(.bold))
                     .foregroundStyle(Color.storeDark)
@@ -133,8 +143,9 @@ struct StoreView: View {
                 .frame(width: 1, height: 20)
 
             HStack(spacing: 5) {
-                Text("💎")
-                    .font(.system(size: 15))
+                Image(systemName: "diamond.fill")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.storePrimary)
                 Text("\(houseStore.wallet.gems)")
                     .font(.system(.subheadline, design: .rounded).weight(.bold))
                     .foregroundStyle(Color.storeDark)
@@ -154,7 +165,8 @@ struct StoreView: View {
             HStack(spacing: 8) {
                 ForEach(ItemCategory.allCases, id: \.self) { cat in
                     StoreCategoryTab(
-                        label: "\(cat.emoji) \(cat.displayName)",
+                        icon: cat.sfSymbol,
+                        label: cat.displayName,
                         isActive: cat == selectedCategory
                     ) {
                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -192,13 +204,14 @@ struct StoreView: View {
 // MARK: - StoreCategoryTab
 
 private struct StoreCategoryTab: View {
+    let icon: String
     let label: String
     let isActive: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(label)
+            Label(label, systemImage: icon)
                 .font(.system(.subheadline, design: .rounded).weight(.semibold))
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
@@ -225,9 +238,10 @@ struct StoreItemCard: View {
 
     @State private var purchasing = false
 
-    private var emoji: String      { storeEmoji(for: item) }
-    private var isRare: Bool       { item.rarity != .common }
-    private var canAfford: Bool    { houseStore.wallet.canAfford(price: item.price, currency: item.currency) }
+    private var symbolName: String   { storeSymbolName(for: item) }
+    private var symbolColor: Color   { storeSymbolColor(for: item) }
+    private var isRare: Bool         { item.rarity != .common }
+    private var canAfford: Bool      { houseStore.wallet.canAfford(price: item.price, currency: item.currency) }
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -236,7 +250,7 @@ struct StoreItemCard: View {
                 .shadow(color: Color.storePrimary.opacity(0.09), radius: 8, y: 3)
 
             if isRare {
-                Text("💜 Raro")
+                Label("Raro", systemImage: "star.fill")
                     .font(.system(.caption2, design: .rounded).weight(.bold))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
@@ -251,19 +265,21 @@ struct StoreItemCard: View {
         VStack(alignment: .leading, spacing: 6) {
             // Name row
             HStack(spacing: 4) {
-                Text(emoji)
-                    .font(.system(size: 13))
+                Image(systemName: symbolName)
+                    .font(.system(size: 12))
+                    .foregroundStyle(symbolColor)
                 Text(item.name)
                     .font(.system(.caption, design: .rounded).weight(.bold))
                     .foregroundStyle(Color.storeDark)
                     .lineLimit(1)
             }
 
-            // Large emoji
-            Text(emoji)
-                .font(.system(size: 54))
+            // Large symbol
+            Image(systemName: symbolName)
+                .font(.system(size: 48))
+                .foregroundStyle(symbolColor)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.vertical, 2)
+                .padding(.vertical, 4)
 
             // Description
             Text(item.description)
@@ -291,6 +307,7 @@ struct StoreItemCard: View {
 
     private struct StatBadge: Identifiable {
         let id = UUID()
+        let icon: String
         let label: String
         let bg: Color
         let fg: Color
@@ -298,10 +315,10 @@ struct StoreItemCard: View {
 
     private var statBadges: [StatBadge] {
         var badges: [StatBadge] = []
-        if item.hungerBoost    > 0 { badges.append(.init(label: "+\(pct(item.hungerBoost)) 🍴",    bg: .statGreenBg, fg: .statGreenFg)) }
-        if item.happinessBoost > 0 { badges.append(.init(label: "+\(pct(item.happinessBoost)) 😊", bg: .statPinkBg,  fg: .statPinkFg)) }
-        if item.calmBoost      > 0 { badges.append(.init(label: "+\(pct(item.calmBoost)) 🌿",      bg: .statTealBg,  fg: .statTealFg)) }
-        if item.energyBoost    > 0 { badges.append(.init(label: "+\(pct(item.energyBoost)) ⚡️",   bg: .statTealBg,  fg: .statTealFg)) }
+        if item.hungerBoost    > 0 { badges.append(.init(icon: "fork.knife",   label: "+\(pct(item.hungerBoost))",    bg: .statGreenBg, fg: .statGreenFg)) }
+        if item.happinessBoost > 0 { badges.append(.init(icon: "face.smiling", label: "+\(pct(item.happinessBoost))", bg: .statPinkBg,  fg: .statPinkFg)) }
+        if item.calmBoost      > 0 { badges.append(.init(icon: "leaf.fill",    label: "+\(pct(item.calmBoost))",      bg: .statTealBg,  fg: .statTealFg)) }
+        if item.energyBoost    > 0 { badges.append(.init(icon: "bolt.fill",    label: "+\(pct(item.energyBoost))",    bg: .statTealBg,  fg: .statTealFg)) }
         return badges
     }
 
@@ -314,7 +331,7 @@ struct StoreItemCard: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 4) {
                     ForEach(badges) { badge in
-                        Text(badge.label)
+                        Label(badge.label, systemImage: badge.icon)
                             .font(.system(.caption2, design: .rounded).weight(.semibold))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
@@ -331,8 +348,9 @@ struct StoreItemCard: View {
 
     private var priceLabel: some View {
         HStack(spacing: 3) {
-            Text(item.currency == .coins ? "🪙" : "💎")
+            Image(systemName: item.currency == .coins ? "dollarsign.circle.fill" : "diamond.fill")
                 .font(.system(size: 13))
+                .foregroundStyle(item.currency == .coins ? Color(hex: "#F59E0B") : Color.storePrimary)
             Text("\(item.price)")
                 .font(.system(.subheadline, design: .rounded).weight(.bold))
                 .foregroundStyle(Color.storeDark)
@@ -350,7 +368,7 @@ struct StoreItemCard: View {
                         .scaleEffect(0.75)
                         .frame(width: 60)
                 } else {
-                    Text("Acquista 🛒")
+                    Text("Acquista")
                 }
             }
             .font(.system(.caption, design: .rounded).weight(.bold))
@@ -396,7 +414,7 @@ private struct GemPackSheet: View {
                 .padding(.top, 14)
                 .padding(.bottom, 20)
 
-            Text("💎 Acquista Gemme")
+            Label("Acquista Gemme", systemImage: "diamond.fill")
                 .font(.system(.title2, design: .rounded).weight(.heavy))
                 .foregroundStyle(Color.storeDark)
 
@@ -439,7 +457,9 @@ private struct GemPackRow: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
-                    Text("💎 \(pack.gems)")
+                    Image(systemName: "diamond.fill")
+                        .foregroundStyle(Color(hex: "#7B5CC8"))
+                    Text("\(pack.gems)")
                         .font(.system(.headline, design: .rounded).weight(.bold))
                         .foregroundStyle(Color.storeDark)
                     if let bonus = pack.bonusLabel {
@@ -466,7 +486,7 @@ private struct GemPackRow: View {
                             .scaleEffect(0.85)
                             .frame(width: 90)
                     } else {
-                        Text("Acquista 🛒")
+                        Text("Acquista")
                     }
                 }
                 .font(.system(.subheadline, design: .rounded).weight(.bold))

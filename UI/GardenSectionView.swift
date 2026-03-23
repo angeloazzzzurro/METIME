@@ -2,12 +2,10 @@ import SwiftUI
 import SpriteKit
 
 // MARK: - GardenSectionView
-// Il giardino esistente con SpriteKit (GardenScene) + azioni rapide.
 
 struct GardenSectionView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var store: GameStore
-    @Environment(\.dismiss) private var dismiss
 
     @State private var scene: GardenScene = {
         let s = GardenScene(size: UIScreen.main.bounds.size)
@@ -22,16 +20,30 @@ struct GardenSectionView: View {
                 .onAppear { scene.mood = appState.mood }
                 .onChange(of: appState.mood) { _, m in scene.mood = m }
 
-            VStack(spacing: 0) {
-                sectionHeader(title: "🌿 Giardino", tint: .green)
-
-                HStack(spacing: 12) {
-                    SectionActionButton(icon: "leaf.fill",          label: "Annaffia", tint: .green)  { store.feed() }
-                    SectionActionButton(icon: "hare.fill",          label: "Gioca",    tint: .blue)   { store.play() }
-                }
-                .padding(.bottom, 34)
-                .padding(.horizontal, 20)
+            HStack(spacing: 12) {
+                gardenButton(icon: "leaf.fill", label: "Annaffia", color: Color(hex: "#34D399")) { store.feed() }
+                gardenButton(icon: "hare.fill",  label: "Gioca",    color: Color(hex: "#60A5FA")) { store.play() }
             }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 34)
         }
+    }
+
+    private func gardenButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                Text(label)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(color, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: color.opacity(0.4), radius: 8, y: 4)
+        }
+        .buttonStyle(.plain)
     }
 }

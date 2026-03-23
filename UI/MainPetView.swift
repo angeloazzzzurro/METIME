@@ -276,36 +276,6 @@ struct MainPetView: View {
     }
 }
 
-// MARK: - HomePetNavButton
-
-private struct HomePetNavButton: View {
-    let icon: String
-    let label: String
-    let color: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(.white)
-                    .padding(10)
-                    .background(color)
-                    .clipShape(Capsule())
-                Text(label)
-                    .font(.headline.weight(.semibold))
-                    .foregroundColor(color)
-            }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 12)
-            .background(color.opacity(0.12))
-            .cornerRadius(18)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 // MARK: - HomePetTabButton
 
 private struct HomePetTabButton: View {

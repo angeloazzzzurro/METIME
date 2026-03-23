@@ -15,137 +15,46 @@ struct HouseView: View {
         return s
     }()
 
-    @State private var showStore = false
-    @State private var showInventory = false
-    @State private var selectedItem: OwnedItem? = nil
-    @State private var showUseConfirm = false
     @EnvironmentObject private var navigationState: NavigationState
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            LinearGradient(
-                colors: [
-                    Color(red: 1.0, green: 0.92, blue: 0.96),
-                    Color(red: 0.92, green: 0.88, blue: 1.0)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                LinearGradient(
+                    colors: [
+                        Color(red: 1.0, green: 0.92, blue: 0.96),
+                        Color(red: 0.92, green: 0.88, blue: 1.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
 
-            backgroundDecorations
+                backgroundDecorations
 
-            switch navigationState.activeSection {
-            case .home:
                 VStack(spacing: 0) {
                     topBar
-                    GeometryReader { geo in
-                        SpriteView(scene: scene, options: [.allowsTransparency])
-                            .frame(width: geo.size.width, height: geo.size.height)
-                            .onAppear {
-                                scene.size = CGSize(width: geo.size.width, height: geo.size.height)
+                    let sceneHeight = geo.size.height * 0.55
+                    SpriteView(scene: scene, options: [.allowsTransparency])
+                        .frame(width: geo.size.width, height: sceneHeight)
+                        .onAppear {
+                            scene.size = CGSize(width: geo.size.width, height: sceneHeight)
+                        }
+                        .onChange(of: gameStore.pet.moodRaw) { _, newVal in
+                            if let mood = PetMood(rawValue: newVal) {
+                                scene.mood = mood
                             }
-                    }
-                    .frame(height: 320)
-                    .onChange(of: gameStore.pet.moodRaw) { _, newVal in
-                        if let mood = PetMood(rawValue: newVal) {
-                            scene.mood = mood
                         }
-                    }
-                    .onChange(of: houseStore.itemsPlacedInRoom()) { _, placed in
-                        scene.placedItems = placed.compactMap { item in
-                            guard let x = item.roomPositionX,
-                                  let y = item.roomPositionY else { return nil }
-                            return (itemID: item.itemID, position: CGPoint(x: x, y: y))
+                        .onChange(of: houseStore.itemsPlacedInRoom()) { _, placed in
+                            scene.placedItems = placed.compactMap { item in
+                                guard let x = item.roomPositionX,
+                                      let y = item.roomPositionY else { return nil }
+                                return (itemID: item.itemID, position: CGPoint(x: x, y: y))
+                            }
                         }
-                    }
                     actionBar
                     Spacer()
                 }
-            case .garden:
-                GardenSectionView()
-                    .environmentObject(gameStore)
-                    .environmentObject(houseStore)
-            case .store:
-                ShopSectionView()
-                    .environmentObject(gameStore)
-                    .environmentObject(houseStore)
-            case .inventory:
-                Text("Zaino")
-                    .font(.largeTitle)
-                    .foregroundColor(Color(hex: "#60A5FA"))
-                    .padding()
-            case .decorate:
-                Text("Decora")
-                    .font(.largeTitle)
-                    .foregroundColor(Color(hex: "#A78BFA"))
-                    .padding()
-            case .meTime:
-                NavigationStack {
-                    CareRitualMockupView()
-                }
             }
-
-            VStack(spacing: 12) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        HomePetNavButton(icon: "bag.fill", label: "Store", color: Color(hex: "#F87171")) {
-                            navigationState.activeSection = .store
-                        }
-                        HomePetNavButton(icon: "backpack.fill", label: "Zaino", color: Color(hex: "#60A5FA")) {
-                            navigationState.activeSection = .inventory
-                        }
-                        HomePetNavButton(icon: "wand.and.stars", label: "Decora", color: Color(hex: "#A78BFA")) {
-                            navigationState.activeSection = .decorate
-                        }
-                        HomePetNavButton(icon: "sparkles.rectangle.stack.fill", label: "Me Time", color: Color(hex: "#F59E0B")) {
-                            navigationState.activeSection = .meTime
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 8)
-                }
-                .background(Color.white)
-                .cornerRadius(24)
-                .shadow(color: Color.black.opacity(0.08), radius: 8, y: 2)
-
-                HStack(spacing: 0) {
-                    HomePetTabButton(icon: "leaf", label: "Giardino", selected: navigationState.activeSection == .garden) {
-                        navigationState.activeSection = .garden
-                    }
-                    HomePetTabButton(icon: "house.fill", label: "Casa", selected: navigationState.activeSection == .home) {
-                        navigationState.activeSection = .home
-                    }
-                }
-                .frame(height: 56)
-                .background(Color.white)
-                .cornerRadius(18)
-                .shadow(color: Color.black.opacity(0.06), radius: 6, y: 1)
-                .padding(.horizontal, 32)
-                .padding(.bottom, 8)
-            }
-        }
-        .sheet(isPresented: $showStore) {
-            StoreSheetView()
-                .environmentObject(houseStore)
-                .environmentObject(gameStore)
-        }
-        .sheet(isPresented: $showInventory) {
-            InventorySheetView(selectedItem: $selectedItem, showUseConfirm: $showUseConfirm)
-                .environmentObject(houseStore)
-                .environmentObject(gameStore)
-        }
-        .confirmationDialog(
-            "Usare \(selectedItem?.definition?.name ?? "oggetto")?",
-            isPresented: $showUseConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Usa") {
-                if let item = selectedItem {
-                    _ = houseStore.useItem(item, on: gameStore)
-                }
-            }
-            Button("Annulla", role: .cancel) {}
         }
     }
 
@@ -188,36 +97,35 @@ struct HouseView: View {
     // MARK: - Action Bar
 
     private var actionBar: some View {
-        HStack(spacing: 16) {
-            actionButton(icon: "🛍️", label: "Store", color: Color(red: 0.9, green: 0.4, blue: 0.6)) {
-                showStore = true
-            }
-            actionButton(icon: "🎒", label: "Zaino", color: Color(red: 0.4, green: 0.6, blue: 0.9)) {
-                showInventory = true
-            }
-            actionButton(icon: "✨", label: "Decora", color: Color(red: 0.6, green: 0.4, blue: 0.9)) {
-                // TODO: modalità posizionamento oggetti
-            }
+        HStack(spacing: 12) {
+            actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#F87171")) { navigationState.activeSection = .store }
+            actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#60A5FA")) { navigationState.activeSection = .inventory }
+            actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#A78BFA")) { navigationState.activeSection = .decorate }
+            actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#F59E0B")) { navigationState.activeSection = .meTime }
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Color.white.opacity(0.9), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .shadow(color: Color.black.opacity(0.08), radius: 8, y: 2)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 12)
     }
 
     private func actionButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 6) {
-                Text(icon)
-                    .font(.system(size: 28))
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(color, in: Circle())
                 Text(label)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
                     .foregroundColor(color)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.white.opacity(0.75))
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .shadow(color: color.opacity(0.2), radius: 6, x: 0, y: 3)
         }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Background Decorations
@@ -245,57 +153,6 @@ struct HouseView: View {
     }
 }
 
-// MARK: - House Navigation Buttons
-
-private struct HomePetNavButton: View {
-    let icon: String
-    let label: String
-    let color: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(.white)
-                    .padding(10)
-                    .background(color)
-                    .clipShape(Capsule())
-                Text(label)
-                    .font(.headline.weight(.semibold))
-                    .foregroundColor(color)
-            }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 12)
-            .background(color.opacity(0.12))
-            .cornerRadius(18)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private struct HomePetTabButton: View {
-    let icon: String
-    let label: String
-    let selected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundColor(selected ? Color(hex: "#A78BFA") : Color.gray.opacity(0.6))
-                Text(label)
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(selected ? Color(hex: "#A78BFA") : Color.gray.opacity(0.6))
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.plain)
-    }
-}
 
 // MARK: - StoreSheetView
 
@@ -330,10 +187,8 @@ struct StoreSheetView: View {
                             spacing: 22
                         ) {
                             ForEach(filteredItems, id: \.id) { item in
-                                StoreItemCard(item: item) {
-                                    handlePurchase(item: item)
-                                }
-                                .environmentObject(houseStore)
+                                StoreItemCard(item: item)
+                                    .environmentObject(houseStore)
                             }
                         }
                         .padding(.horizontal, 22)
@@ -597,215 +452,6 @@ struct StoreSheetView: View {
     }
 }
 
-// MARK: - StoreItemCard
-
-struct StoreItemCard: View {
-    @EnvironmentObject var houseStore: HouseStore
-    let item: HouseItemDefinition
-    let onBuy: () -> Void
-
-    var isOwned: Bool { houseStore.owns(itemID: item.id) }
-    var qty: Int { houseStore.quantity(of: item.id) }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .center, spacing: 6) {
-                Text(titleEmoji)
-                    .font(.system(size: 14))
-                Text(item.name.replacingOccurrences(of: " Magica", with: ""))
-                    .font(.system(size: 16, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(hex: "#4A345D"))
-                    .lineLimit(1)
-                Spacer()
-                if qty > 1 {
-                    Text("x\(qty)")
-                        .font(.system(size: 9, weight: .black, design: .rounded))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 4)
-                        .background(Color(hex: "#8B67D6"))
-                        .clipShape(Capsule())
-                }
-                rarityBadge
-            }
-            .padding(.top, 14)
-            .padding(.horizontal, 14)
-
-            Text(centerEmoji)
-                .font(.system(size: 60))
-                .frame(maxWidth: .infinity)
-                .padding(.top, 16)
-                .padding(.bottom, 12)
-
-            Text(shortDescription)
-                .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(Color(hex: "#5D4A57"))
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 18)
-                .frame(minHeight: 44)
-
-            effectsBadges
-                .padding(.top, 10)
-
-            Spacer(minLength: 12)
-
-            HStack(alignment: .center) {
-                Text(priceText)
-                    .font(.system(size: 17, weight: .heavy, design: .rounded))
-                    .foregroundStyle(priceColor)
-
-                Spacer(minLength: 8)
-
-                Button(action: onBuy) {
-                    Text(isOwned && !item.isConsumable ? "Tuo" : "Acquista 🛒")
-                        .font(.system(size: 11.5, weight: .black, design: .rounded))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 13)
-                        .padding(.vertical, 8)
-                        .background(isOwned && !item.isConsumable ? Color(hex: "#C3B5DC") : Color(hex: "#8B67D6"))
-                        .clipShape(Capsule())
-                        .shadow(color: Color(hex: "#8B67D6").opacity(0.22), radius: 6, y: 3)
-                }
-                .buttonStyle(.plain)
-                .disabled(isOwned && !item.isConsumable)
-                .opacity(isOwned && !item.isConsumable ? 0.9 : 1)
-            }
-            .padding(.horizontal, 14)
-            .padding(.bottom, 14)
-        }
-        .frame(maxWidth: .infinity, minHeight: 258)
-        .background(Color.white.opacity(0.97))
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color(hex: "#CDAEF0"), lineWidth: 1.6)
-        }
-        .shadow(color: Color(hex: "#A980E2").opacity(0.24), radius: 12, y: 6)
-    }
-
-    private var effectsBadges: some View {
-        HStack(spacing: 6) {
-            if item.hungerBoost > 0    { effectBadge("🍽️", item.hungerBoost) }
-            if item.happinessBoost > 0 { effectBadge("😊", item.happinessBoost) }
-            if item.calmBoost > 0      { effectBadge("🌿", item.calmBoost) }
-            if item.energyBoost > 0    { effectBadge("⚡", item.energyBoost) }
-        }
-        .padding(.horizontal, 14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func effectBadge(_ icon: String, _ value: Double) -> some View {
-        HStack(spacing: 4) {
-            Text("+\(Int(value * 100))%")
-            Text(icon)
-        }
-        .font(.system(size: 10, weight: .bold, design: .rounded))
-        .foregroundStyle(effectColor(icon))
-        .padding(.horizontal, 8)
-        .padding(.vertical, 5)
-        .background(effectBackground(icon))
-        .clipShape(Capsule())
-    }
-
-    private var priceText: String {
-        item.currency == .coins ? "🪙 \(item.price)" : "💎 \(item.price)"
-    }
-
-    private var priceColor: Color {
-        item.currency == .coins ? Color(hex: "#D18B00") : Color(hex: "#7C3AED")
-    }
-
-    private var purchaseLabel: String {
-        item.currency == .coins ? "Acquista" : "Sblocca"
-    }
-
-    private var titleEmoji: String {
-        switch item.id {
-        case "food_carrot": return "🥕"
-        case "food_cookie": return "🍪"
-        case "food_cake": return "🎂"
-        case "food_tea": return "🍵"
-        default: return emojiFor(item)
-        }
-    }
-
-    private var centerEmoji: String {
-        emojiFor(item)
-    }
-
-    private var shortDescription: String {
-        switch item.id {
-        case "food_carrot":
-            return "Un gustoso spuntino salutare."
-        case "food_cookie":
-            return "Perfetto per una pausa dolce."
-        case "food_cake":
-            return "Una festa per il palato!"
-        case "food_tea":
-            return "Rilassante e rigenerante."
-        default:
-            return item.description
-        }
-    }
-
-    @ViewBuilder
-    private var rarityBadge: some View {
-        switch item.rarity {
-        case .common:
-            EmptyView()
-        case .rare:
-            Text("💜 Raro")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(Color(hex: "#8B67D6"))
-                .clipShape(Capsule())
-        case .legendary:
-            Text("⭐ Leggendario")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .background(Color(hex: "#F2A93B"))
-                .clipShape(Capsule())
-        }
-    }
-
-    private func effectBackground(_ icon: String) -> Color {
-        if icon == "😊" {
-            return Color(hex: "#FDE1E8")
-        }
-        return Color(hex: "#E7F4D7")
-    }
-
-    private func effectColor(_ icon: String) -> Color {
-        if icon == "😊" {
-            return Color(hex: "#D65D7A")
-        }
-        return Color(hex: "#5D9652")
-    }
-
-    private func emojiFor(_ def: HouseItemDefinition) -> String {
-        switch def.id {
-        case "food_carrot":       return "🥕"
-        case "food_cookie":       return "🍪"
-        case "food_cake":         return "🎂"
-        case "food_tea":          return "🍵"
-        case "essential_bowl":    return "🥣"
-        case "essential_cushion": return "🛋️"
-        case "essential_blanket": return "🛏️"
-        case "deco_plant":        return "🪴"
-        case "deco_lamp":         return "🌙"
-        case "deco_rug":          return "🪄"
-        case "special_crystal":   return "💎"
-        case "special_book":      return "📖"
-        case "special_candle":    return "🕯️"
-        default:                  return "📦"
-        }
-    }
-}
 
 // MARK: - InventorySheetView
 

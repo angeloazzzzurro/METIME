@@ -1,5 +1,3 @@
-    // Lista delle sezioni navigabili (solo quelle principali)
-    private let sections: [ActiveSection] = [.home, .garden, .store, .inventory, .decorate, .meTime]
 import SwiftUI
 import SpriteKit
 
@@ -14,6 +12,8 @@ struct MainPetView: View {
     @EnvironmentObject private var navigationState: NavigationState
     @EnvironmentObject private var houseStore: HouseStore
 
+    private let sections: [NavigationState.Section] = [.home, .garden, .store, .inventory, .decorate, .meTime]
+
     @State private var showJournal = false
     @State private var feedShake: CGFloat = 0
 
@@ -25,11 +25,7 @@ struct MainPetView: View {
     }()
 
     var body: some View {
-        ZStack(alignment: .top) {
-            kawaiiBg.ignoresSafeArea()
-            KawaiiDecorations().ignoresSafeArea()
-
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
                 // ── Barra di navigazione fissa in alto ──
                 navBar
 
@@ -37,7 +33,10 @@ struct MainPetView: View {
                 Group {
                     switch navigationState.activeSection {
                     case .home:
-                        homeSection
+                        HouseView()
+                            .environmentObject(store)
+                            .environmentObject(houseStore)
+                            .environmentObject(navigationState)
                     case .garden:
                         GardenSectionView()
                             .environmentObject(appState)
@@ -65,7 +64,6 @@ struct MainPetView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
         }
         // ── Gesture swipe per navigazione tra sezioni ──
         .gesture(
@@ -101,66 +99,32 @@ struct MainPetView: View {
         }
     }
 
-    // MARK: - Nav Bar (fissa in alto)
+    // MARK: - Nav Bar (solo Giardino | Casa)
 
     private var navBar: some View {
-        VStack(spacing: 8) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    HomePetNavButton(icon: "bag.fill", label: "Store", color: Color(hex: "#F87171")) {
-                        navigationState.activeSection = .store
-                    }
-                    HomePetNavButton(icon: "backpack.fill", label: "Zaino", color: Color(hex: "#60A5FA")) {
-                        navigationState.activeSection = .inventory
-                    }
-                    HomePetNavButton(icon: "wand.and.stars", label: "Decora", color: Color(hex: "#A78BFA")) {
-                        navigationState.activeSection = .decorate
-                    }
-                    HomePetNavButton(icon: "sparkles.rectangle.stack.fill", label: "Me Time", color: Color(hex: "#F59E0B")) {
-                        navigationState.activeSection = .meTime
-                    }
-                        Menu {
-                            ForEach(sections, id: \.self) { section in
-                                Button(action: { navigationState.activeSection = section }) {
-                                    Text(section.label)
-                                }
-                            }
-                        } label: {
-                            HomePetNavButton(icon: "ellipsis.circle", label: "Altro", color: Color(hex: "#10B981")) {}
-                        }
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 8)
+        HStack(spacing: 0) {
+            HomePetTabButton(
+                icon: "leaf",
+                label: "Giardino",
+                selected: navigationState.activeSection == .garden
+            ) {
+                navigationState.activeSection = .garden
             }
-            .background(Color.white)
-            .cornerRadius(24)
-            .shadow(color: Color.black.opacity(0.08), radius: 8, y: 2)
-
-            HStack(spacing: 0) {
-                HomePetTabButton(
-                    icon: "leaf",
-                    label: "Giardino",
-                    selected: navigationState.activeSection == .garden
-                ) {
-                    navigationState.activeSection = .garden
-                }
-                HomePetTabButton(
-                    icon: "house.fill",
-                    label: "Casa",
-                    selected: navigationState.activeSection == .home
-                ) {
-                    navigationState.activeSection = .home
-                }
+            HomePetTabButton(
+                icon: "house.fill",
+                label: "Casa",
+                selected: navigationState.activeSection == .home
+            ) {
+                navigationState.activeSection = .home
             }
-            .frame(height: 56)
-            .background(Color.white)
-            .cornerRadius(18)
-            .shadow(color: Color.black.opacity(0.06), radius: 6, y: 1)
-            .padding(.horizontal, 32)
         }
+        .frame(height: 56)
+        .background(Color.white)
+        .cornerRadius(18)
+        .shadow(color: Color.black.opacity(0.08), radius: 6, y: 2)
+        .padding(.horizontal, 16)
         .padding(.top, 8)
         .padding(.bottom, 4)
-        .padding(.horizontal, 16)
     }
 
     // MARK: - Home Section

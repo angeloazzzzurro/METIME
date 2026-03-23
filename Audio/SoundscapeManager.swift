@@ -45,9 +45,7 @@ final class SoundscapeManager {
     private func setupGraph() {
         engine.attach(player)
         engine.attach(mixer)
-        engine.connect(player, to: mixer, format: nil)
-        engine.connect(mixer, to: engine.mainMixerNode, format: nil)
-        mixer.outputVolume = 0.6
+        engine.mainMixerNode.outputVolume = 0.6
     }
 
     private func setupSession() {
@@ -66,6 +64,11 @@ final class SoundscapeManager {
 
         try? file.read(into: buffer)
         player.stop()
+
+        // Reconnect with the correct format for this file to avoid channel mismatch
+        engine.disconnectNodeOutput(player)
+        engine.connect(player, to: engine.mainMixerNode, format: file.processingFormat)
+
         player.scheduleBuffer(buffer, at: nil, options: [.loops], completionHandler: nil)
         player.play()
     }

@@ -7,3 +7,4 @@ build/
 scripts/auto_commit.log
 scripts/watcher.out
 scripts/watcher.pid
+.vscode/

@@ -16,55 +16,100 @@ struct GardenSectionView: View {
     @State private var gardenPurchaseMessage: String?
 
     var body: some View {
-        ZStack {
-            SpriteView(scene: scene, options: [.allowsTransparency])
-                .ignoresSafeArea()
-                .onAppear {
-                    scene.mood = appState.mood
-                    scene.applyPetColor(store.currentPetColor, animated: false)
-                    scene.unlockedPlotCount = houseStore.unlockedGardenPlots
-                    scene.terrainExpansionLevel = houseStore.gardenTerrainExpansionLevel
-                }
-                .onChange(of: appState.mood) { _, m in scene.mood = m }
-                .onChange(of: store.pet.colorIndex) { _, _ in
-                    scene.applyPetColor(store.currentPetColor)
-                }
-                .onChange(of: houseStore.unlockedGardenPlots) { _, newCount in
-                    scene.unlockedPlotCount = newCount
-                }
-                .onChange(of: houseStore.gardenTerrainExpansionLevel) { _, newLevel in
-                    scene.terrainExpansionLevel = newLevel
-                }
+        GeometryReader { proxy in
+            let compact = proxy.size.width < 430
 
-            gardenOverlay
-        }
-    }
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: compact ? 10 : 14) {
+                    SpriteView(scene: scene, options: [.allowsTransparency])
+                        .frame(maxWidth: .infinity)
+                        .frame(height: compact ? min(max(proxy.size.height * 0.54, 320), 420) : min(max(proxy.size.height * 0.56, 360), 520))
+                        .background(
+                            RoundedRectangle(cornerRadius: compact ? 28 : 34, style: .continuous)
+                                .fill(Color.white.opacity(0.08))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: compact ? 28 : 34, style: .continuous)
+                                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                        )
+                        .overlay(alignment: .bottomTrailing) {
+                            JoystickControl(
+                                onMove: { vector in
+                                    scene.setMovementVector(vector)
+                                },
+                                onEnd: {
+                                    scene.stopMovement()
+                                }
+                            )
+                            .padding(.trailing, compact ? 14 : 18)
+                            .padding(.bottom, compact ? 14 : 18)
+                        }
+                        .clipped()
+                        .padding(.horizontal, compact ? 12 : 18)
+                        .padding(.top, compact ? 8 : 12)
+                        .onAppear {
+                            scene.mood = appState.mood
+                            scene.applyPetColor(store.currentPetColor, animated: false)
+                            scene.unlockedPlotCount = houseStore.unlockedGardenPlots
+                            scene.terrainExpansionLevel = houseStore.gardenTerrainExpansionLevel
+                        }
+                        .onDisappear {
+                            scene.stopMovement()
+                        }
+                        .onChange(of: appState.mood) { _, m in scene.mood = m }
+                        .onChange(of: store.pet.colorIndex) { _, _ in
+                            scene.applyPetColor(store.currentPetColor)
+                        }
+                        .onChange(of: houseStore.unlockedGardenPlots) { _, newCount in
+                            scene.unlockedPlotCount = newCount
+                        }
+                        .onChange(of: houseStore.gardenTerrainExpansionLevel) { _, newLevel in
+                            scene.terrainExpansionLevel = newLevel
+                        }
 
-    private var gardenOverlay: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: 12) {
-                gardenHeroCard
-                gardenStatsColumn
+                    Group {
+                        if compact {
+                            VStack(spacing: 10) {
+                                gardenHeroCard(compact: compact)
+                                gardenStatsRow
+                            }
+                        } else {
+                            HStack(alignment: .top, spacing: 12) {
+                                gardenHeroCard(compact: compact)
+                                gardenStatsColumn
+                            }
+                        }
+                    }
+                    .padding(.horizontal, compact ? 12 : 18)
+
+                    gardenBottomDock(compact: compact)
+                        .padding(.horizontal, compact ? 12 : 18)
+                        .padding(.bottom, compact ? 12 : 16)
+                }
+                .frame(maxWidth: .infinity, alignment: .top)
             }
-            .padding(.horizontal, 18)
-            .padding(.top, 12)
-
-            Spacer()
-
-            gardenBottomDock
-                .padding(.horizontal, 18)
-                .padding(.bottom, 10)
+            .background(
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.98, green: 0.96, blue: 0.89),
+                        Color(red: 0.87, green: 0.96, blue: 0.86),
+                        Color(red: 0.78, green: 0.89, blue: 0.79)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
         }
     }
 
-    private var gardenHeroCard: some View {
+    private func gardenHeroCard(compact: Bool) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Giardino")
-                .font(.system(size: 24, weight: .black, design: .rounded))
+                .font(.system(size: compact ? 22 : 24, weight: .black, design: .rounded))
                 .foregroundStyle(Color(hex: "#2E5F3C"))
 
             Text("Uno spazio piu arioso con aiuole, sentiero e nuove zollette da sbloccare.")
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .font(.system(size: compact ? 11 : 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(Color(hex: "#5D8462"))
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -102,8 +147,16 @@ struct GardenSectionView: View {
         }
     }
 
-    private var gardenBottomDock: some View {
-        VStack(spacing: 12) {
+    private var gardenStatsRow: some View {
+        HStack(spacing: 8) {
+            compactStatPill(icon: "dollarsign.circle.fill", value: "\(houseStore.wallet.coins)", tint: Color(hex: "#D69A2A"))
+            compactStatPill(icon: "square.grid.2x2.fill", value: "\(houseStore.unlockedGardenPlots)/\(HouseStore.maxGardenPlots)", tint: Color(hex: "#53A86A"))
+            compactStatPill(icon: "arrow.up.left.and.arrow.down.right", value: "\(houseStore.gardenTerrainExpansionLevel)/\(HouseStore.maxGardenTerrainExpansions)", tint: Color(hex: "#6E8CFF"))
+        }
+    }
+
+    private func gardenBottomDock(compact: Bool) -> some View {
+        let dockContent = VStack(spacing: 12) {
             if let gardenPurchaseMessage {
                 Text(gardenPurchaseMessage)
                     .font(.system(size: 12, weight: .black, design: .rounded))
@@ -197,10 +250,28 @@ struct GardenSectionView: View {
                 .buttonStyle(.plain)
                 .disabled(!houseStore.canPurchaseGardenTerrain)
 
-                HStack(spacing: 10) {
-                    gardenButton(icon: "drop.fill", label: "Annaffia", subtitle: "Cura il prato", color: Color(hex: "#34C99A")) { store.feed() }
-                    gardenButton(icon: "figure.run", label: "Gioca", subtitle: "Alza il mood", color: Color(hex: "#5C9AF7")) { store.play() }
+                if compact {
+                    VStack(spacing: 10) {
+                        gardenButton(icon: "drop.fill", label: "Annaffia", subtitle: "Cura il prato", color: Color(hex: "#34C99A")) { store.feed() }
+                        gardenButton(icon: "figure.run", label: "Gioca", subtitle: "Alza il mood", color: Color(hex: "#5C9AF7")) { store.play() }
+                    }
+                } else {
+                    HStack(spacing: 10) {
+                        gardenButton(icon: "drop.fill", label: "Annaffia", subtitle: "Cura il prato", color: Color(hex: "#34C99A")) { store.feed() }
+                        gardenButton(icon: "figure.run", label: "Gioca", subtitle: "Alza il mood", color: Color(hex: "#5C9AF7")) { store.play() }
+                    }
                 }
+            }
+        }
+
+        return Group {
+            if compact {
+                ScrollView(.vertical, showsIndicators: false) {
+                    dockContent
+                }
+                .frame(maxHeight: 260)
+            } else {
+                dockContent
             }
         }
     }
@@ -227,6 +298,26 @@ struct GardenSectionView: View {
                 .stroke(Color.white.opacity(0.55), lineWidth: 1)
         )
         .shadow(color: tint.opacity(0.10), radius: 10, y: 5)
+    }
+
+    private func compactStatPill(icon: String, value: String, tint: Color) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .black))
+            Text(value)
+                .font(.system(size: 12, weight: .black, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .foregroundStyle(tint)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 9)
+        .background(Color.white.opacity(0.88), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.white.opacity(0.55), lineWidth: 1)
+        )
     }
 
     private func tagChip(icon: String, text: String) -> some View {
@@ -343,4 +434,3 @@ struct GardenSectionView: View {
         .buttonStyle(.plain)
     }
 }
-

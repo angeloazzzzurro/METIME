@@ -10,6 +10,10 @@ final class GardenScene: SKScene {
 
     private var weather: SKEmitterNode?
     private var hasBuiltScene = false
+    private var movementVector: CGVector = .zero
+    private var lastMovementUpdateTime: TimeInterval?
+    private let movementSpeed: CGFloat = 138
+    private var currentBoardFrame: CGRect = .zero
 
     var onPetTapped: (() -> Void)?
 
@@ -55,6 +59,30 @@ final class GardenScene: SKScene {
         updateWeather()
     }
 
+    override func update(_ currentTime: TimeInterval) {
+        super.update(currentTime)
+
+        guard movementVector != .zero else {
+            lastMovementUpdateTime = currentTime
+            return
+        }
+
+        let deltaTime: CGFloat
+        if let lastMovementUpdateTime {
+            deltaTime = CGFloat(min(currentTime - lastMovementUpdateTime, 1.0 / 20.0))
+        } else {
+            deltaTime = 1.0 / 60.0
+        }
+        lastMovementUpdateTime = currentTime
+
+        movePet(
+            by: CGVector(
+                dx: movementVector.dx * movementSpeed * deltaTime,
+                dy: movementVector.dy * movementSpeed * deltaTime
+            )
+        )
+    }
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: worldLayer)
@@ -70,6 +98,22 @@ final class GardenScene: SKScene {
         petNode.setColor(color, animated: animated)
     }
 
+    func setMovementVector(_ vector: CGVector) {
+        let length = hypot(vector.dx, vector.dy)
+        guard length > 0.01 else {
+            stopMovement()
+            return
+        }
+
+        movementVector = CGVector(dx: vector.dx / length, dy: vector.dy / length)
+        updatePetFacing(for: movementVector.dx)
+    }
+
+    func stopMovement() {
+        movementVector = .zero
+        lastMovementUpdateTime = nil
+    }
+
     private func rebuildGarden() {
         guard size.width > 0, size.height > 0 else { return }
 
@@ -83,6 +127,12 @@ final class GardenScene: SKScene {
         let boardWidth = min(size.width * widthScale, 430 + CGFloat(terrainExpansionLevel) * 48)
         let boardHeight = min(size.height * heightScale, 270 + CGFloat(terrainExpansionLevel) * 30)
         let boardCenterY = size.height * (0.44 + CGFloat(terrainExpansionLevel) * 0.012)
+        currentBoardFrame = CGRect(
+            x: centerX - boardWidth * 0.5,
+            y: boardCenterY - boardHeight * 0.5,
+            width: boardWidth,
+            height: boardHeight
+        )
 
         let grassBoard = SKShapeNode(rectOf: CGSize(width: boardWidth, height: boardHeight), cornerRadius: 34)
         grassBoard.fillColor = lawnColor
@@ -314,6 +364,37 @@ final class GardenScene: SKScene {
         petShadow.strokeColor = .clear
         petShadow.position = CGPoint(x: petNode.position.x, y: petNode.position.y - 34)
         petShadow.zPosition = 399
+    }
+
+    private func movePet(by delta: CGVector) {
+        let targetPosition = CGPoint(
+            x: petNode.position.x + delta.dx,
+            y: petNode.position.y + delta.dy
+        )
+        let clampedPosition = clampedPetPosition(targetPosition)
+
+        petNode.position = clampedPosition
+        petShadow.position = CGPoint(x: clampedPosition.x, y: clampedPosition.y - 34)
+    }
+
+    private func clampedPetPosition(_ position: CGPoint) -> CGPoint {
+        let insetX = max(currentBoardFrame.width * 0.12, 44)
+        let insetY = max(currentBoardFrame.height * 0.18, 42)
+        let minX = currentBoardFrame.minX + insetX
+        let maxX = currentBoardFrame.maxX - insetX
+        let minY = currentBoardFrame.minY + insetY
+        let maxY = currentBoardFrame.maxY - insetY
+
+        return CGPoint(
+            x: min(max(position.x, minX), maxX),
+            y: min(max(position.y, minY), maxY)
+        )
+    }
+
+    private func updatePetFacing(for horizontalComponent: CGFloat) {
+        guard abs(horizontalComponent) > 0.08 else { return }
+        let direction: CGFloat = horizontalComponent < 0 ? -1 : 1
+        petNode.xScale = abs(petNode.xScale) * direction
     }
 
     private var lawnColor: UIColor {

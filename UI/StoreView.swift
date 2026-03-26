@@ -86,71 +86,72 @@ struct StoreView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.storeBg.ignoresSafeArea()
+        GeometryReader { proxy in
+            let compact = proxy.size.width < 430
 
-            itemGrid
-        }
-        .safeAreaInset(edge: .top) {
-            stickyStoreHeader
-        }
-        .sheet(isPresented: $showGemSheet) {
-            GemPackSheet()
-                .environmentObject(houseStore)
+            ZStack {
+                Color.storeBg.ignoresSafeArea()
+
+                itemGrid(compact: compact)
+            }
+            .safeAreaInset(edge: .top) {
+                stickyStoreHeader(compact: compact)
+            }
+            .sheet(isPresented: $showGemSheet) {
+                GemPackSheet()
+                    .environmentObject(houseStore)
+            }
         }
     }
 
     // MARK: Header Bar
 
-    private var headerBar: some View {
+    private func headerBar(compact: Bool) -> some View {
         HStack(spacing: 6) {
-            // Left: Acquista Gemme
             Button { showGemSheet = true } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "diamond.fill")
-                        .font(.system(size: 12))
-                    Text("Acquista Gemme")
-                        .font(.system(.caption, design: .rounded).weight(.bold))
+                        .font(.system(size: compact ? 11 : 12))
+                    Text(compact ? "Gemme" : "Acquista Gemme")
+                        .font(.system(compact ? .caption2 : .caption, design: .rounded).weight(.bold))
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, compact ? 10 : 12)
+                .padding(.vertical, compact ? 7 : 8)
                 .background(Color.storeBtn, in: Capsule())
                 .foregroundStyle(.white)
             }
 
             Spacer(minLength: 4)
 
-            // Center: Title
             Label("Store", systemImage: "basket.fill")
-                .font(.system(.title3, design: .rounded).weight(.heavy))
+                .font(.system(compact ? .headline : .title3, design: .rounded).weight(.heavy))
                 .foregroundStyle(Color.storeDark)
 
             Spacer(minLength: 4)
 
-            // Right: Chiudi
             Button("Chiudi") {
                 navigationState.activeSection = .home
             }
-            .font(.system(.subheadline, design: .rounded).weight(.semibold))
+            .font(.system(compact ? .caption : .subheadline, design: .rounded).weight(.semibold))
             .foregroundStyle(Color.storePrimary)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding(.horizontal, compact ? 12 : 16)
+            .padding(.vertical, compact ? 7 : 8)
             .background(.white, in: Capsule())
             .overlay(Capsule().strokeBorder(Color.storePrimary, lineWidth: 1.5))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, compact ? 12 : 16)
     }
 
     // MARK: Currency Bar
 
-    private var currencyBar: some View {
+    private func currencyBar(compact: Bool) -> some View {
         HStack(spacing: 0) {
             HStack(spacing: 5) {
                 Image(systemName: "dollarsign.circle.fill")
-                    .font(.system(size: 15))
+                    .font(.system(size: compact ? 14 : 15))
                     .foregroundStyle(Color(hex: "#F59E0B"))
                 Text("\(houseStore.wallet.coins)")
-                    .font(.system(.subheadline, design: .rounded).weight(.bold))
+                    .font(.system(compact ? .caption : .subheadline, design: .rounded).weight(.bold))
                     .foregroundStyle(Color.storeDark)
                     .contentTransition(.numericText())
             }
@@ -162,16 +163,16 @@ struct StoreView: View {
 
             HStack(spacing: 5) {
                 Image(systemName: "diamond.fill")
-                    .font(.system(size: 13))
+                    .font(.system(size: compact ? 12 : 13))
                     .foregroundStyle(Color.storePrimary)
                 Text("\(houseStore.wallet.gems)")
-                    .font(.system(.subheadline, design: .rounded).weight(.bold))
+                    .font(.system(compact ? .caption : .subheadline, design: .rounded).weight(.bold))
                     .foregroundStyle(Color.storeDark)
                     .contentTransition(.numericText())
             }
             .frame(maxWidth: .infinity)
         }
-        .padding(.vertical, 11)
+        .padding(.vertical, compact ? 9 : 11)
         .background(.white, in: Capsule())
         .shadow(color: Color.storePrimary.opacity(0.12), radius: 8, y: 3)
     }
@@ -199,21 +200,21 @@ struct StoreView: View {
 
     // MARK: Item Grid
 
-    private var itemGrid: some View {
+    private func itemGrid(compact: Bool) -> some View {
         ScrollView {
             LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
                 Section {
                     LazyVGrid(
-                        columns: [GridItem(.flexible()), GridItem(.flexible())],
-                        spacing: 14
+                        columns: compact ? [GridItem(.flexible())] : [GridItem(.flexible()), GridItem(.flexible())],
+                        spacing: compact ? 12 : 14
                     ) {
                         ForEach(filteredItems) { item in
                             StoreItemCard(item: item)
                                 .environmentObject(houseStore)
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
+                    .padding(.horizontal, compact ? 12 : 16)
+                    .padding(.top, compact ? 12 : 16)
                     .padding(.bottom, 40)
                 } header: {
                     Color.clear.frame(height: 1)
@@ -224,18 +225,18 @@ struct StoreView: View {
         .padding(.top, 10)
     }
 
-    private var stickyStoreHeader: some View {
+    private func stickyStoreHeader(compact: Bool) -> some View {
         VStack(spacing: 0) {
-            headerBar
-                .padding(.top, 8)
+            headerBar(compact: compact)
+                .padding(.top, compact ? 6 : 8)
 
-            currencyBar
-                .padding(.horizontal, 48)
-                .padding(.top, 12)
+            currencyBar(compact: compact)
+                .padding(.horizontal, compact ? 12 : 48)
+                .padding(.top, compact ? 8 : 12)
 
             categoryTabBar
-                .padding(.top, 14)
-                .padding(.bottom, 10)
+                .padding(.top, compact ? 10 : 14)
+                .padding(.bottom, compact ? 8 : 10)
         }
         .background(
             LinearGradient(

@@ -40,6 +40,9 @@ final class HouseScene: SKScene {
             petNode?.setColor(petColor)
         }
     }
+    private var movementVector: CGVector = .zero
+    private var lastMovementUpdateTime: TimeInterval?
+    private let movementSpeed: CGFloat = 132
 
     private let cols: Int = 13
     private let rows: Int = 13
@@ -74,9 +77,13 @@ final class HouseScene: SKScene {
 
     // MARK: - Lifecycle
 
+    private var isCompactScene: Bool {
+        size.width < 390 || size.height < 340
+    }
+
     override func didMove(to view: SKView) {
         backgroundColor = .clear
-        anchorPoint = CGPoint(x: 0.5, y: 0.34)
+        anchorPoint = CGPoint(x: 0.5, y: isCompactScene ? 0.40 : 0.34)
 
         addChild(floorLayer)
         addChild(wallLayer)
@@ -94,6 +101,30 @@ final class HouseScene: SKScene {
         guard sceneConfigured, oldSize != size else { return }
         configureLayout(for: size)
         rebuildScene()
+    }
+
+    override func update(_ currentTime: TimeInterval) {
+        super.update(currentTime)
+
+        guard movementVector != .zero else {
+            lastMovementUpdateTime = currentTime
+            return
+        }
+
+        let deltaTime: CGFloat
+        if let lastMovementUpdateTime {
+            deltaTime = CGFloat(min(currentTime - lastMovementUpdateTime, 1.0 / 20.0))
+        } else {
+            deltaTime = 1.0 / 60.0
+        }
+        lastMovementUpdateTime = currentTime
+
+        movePet(
+            by: CGVector(
+                dx: movementVector.dx * movementSpeed * deltaTime,
+                dy: movementVector.dy * movementSpeed * deltaTime
+            )
+        )
     }
 
     // MARK: - Room Construction
@@ -139,17 +170,23 @@ final class HouseScene: SKScene {
     }
 
     private func configureLayout(for size: CGSize) {
-        let availableWidth = max(size.width * 1.02, 380)
-        let availableHeight = max(size.height * 0.72, 280)
+        let compact = size.width < 390 || size.height < 340
+        let availableWidth = compact ? max(size.width * 0.84, 260) : max(size.width * 1.02, 380)
+        let availableHeight = compact ? max(size.height * 0.56, 180) : max(size.height * 0.72, 280)
 
         let widthBasedTile = availableWidth / CGFloat(cols + rows)
-        let heightBasedTile = availableHeight / CGFloat(rows + cols) * 2.55
-        let resolvedTileW = min(max(min(widthBasedTile, heightBasedTile), 40), 118)
+        let heightBasedTile = availableHeight / CGFloat(rows + cols) * (compact ? 2.15 : 2.55)
+        let minimumTile: CGFloat = compact ? 28 : 40
+        let maximumTile: CGFloat = compact ? 92 : 118
+        let resolvedTileW = min(max(min(widthBasedTile, heightBasedTile), minimumTile), maximumTile)
 
         tileW = resolvedTileW
         tileH = resolvedTileW * 0.5
-        let baseWallHeight = min(max(size.height * 0.34, 110), 196)
+        let baseWallHeight = compact
+            ? min(max(size.height * 0.24, 58), 104)
+            : min(max(size.height * 0.34, 110), 196)
         wallHeight = baseWallHeight
+        anchorPoint = CGPoint(x: 0.5, y: compact ? 0.40 : 0.34)
     }
 
     private func makeTile(col: Int, row: Int) -> SKShapeNode {
@@ -296,6 +333,22 @@ final class HouseScene: SKScene {
         if mood == .evolving {
             runEvolutionCelebration()
         }
+    }
+
+    func setMovementVector(_ vector: CGVector) {
+        let length = hypot(vector.dx, vector.dy)
+        guard length > 0.01 else {
+            stopMovement()
+            return
+        }
+
+        movementVector = CGVector(dx: vector.dx / length, dy: vector.dy / length)
+        updatePetFacing(for: movementVector.dx)
+    }
+
+    func stopMovement() {
+        movementVector = .zero
+        lastMovementUpdateTime = nil
     }
 
     // MARK: - Items
@@ -530,6 +583,50 @@ final class HouseScene: SKScene {
         ])))
         petNode.run(.move(to: CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.18), duration: 0.2))
         runEvolutionCelebration()
+    }
+
+    private func movePet(by delta: CGVector) {
+        guard let petNode, let petShadowNode else { return }
+
+        let targetPosition = CGPoint(
+            x: petNode.position.x + delta.dx,
+            y: petNode.position.y + delta.dy
+        )
+        let clampedPosition = clampedPetPosition(targetPosition)
+
+        petNode.position = clampedPosition
+        petShadowNode.position = CGPoint(
+            x: clampedPosition.x,
+            y: clampedPosition.y - tileH * 1.13
+        )
+    }
+
+    private func clampedPetPosition(_ position: CGPoint) -> CGPoint {
+        let bounds = petMovementBounds()
+        return CGPoint(
+            x: min(max(position.x, bounds.minX), bounds.maxX),
+            y: min(max(position.y, bounds.minY), bounds.maxY)
+        )
+    }
+
+    private func petMovementBounds() -> CGRect {
+        let minX = CGFloat(-(cols - 1)) * (tileW / 2) + tileW * 0.9
+        let maxX = CGFloat(rows - 1) * (tileW / 2) - tileW * 0.9
+        let minY = CGFloat(-(cols + rows - 2)) * (tileH / 2) + tileH * 1.6
+        let maxY = tileH * 2.1
+
+        return CGRect(
+            x: minX,
+            y: minY,
+            width: max(maxX - minX, 1),
+            height: max(maxY - minY, 1)
+        )
+    }
+
+    private func updatePetFacing(for horizontalComponent: CGFloat) {
+        guard let petNode, abs(horizontalComponent) > 0.08 else { return }
+        let direction: CGFloat = horizontalComponent < 0 ? -1 : 1
+        petNode.xScale = abs(petNode.xScale) * direction
     }
 
     private func petBodySize(for stage: Int) -> CGSize {

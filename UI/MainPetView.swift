@@ -24,6 +24,7 @@ struct MainPetView: View {
                 if compact {
                     VStack(spacing: 0) {
                         compactSelectionBar
+                        careFocusPanel(compact: true)
                         currentSectionContent
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -31,13 +32,16 @@ struct MainPetView: View {
                     HStack(spacing: 0) {
                         sideSelectionBar
 
-                        currentSectionContent
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        VStack(spacing: 0) {
+                            careFocusPanel(compact: false)
+                            currentSectionContent
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
                     }
                 }
             }
             .background(Color(hex: "#F8F4FF").ignoresSafeArea())
-            .gesture(
+            .simultaneousGesture(
                 DragGesture(minimumDistance: 40, coordinateSpace: .local)
                     .onEnded { value in
                         let h = value.translation.width
@@ -200,6 +204,150 @@ struct MainPetView: View {
                 }
             }
         }
+    }
+
+    private func careFocusPanel(compact: Bool) -> some View {
+        VStack(spacing: compact ? 10 : 12) {
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Cura del pet")
+                        .font(.system(size: compact ? 18 : 22, weight: .black, design: .rounded))
+                        .foregroundStyle(Color(hex: "#5F467E"))
+                    Text(careHeadline)
+                        .font(.system(size: compact ? 11 : 13, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color(hex: "#8B76A5"))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 8)
+
+                HStack(spacing: compact ? 8 : 10) {
+                    careBadge(
+                        icon: "face.smiling.fill",
+                        label: store.pet.mood.rawValue.capitalized,
+                        tint: tint(forMood: store.pet.mood)
+                    )
+                    careBadge(
+                        icon: "sparkles",
+                        label: "Lv \(store.pet.stage)",
+                        tint: Color(hex: "#F59E0B")
+                    )
+                }
+            }
+
+            if compact {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        careActionButton(icon: "fork.knife", title: "Nutri", tint: Color(hex: "#F97316")) {
+                            store.feed()
+                        }
+                        .offset(x: feedShake)
+
+                        careActionButton(icon: "gamecontroller.fill", title: "Gioca", tint: Color(hex: "#EC4899")) {
+                            store.play()
+                        }
+
+                        careActionButton(icon: "sparkles", title: "Calma", tint: Color(hex: "#60A5FA")) {
+                            store.meditate()
+                        }
+
+                        careActionButton(icon: "book.closed.fill", title: "Diario", tint: Color(hex: "#5A8BCF")) {
+                            navigationState.activeSection = .diary
+                        }
+
+                        careActionButton(icon: "cup.and.saucer.fill", title: "Me Time", tint: Color(hex: "#D36F8E")) {
+                            navigationState.activeSection = .meTime
+                        }
+                    }
+                    .padding(.horizontal, 1)
+                }
+            } else {
+                HStack(spacing: 10) {
+                    careActionButton(icon: "fork.knife", title: "Nutri", tint: Color(hex: "#F97316")) {
+                        store.feed()
+                    }
+                    .offset(x: feedShake)
+
+                    careActionButton(icon: "gamecontroller.fill", title: "Gioca", tint: Color(hex: "#EC4899")) {
+                        store.play()
+                    }
+
+                    careActionButton(icon: "sparkles", title: "Calma", tint: Color(hex: "#60A5FA")) {
+                        store.meditate()
+                    }
+
+                    careActionButton(icon: "book.closed.fill", title: "Diario", tint: Color(hex: "#5A8BCF")) {
+                        navigationState.activeSection = .diary
+                    }
+
+                    careActionButton(icon: "cup.and.saucer.fill", title: "Me Time", tint: Color(hex: "#D36F8E")) {
+                        navigationState.activeSection = .meTime
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, compact ? 14 : 18)
+        .padding(.vertical, compact ? 12 : 14)
+        .background(
+            LinearGradient(
+                colors: [Color.white.opacity(0.96), Color(hex: "#F8F1FF")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color(hex: "#E6D8FF"))
+                .frame(height: 1)
+        }
+    }
+
+    private var careHeadline: String {
+        let pet = store.pet
+        if pet.needs.hunger < 0.35 { return "Ha fame: dagli cibo o uno snack." }
+        if pet.needs.calm < 0.35 { return "Ha bisogno di calma: diario o Me Time." }
+        if pet.needs.energy < 0.35 { return "Energia bassa: rallenta e fai un rituale." }
+        if pet.needs.happiness < 0.45 { return "Vuole attenzione: gioca o passa tempo con lui." }
+        return "Sta bene. Mantieni il ritmo con cura leggera."
+    }
+
+    private func careBadge(icon: String, label: String, tint: Color) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .black))
+            Text(label)
+                .font(.system(size: 11, weight: .black, design: .rounded))
+                .lineLimit(1)
+        }
+        .foregroundStyle(tint)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(0.92), in: Capsule())
+    }
+
+    private func careActionButton(icon: String, title: String, tint: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .black))
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        LinearGradient(
+                            colors: [tint, tint.opacity(0.82)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        in: Circle()
+                    )
+                Text(title)
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(tint)
+                    .lineLimit(1)
+            }
+            .frame(width: 70)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Side Bar
@@ -421,6 +569,23 @@ struct MainPetView: View {
         }
     }
 
+    private func tint(forMood mood: PetMood) -> Color {
+        switch mood {
+        case .happy:
+            return Color(hex: "#E38A74")
+        case .calm:
+            return Color(hex: "#5A8BCF")
+        case .anxious:
+            return Color(hex: "#D36F8E")
+        case .sleepy:
+            return Color(hex: "#6F78D8")
+        case .sick:
+            return Color(hex: "#7D8C8B")
+        case .evolving:
+            return Color(hex: "#A77BC7")
+        }
+    }
+
     private func triggerShake() {
         withAnimation(.spring(response: 0.1, dampingFraction: 0.3).repeatCount(4, autoreverses: true)) {
             feedShake = 6
@@ -483,6 +648,48 @@ private struct HomePetTabButton: View {
     }
 }
 
+private struct CompactTabButton: View {
+    let icon: String
+    let label: String
+    let selected: Bool
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 7) {
+                Image(systemName: icon)
+                    .font(.system(size: 13, weight: .black))
+                Text(label)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(selected ? .white : tint)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                Capsule()
+                    .fill(
+                        selected
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: [tint, tint.opacity(0.78)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(Color.white.opacity(0.94))
+                    )
+            )
+            .overlay(
+                Capsule()
+                    .stroke(selected ? Color.white.opacity(0.18) : tint.opacity(0.14), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Color hex helper
 
 extension Color {
@@ -507,103 +714,118 @@ struct GamesSectionView: View {
     @State private var activeMiniGame: MiniGameDefinition?
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(hex: "#FFF6EA"), Color(hex: "#FDEFE8"), Color(hex: "#FFF9F1")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        GeometryReader { proxy in
+            let compact = proxy.size.width < 430
 
-            VStack(spacing: 18) {
-                gamesHeader
+            ZStack {
+                LinearGradient(
+                    colors: [Color(hex: "#FFF6EA"), Color(hex: "#FDEFE8"), Color(hex: "#FFF9F1")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                HStack(alignment: .top, spacing: 14) {
-                    featuredGameCard
+                ScrollView {
+                    VStack(spacing: compact ? 14 : 18) {
+                        gamesHeader
 
-                    VStack(spacing: 12) {
-                        statBadge(icon: "dollarsign.circle.fill", title: "Coin", value: "\(houseStore.wallet.coins)", tint: Color(hex: "#CF8C2B"))
-                        statBadge(icon: "flame.fill", title: "Combo", value: "\(comboCount)", tint: Color(hex: "#E37858"))
-                        statBadge(icon: "heart.fill", title: "Mood", value: store.pet.mood.rawValue.capitalized, tint: Color(hex: "#D36F8E"))
-                    }
-                    .frame(width: 110)
-                }
+                        if compact {
+                            VStack(spacing: 12) {
+                                featuredGameCard
+                                HStack(spacing: 10) {
+                                    statBadge(icon: "dollarsign.circle.fill", title: "Coin", value: "\(houseStore.wallet.coins)", tint: Color(hex: "#CF8C2B"))
+                                    statBadge(icon: "flame.fill", title: "Combo", value: "\(comboCount)", tint: Color(hex: "#E37858"))
+                                    statBadge(icon: "heart.fill", title: "Mood", value: store.pet.mood.rawValue.capitalized, tint: Color(hex: "#D36F8E"))
+                                }
+                            }
+                        } else {
+                            HStack(alignment: .top, spacing: 14) {
+                                featuredGameCard
 
-                HStack(spacing: 12) {
-                    ForEach(MiniGameDefinition.allCases, id: \.self) { game in
-                        gameSelectionCard(for: game)
-                    }
-                }
-
-                if let rewardMessage {
-                    Text(rewardMessage)
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: "#7A5130"))
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(Color.white.opacity(0.9), in: Capsule())
-                        .transition(.opacity.combined(with: .scale))
-                }
-
-                Button(action: playSelectedGame) {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(Color.white.opacity(0.2))
-                                .frame(width: 50, height: 50)
-                            Image(systemName: selectedMiniGame.icon)
-                                .font(.system(size: 22, weight: .black))
-                            Text(selectedMiniGame.badgeText)
-                                .font(.system(size: 11, weight: .black, design: .rounded))
-                                .foregroundStyle(selectedMiniGame.logoTint)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(Color.white, in: Capsule())
-                                .offset(x: 20, y: 20)
+                                VStack(spacing: 12) {
+                                    statBadge(icon: "dollarsign.circle.fill", title: "Coin", value: "\(houseStore.wallet.coins)", tint: Color(hex: "#CF8C2B"))
+                                    statBadge(icon: "flame.fill", title: "Combo", value: "\(comboCount)", tint: Color(hex: "#E37858"))
+                                    statBadge(icon: "heart.fill", title: "Mood", value: store.pet.mood.rawValue.capitalized, tint: Color(hex: "#D36F8E"))
+                                }
+                                .frame(width: 110)
+                            }
                         }
 
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(selectedMiniGame.actionTitle)
-                                .font(.system(size: 16, weight: .black, design: .rounded))
-                            Text(selectedMiniGame.rewardLine)
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.white.opacity(0.86))
+                        VStack(spacing: 12) {
+                            ForEach(MiniGameDefinition.allCases, id: \.self) { game in
+                                gameSelectionCard(for: game)
+                            }
                         }
 
-                        Spacer()
-
-                        VStack(alignment: .trailing, spacing: 3) {
-                            Text("+\(selectedMiniGame.baseCoins + min(comboCount, 4) * 2)")
-                                .font(.system(size: 18, weight: .black, design: .rounded))
-                            Text("coin")
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.white.opacity(0.82))
+                        if let rewardMessage {
+                            Text(rewardMessage)
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                                .foregroundStyle(Color(hex: "#7A5130"))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 10)
+                                .background(Color.white.opacity(0.9), in: Capsule())
+                                .transition(.opacity.combined(with: .scale))
                         }
+
+                        Button(action: playSelectedGame) {
+                            HStack(spacing: 12) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 50, height: 50)
+                                    Image(systemName: selectedMiniGame.icon)
+                                        .font(.system(size: 22, weight: .black))
+                                    Text(selectedMiniGame.badgeText)
+                                        .font(.system(size: 11, weight: .black, design: .rounded))
+                                        .foregroundStyle(selectedMiniGame.logoTint)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 3)
+                                        .background(Color.white, in: Capsule())
+                                        .offset(x: 20, y: 20)
+                                }
+
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(selectedMiniGame.actionTitle)
+                                        .font(.system(size: 16, weight: .black, design: .rounded))
+                                    Text(selectedMiniGame.rewardLine)
+                                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                                        .foregroundStyle(Color.white.opacity(0.86))
+                                }
+
+                                Spacer()
+
+                                VStack(alignment: .trailing, spacing: 3) {
+                                    Text("+\(selectedMiniGame.baseCoins + min(comboCount, 4) * 2)")
+                                        .font(.system(size: 18, weight: .black, design: .rounded))
+                                    Text("coin")
+                                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                                        .foregroundStyle(Color.white.opacity(0.82))
+                                }
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 16)
+                            .background(
+                                LinearGradient(
+                                    colors: [selectedMiniGame.tint, selectedMiniGame.tint.opacity(0.78)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                in: RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                                    .stroke(Color.white.opacity(0.22), lineWidth: 1)
+                            )
+                            .shadow(color: selectedMiniGame.tint.opacity(0.24), radius: 16, y: 8)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
-                    .background(
-                        LinearGradient(
-                            colors: [selectedMiniGame.tint, selectedMiniGame.tint.opacity(0.78)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        in: RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 28, style: .continuous)
-                            .stroke(Color.white.opacity(0.22), lineWidth: 1)
-                    )
-                    .shadow(color: selectedMiniGame.tint.opacity(0.24), radius: 16, y: 8)
+                    .padding(.horizontal, compact ? 14 : 20)
+                    .padding(.top, compact ? 14 : 18)
+                    .padding(.bottom, 20)
                 }
-                .buttonStyle(.plain)
-
-                Spacer(minLength: 0)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 20)
         }
         .sheet(item: $activeMiniGame) { game in
             MiniGamePlayView(

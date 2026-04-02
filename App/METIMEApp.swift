@@ -17,6 +17,7 @@ struct METIMEApp: App {
             PetNeeds.self,
             OwnedItem.self,
             Wallet.self,
+            GardenState.self,
             MeditationSession.self,
             GratitudeEntry.self,
         ])

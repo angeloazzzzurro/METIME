@@ -198,7 +198,7 @@ struct MainPetView: View {
                     .environmentObject(navigationState)
             case .meTime:
                 NavigationStack {
-                    CareRitualMockupView()
+                    MeditationView()
                         .environmentObject(store)
                         .environmentObject(houseStore)
                 }

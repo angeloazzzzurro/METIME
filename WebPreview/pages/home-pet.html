@@ -453,14 +453,15 @@
 
     /* ══ ISOMETRIC BAROQUE BED ══ */
     .iso-bed {
-      position: absolute; right: 14%; bottom: 50px; z-index: 1;
-      width: 100px; height: 72px;
-      transform: rotateX(55deg) rotateZ(-45deg);
+      position: absolute; right: 13%; bottom: 48px; z-index: 1;
+      width: 118px; height: 82px;
+      transform: rotateX(60deg) rotateZ(-45deg);
+      transform-origin: 50% 60%;
       transform-style: preserve-3d;
       cursor: pointer;
       transition: filter 0.3s, transform 0.3s;
     }
-    .iso-bed:hover { filter: brightness(1.08); transform: rotateX(55deg) rotateZ(-45deg) translateY(-4px); }
+    .iso-bed:hover { filter: brightness(1.08); transform: rotateX(60deg) rotateZ(-45deg) translateY(-4px); }
     .iso-bed.resting { animation: bed-glow 1.5s ease-in-out infinite alternate; }
     @keyframes bed-glow {
       0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
@@ -469,46 +470,56 @@
 
     /* Bed shadow on ground */
     .bed-shadow {
-      position: absolute; bottom: -6px; left: 50%; width: 110px; height: 16px;
+      position: absolute; bottom: -10px; left: 50%; width: 130px; height: 20px;
       transform: translateX(-50%);
-      background: radial-gradient(ellipse, rgba(40,20,0,0.3) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(40,20,0,0.28) 0%, rgba(40,20,0,0.12) 45%, transparent 72%);
       border-radius: 50%;
     }
 
     /* Legs (gold claw feet) */
     .bed-leg {
-      position: absolute; width: 10px; height: 14px;
+      position: absolute; width: 10px; height: 18px;
       background: linear-gradient(135deg, #e8cc6a, #c9a23c, #8b6914);
       border-radius: 0 0 5px 5px; z-index: 0;
-      box-shadow: inset 1px 0 0 #f5e6a3;
+      box-shadow: inset 1px 0 0 #f5e6a3, 0 3px 4px rgba(40,20,0,0.16);
     }
     .bed-leg::after {
       content: ""; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
       width: 12px; height: 5px; border-radius: 50%;
       background: #c9a23c; box-shadow: 0 1px 0 #8b6914;
     }
-    .bed-leg-fl { left: 4px;  bottom: 0; }
-    .bed-leg-fr { right: 4px; bottom: 0; }
-    .bed-leg-bl { left: 4px;  top: 0; }
-    .bed-leg-br { right: 4px; top: 0; }
+    .bed-leg-fl { left: 10px;  bottom: 2px; }
+    .bed-leg-fr { right: 10px; bottom: 2px; }
+    .bed-leg-bl { left: 14px;  top: 10px; height: 12px; opacity: 0.8; }
+    .bed-leg-br { right: 14px; top: 10px; height: 12px; opacity: 0.8; }
 
     /* Frame (gold carved rail) */
     .bed-frame-iso {
-      position: absolute; inset: 12px 0; height: 14px; bottom: 10px;
+      position: absolute; left: 6px; right: 6px; top: 16px; bottom: 14px;
       background: linear-gradient(180deg, #e8cc6a, #c9a23c, #8b6914);
-      border: 1.5px solid #8b6914; border-radius: 4px; z-index: 1;
+      border: 1.5px solid #8b6914; border-radius: 6px; z-index: 1;
       box-shadow: inset 0 1px 0 #f5e6a3, 0 2px 4px rgba(40,20,0,0.25);
+      clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%);
     }
     .bed-frame-iso::before {
-      content: ""; position: absolute; inset: 2px 6px;
+      content: ""; position: absolute; inset: 3px 7px;
       border: 1px solid rgba(245,230,163,0.5); border-radius: 2px;
+    }
+    .bed-frame-side {
+      position: absolute; right: 6px; top: 22px; bottom: 14px; width: 16px; z-index: 1;
+      background: linear-gradient(180deg, #c49430, #8b6914 72%, #654b0f);
+      border-right: 1.5px solid #6f5310;
+      border-bottom: 1.5px solid #6f5310;
+      clip-path: polygon(0 0, 100% 12%, 100% 100%, 0 88%);
+      box-shadow: inset 1px 0 0 rgba(245,230,163,0.35);
+      opacity: 0.95;
     }
 
     /* Headboard (baroque carved wood + gold) */
     .bed-headboard {
-      position: absolute; left: -4px; right: -4px; top: -10px; height: 28px; z-index: 3;
+      position: absolute; left: 12px; right: 12px; top: 8px; height: 22px; z-index: 3;
       background: linear-gradient(180deg, #7a5430, #5c3a1e, #3a2010);
-      border: 2px solid #8b6914; border-radius: 10px 10px 2px 2px;
+      border: 2px solid #8b6914; border-radius: 9px 9px 3px 3px;
       box-shadow: inset 0 2px 0 #f5e6a3, inset 0 -3px 8px rgba(0,0,0,0.3), 0 3px 6px rgba(40,20,0,0.3);
       overflow: hidden;
     }
@@ -527,7 +538,7 @@
     }
     /* Crown */
     .bed-crown {
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
       font-size: 12px; z-index: 4; filter: drop-shadow(0 1px 2px rgba(40,20,0,0.4));
     }
     /* Scrollwork */
@@ -540,10 +551,11 @@
 
     /* Footboard */
     .bed-footboard {
-      position: absolute; left: 2px; right: 2px; bottom: 8px; height: 16px; z-index: 3;
+      position: absolute; left: 6px; right: 6px; bottom: 12px; height: 14px; z-index: 3;
       background: linear-gradient(180deg, #7a5430, #5c3a1e);
       border: 1.5px solid #8b6914; border-radius: 2px 2px 6px 6px;
       box-shadow: inset 0 1px 0 #f5e6a3, 0 2px 4px rgba(40,20,0,0.2);
+      clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
     }
     .bed-footboard::before {
       content: ""; position: absolute; inset: 3px 6px;
@@ -552,21 +564,31 @@
 
     /* Mattress */
     .bed-mattress {
-      position: absolute; left: 3px; right: 3px; top: 14px; bottom: 20px;
+      position: absolute; left: 10px; right: 10px; top: 18px; bottom: 24px;
       background: linear-gradient(180deg, #fff8f0, #f5ead6, #e8d8b8);
-      border: 1px solid #d4bfa0; border-radius: 4px; z-index: 2;
+      border: 1px solid #d4bfa0; border-radius: 5px; z-index: 2;
       box-shadow: inset 0 -2px 6px rgba(160,130,90,0.15), inset 0 1px 0 rgba(255,255,255,0.5);
+      clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%);
+    }
+    .bed-mattress-front {
+      position: absolute; left: 14px; right: 14px; bottom: 18px; height: 11px; z-index: 2;
+      background: linear-gradient(180deg, #e8d8b8, #d8c2a2 80%, #c0a47f);
+      border: 1px solid #c4aa86;
+      border-top: 0;
+      clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
     }
 
     /* Blanket (velvet burgundy) */
     .bed-blanket {
-      position: absolute; left: 2px; right: 2px; top: 28px; bottom: 22px;
+      position: absolute; left: 12px; right: 12px; top: 34px; bottom: 24px;
       background:
         radial-gradient(circle at 30% 30%, #8e2a50 0%, transparent 50%),
         linear-gradient(180deg, #8e2a50 0%, #6b1838 40%, #4a0e26 100%);
-      border: 1.5px solid #4a0e26; border-radius: 3px; z-index: 2;
+      border: 1.5px solid #4a0e26; border-radius: 4px; z-index: 2;
       box-shadow: inset 0 2px 0 rgba(255,255,255,0.1), inset 0 -4px 10px rgba(0,0,0,0.2);
       overflow: hidden;
+      clip-path: polygon(16% 0, 84% 0, 100% 100%, 0 100%);
     }
     /* Baroque embroidery */
     .bed-blanket::before {
@@ -582,23 +604,23 @@
 
     /* Pillows */
     .bed-pillow {
-      position: absolute; top: 16px; z-index: 3;
+      position: absolute; top: 22px; z-index: 3;
       border-radius: 5px;
       box-shadow: 0 2px 4px rgba(40,20,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4);
     }
     .bed-pillow-l {
-      width: 34px; height: 14px; left: 8px;
+      width: 28px; height: 12px; left: 18px;
       background: linear-gradient(180deg, #fff0e8, #e8d4c2, #d4bfa0);
       border: 1px solid #c8a88e;
     }
     .bed-pillow-r {
-      width: 34px; height: 14px; right: 8px;
+      width: 28px; height: 12px; right: 18px;
       background: linear-gradient(180deg, #f0e0f4, #dcc0e0, #c8a4c4);
       border: 1px solid #b094b4;
     }
     /* Crown pillow */
     .bed-pillow-crown {
-      width: 26px; height: 12px; left: 50%; top: 18px; transform: translateX(-50%);
+      width: 22px; height: 10px; left: 50%; top: 24px; transform: translateX(-50%);
       background: linear-gradient(180deg, #8e2a50, #6b1838);
       border: 1px solid #c9a23c; border-radius: 4px;
     }
@@ -643,6 +665,8 @@
       pointer-events: none; box-shadow: 0 2px 4px rgba(40,20,0,0.15);
     }
     .iso-bed:hover .bed-tooltip { opacity: 1; }
+
+    .iso-bed { display: none; }
 
     @keyframes float { 0%,100%{ transform: translateY(0) rotateX(12deg) rotateZ(-2deg);} 50%{ transform: translateY(-8px) rotateX(12deg) rotateZ(-2deg);} }
     @keyframes drift { 0%{ transform: translateX(-30px); } 100%{ transform: translateX(30px); } }
@@ -697,6 +721,7 @@
             <div class="bed-leg bed-leg-bl"></div>
             <div class="bed-leg bed-leg-br"></div>
             <div class="bed-frame-iso"></div>
+            <div class="bed-frame-side"></div>
             <div class="bed-headboard">
               <span class="bed-scroll bed-scroll-l">❧</span>
               <span class="bed-scroll bed-scroll-r">❧</span>
@@ -704,6 +729,7 @@
             <span class="bed-crown">👑</span>
             <div class="bed-footboard"></div>
             <div class="bed-mattress"></div>
+            <div class="bed-mattress-front"></div>
             <div class="bed-pillow bed-pillow-l"></div>
             <div class="bed-pillow bed-pillow-r"></div>
             <div class="bed-pillow bed-pillow-crown"></div>
@@ -1131,11 +1157,11 @@
     });
 
     /* ── Bed click = rest shortcut ── */
-    document.getElementById("isoBed").addEventListener("click", (e) => {
+    const isoBed = document.getElementById("isoBed");
+    if (isoBed) isoBed.addEventListener("click", (e) => {
       e.stopPropagation();
       const restBtn = document.querySelector('[data-action="rest"]');
       if (!restBtn.classList.contains("cooldown")) {
-        const isoBed = document.getElementById("isoBed");
         isoBed.classList.add("resting");
         setTimeout(() => isoBed.classList.remove("resting"), 3000);
         addRipple(restBtn, e);

@@ -1,7 +1,7 @@
 # Audit Sicurezza e Debug — METIME (Isometrico)
 
 **Data:** 17 marzo 2026
-**Autore:** Manus AI
+**Autore:** angeloazzzzurro
 
 ---
 

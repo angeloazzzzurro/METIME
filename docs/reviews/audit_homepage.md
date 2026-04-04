@@ -1,5 +1,5 @@
 # Audit: Homepage Kawaii — METIME
-**Data:** 17 Marzo 2026 | **Autore:** Manus AI | **Scope:** `MainPetView`, `GameStore`, `AppState`, `PetNode`, `GardenScene`
+**Data:** 17 Marzo 2026 | **Autore:** angeloazzzzurro | **Scope:** `MainPetView`, `GameStore`, `AppState`, `PetNode`, `GardenScene`
 
 ---
 

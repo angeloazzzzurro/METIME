@@ -1,6 +1,6 @@
 # Analisi del Codice: Progetto METIME
 
-**Autore:** Manus AI
+**Autore:** angeloazzzzurro
 **Data:** 13 Marzo 2026
 
 ## 1. Introduzione

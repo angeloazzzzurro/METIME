@@ -114,12 +114,39 @@ private struct ContentRootInner: View {
     }
 
     @EnvironmentObject private var navigationState: NavigationState
+    @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("petTypeRaw") private var petTypeRaw: String = ""
 
     var body: some View {
-        AppTabView()
-            .environmentObject(gameStore)
-            .environmentObject(houseStore)
-            .environmentObject(navigationState)
+        Group {
+            if petTypeRaw.isEmpty {
+                StarterView()
+                    .transition(.asymmetric(
+                        insertion: .opacity,
+                        removal: .scale(scale: 0.92).combined(with: .opacity)
+                    ))
+            } else {
+                AppTabView()
+                    .environmentObject(gameStore)
+                    .environmentObject(houseStore)
+                    .environmentObject(navigationState)
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 1.04).combined(with: .opacity),
+                        removal: .opacity
+                    ))
+                    .onChange(of: scenePhase) { _, phase in
+                        switch phase {
+                        case .active:
+                            gameStore.applyDecayIfNeeded()
+                        case .background, .inactive:
+                            gameStore.markActive()
+                        @unknown default:
+                            break
+                        }
+                    }
+            }
+        }
+        .animation(.spring(response: 0.5, dampingFraction: 0.82), value: petTypeRaw)
     }
 }
 

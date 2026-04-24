@@ -40,8 +40,9 @@ struct HouseView: View {
     private var houseBackground: some View {
         LinearGradient(
             colors: [
-                Color(red: 1.0, green: 0.92, blue: 0.96),
-                Color(red: 0.92, green: 0.88, blue: 1.0)
+                Color(hex: "#8fa882"),
+                Color(hex: "#b8cdb0"),
+                Color(hex: "#f5ead8")
             ],
             startPoint: .top,
             endPoint: .bottom
@@ -200,11 +201,11 @@ struct HouseView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Casa")
                     .font(.system(size: compact ? 11 : 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: "#8B6BB5"))
+                    .foregroundStyle(Color(hex: "#8a7260"))
 
                 Label("La tua stanza", systemImage: "house.fill")
                     .font(.system(size: compact ? 18 : 24, weight: .black, design: .rounded))
-                    .foregroundColor(Color(hex: "#5B3F8C"))
+                    .foregroundColor(Color(hex: "#3d2b1f"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
             }
@@ -212,8 +213,8 @@ struct HouseView: View {
             Spacer()
 
             HStack(spacing: compact ? 8 : 12) {
-                walletBadge(icon: "dollarsign.circle.fill", value: houseStore.wallet.coins, color: Color(red: 1.0, green: 0.75, blue: 0.2))
-                walletBadge(icon: "diamond.fill",           value: houseStore.wallet.gems,  color: Color(red: 0.5, green: 0.3, blue: 0.9))
+                walletBadge(icon: "dollarsign.circle.fill", value: houseStore.wallet.coins, color: Color(hex: "#d4a843"))
+                walletBadge(icon: "diamond.fill",           value: houseStore.wallet.gems,  color: Color(hex: "#a8c9a0"))
             }
         }
         .padding(.horizontal, compact ? 12 : 18)
@@ -248,17 +249,17 @@ struct HouseView: View {
             HStack(spacing: 12) {
                 Image(systemName: "sparkles")
                     .font(.system(size: compact ? 13 : 15, weight: .bold))
-                    .foregroundStyle(Color(hex: "#A78BFA"))
+                    .foregroundStyle(Color(hex: "#8fa882"))
                     .frame(width: compact ? 30 : 34, height: compact ? 30 : 34)
-                    .background(Color.white.opacity(0.9), in: Circle())
+                    .background(Color(hex: "#fdf3e3").opacity(0.9), in: Circle())
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Spazio accogliente")
                         .font(.system(size: compact ? 12 : 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#5B3F8C"))
+                        .foregroundStyle(Color(hex: "#3d2b1f"))
                     Text("Stanza piu ampia con pet soft in stile villager")
                         .font(.system(size: compact ? 10 : 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(Color(hex: "#8B6BB5"))
+                        .foregroundStyle(Color(hex: "#5e4636"))
                         .lineLimit(1)
                 }
 
@@ -278,7 +279,7 @@ struct HouseView: View {
                 compactParameterChip(
                     title: "Mood",
                     value: gameStore.pet.mood.rawValue.capitalized,
-                    tint: Color(hex: "#8B6BB5"),
+                    tint: Color(hex: "#8fa882"),
                     compact: compact
                 )
                 compactParameterChip(
@@ -313,11 +314,11 @@ struct HouseView: View {
 
                         Label(showsCompactParameters ? "Chiudi" : "Dettagli", systemImage: showsCompactParameters ? "chevron.up" : "chevron.down")
                             .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundStyle(Color(hex: "#6C5C8E"))
+                            .foregroundStyle(Color(hex: "#5e4636"))
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.72), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .background(Color(hex: "#fdf3e3").opacity(0.80), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
                 .buttonStyle(.plain)
 
@@ -341,10 +342,10 @@ struct HouseView: View {
         }
         .padding(.horizontal, compact ? 10 : 14)
         .padding(.vertical, compact ? 7 : 10)
-        .background(.white.opacity(compact ? 0.8 : 0.86), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(Color(hex: "#fdf3e3").opacity(compact ? 0.85 : 0.90), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.7), lineWidth: 1)
+                .stroke(Color(hex: "#c9a96e").opacity(0.4), lineWidth: 1.5)
         )
     }
 
@@ -352,7 +353,7 @@ struct HouseView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.system(size: compact ? 8 : 9, weight: .bold, design: .rounded))
-                .foregroundStyle(Color(hex: "#8A7AA8"))
+                .foregroundStyle(Color(hex: "#8a7260"))
             Text(value)
                 .font(.system(size: compact ? 11 : 12, weight: .black, design: .rounded))
                 .foregroundStyle(tint)
@@ -362,14 +363,14 @@ struct HouseView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, compact ? 8 : 9)
         .padding(.vertical, compact ? 6 : 8)
-        .background(Color.white.opacity(0.82), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Color(hex: "#fdf3e3").opacity(0.88), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private func miniStatDot(label: String, value: Float, tint: Color) -> some View {
         VStack(spacing: 3) {
             Text(label)
                 .font(.system(size: 8, weight: .bold, design: .rounded))
-                .foregroundStyle(Color(hex: "#8A7AA8"))
+                .foregroundStyle(Color(hex: "#8a7260"))
             Circle()
                 .fill(tint.opacity(0.18))
                 .overlay(
@@ -387,7 +388,7 @@ struct HouseView: View {
             HStack {
                 Text(title)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: "#6C5C8E"))
+                    .foregroundStyle(Color(hex: "#5e4636"))
                 Spacer()
                 Text("\(Int((value * 100).rounded()))%")
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -416,19 +417,19 @@ struct HouseView: View {
             if compact {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#F87171")) { navigationState.activeSection = .store }
-                        actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#60A5FA")) { navigationState.activeSection = .inventory }
-                        actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#A78BFA")) { navigationState.activeSection = .decorate }
-                        actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#F59E0B")) { navigationState.activeSection = .meTime }
+                        actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#e8a0a0")) { navigationState.activeSection = .store }
+                        actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#a8c9a0")) { navigationState.activeSection = .inventory }
+                        actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#d4884a")) { navigationState.activeSection = .decorate }
+                        actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#d4a843")) { navigationState.activeSection = .meTime }
                     }
                     .padding(.horizontal, 10)
                 }
             } else {
                 HStack(spacing: 12) {
-                    actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#F87171")) { navigationState.activeSection = .store }
-                    actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#60A5FA")) { navigationState.activeSection = .inventory }
-                    actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#A78BFA")) { navigationState.activeSection = .decorate }
-                    actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#F59E0B")) { navigationState.activeSection = .meTime }
+                    actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#e8a0a0")) { navigationState.activeSection = .store }
+                    actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#a8c9a0")) { navigationState.activeSection = .inventory }
+                    actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#d4884a")) { navigationState.activeSection = .decorate }
+                    actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#d4a843")) { navigationState.activeSection = .meTime }
                 }
                 .padding(.horizontal, 14)
             }
@@ -447,8 +448,8 @@ struct HouseView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0),
-                        Color.white.opacity(0.72)
+                        Color(hex: "#f5ead8").opacity(0),
+                        Color(hex: "#f5ead8").opacity(0.82)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -486,7 +487,7 @@ struct HouseView: View {
     private var backgroundDecorations: some View {
         ZStack {
             ForEach(Array(zip(
-                ["⭐", "💫", "🌸", "✨", "🌟", "💕", "🌙"],
+                ["🌿", "🍃", "🌸", "🌺", "🌼", "🍀", "🌙"],
                 [
                     CGPoint(x: 40, y: 96),
                     CGPoint(x: 330, y: 88),
@@ -508,28 +509,28 @@ struct HouseView: View {
 
     private func topBarBackground(compact: Bool) -> some View {
         RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-            .fill(.white.opacity(compact ? 0.68 : 0.78))
+            .fill(Color(hex: "#fdf3e3").opacity(compact ? 0.82 : 0.90))
             .overlay(
                 RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-                    .stroke(Color.white.opacity(compact ? 0.28 : 0.65), lineWidth: 1)
+                    .stroke(Color(hex: "#c9a96e").opacity(compact ? 0.35 : 0.55), lineWidth: 1.5)
             )
     }
 
     private func statusCardBackground(compact: Bool) -> some View {
         RoundedRectangle(cornerRadius: compact ? 0 : 22, style: .continuous)
-            .fill(Color.white.opacity(compact ? 0.62 : 0.72))
+            .fill(Color(hex: "#fdf3e3").opacity(compact ? 0.72 : 0.82))
             .overlay(
                 RoundedRectangle(cornerRadius: compact ? 0 : 22, style: .continuous)
-                    .stroke(Color.white.opacity(compact ? 0.24 : 0.6), lineWidth: 1)
+                    .stroke(Color(hex: "#c9a96e").opacity(compact ? 0.25 : 0.45), lineWidth: 1.5)
             )
     }
 
     private func actionBarBackground(compact: Bool) -> some View {
         RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-            .fill(.white.opacity(compact ? 0.88 : 0.92))
+            .fill(Color(hex: "#fdf3e3").opacity(compact ? 0.92 : 0.95))
             .overlay(
                 RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-                    .stroke(Color.white.opacity(compact ? 0.28 : 0.65), lineWidth: 1)
+                    .stroke(Color(hex: "#c9a96e").opacity(compact ? 0.35 : 0.55), lineWidth: 1.5)
             )
     }
 }

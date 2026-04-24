@@ -11,7 +11,7 @@ struct MainPetView: View {
     @EnvironmentObject private var navigationState: NavigationState
     @EnvironmentObject private var houseStore: HouseStore
 
-    private let sections: [NavigationState.Section] = [.home, .garden, .games, .diary, .store, .inventory, .decorate, .meTime]
+    private let sections: [NavigationState.Section] = [.home, .garden, .games, .diary, .store, .inventory, .decorate, .meTime, .ritual, .map, .restaurant, .farm]
 
     @State private var showJournal = false
     @State private var feedShake: CGFloat = 0
@@ -40,7 +40,7 @@ struct MainPetView: View {
                     }
                 }
             }
-            .background(Color(hex: "#F8F4FF").ignoresSafeArea())
+            .background(Color(hex: "#f5ead8").ignoresSafeArea())
             .simultaneousGesture(
                 DragGesture(minimumDistance: 40, coordinateSpace: .local)
                     .onEnded { value in
@@ -86,7 +86,7 @@ struct MainPetView: View {
             HStack(spacing: 10) {
                 Label("METIME", systemImage: "heart.circle.fill")
                     .font(.system(size: 15, weight: .black, design: .rounded))
-                    .foregroundStyle(Color(hex: "#7A57B8"))
+                    .foregroundStyle(Color(hex: "#3d2b1f"))
 
                 Spacer()
 
@@ -104,7 +104,7 @@ struct MainPetView: View {
                     .padding(.vertical, 9)
                     .background(
                         LinearGradient(
-                            colors: [Color(hex: "#F59E0B"), Color(hex: "#EC4899")],
+                            colors: [Color(hex: "#d4a76a"), Color(hex: "#a67c52")],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -148,14 +148,14 @@ struct MainPetView: View {
         .padding(.bottom, 10)
         .background(
             LinearGradient(
-                colors: [Color.white.opacity(0.97), Color(hex: "#F4ECFF")],
+                colors: [Color(hex: "#fdf3e3"), Color(hex: "#f5ead8")],
                 startPoint: .top,
                 endPoint: .bottom
             )
         )
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color(hex: "#E6D8FF"))
+                .fill(Color(hex: "#c9a96e"))
                 .frame(height: 1)
         }
     }
@@ -202,6 +202,19 @@ struct MainPetView: View {
                         .environmentObject(store)
                         .environmentObject(houseStore)
                 }
+            case .ritual:
+                CareRitualView()
+                    .environmentObject(store)
+                    .environmentObject(houseStore)
+            case .map:
+                WorldMapView()
+            case .restaurant:
+                FoodSelectionView()
+                    .environmentObject(store)
+                    .environmentObject(houseStore)
+            case .farm:
+                FarmView()
+                    .environmentObject(houseStore)
             }
         }
     }
@@ -212,10 +225,10 @@ struct MainPetView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cura del pet")
                         .font(.system(size: compact ? 18 : 22, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: "#5F467E"))
+                        .foregroundStyle(Color(hex: "#3d2b1f"))
                     Text(careHeadline)
                         .font(.system(size: compact ? 11 : 13, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#8B76A5"))
+                        .foregroundStyle(Color(hex: "#5e4636"))
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
@@ -234,6 +247,8 @@ struct MainPetView: View {
                     )
                 }
             }
+
+            needsBars
 
             if compact {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -290,14 +305,14 @@ struct MainPetView: View {
         .padding(.vertical, compact ? 12 : 14)
         .background(
             LinearGradient(
-                colors: [Color.white.opacity(0.96), Color(hex: "#F8F1FF")],
+                colors: [Color(hex: "#fdf3e3"), Color(hex: "#f5ead8")],
                 startPoint: .top,
                 endPoint: .bottom
             )
         )
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color(hex: "#E6D8FF"))
+                .fill(Color(hex: "#c9a96e"))
                 .frame(height: 1)
         }
     }
@@ -311,6 +326,47 @@ struct MainPetView: View {
         return "Sta bene. Mantieni il ritmo con cura leggera."
     }
 
+    private var needsBars: some View {
+        HStack(spacing: 8) {
+            needsBar(icon: "fork.knife",       label: "Fame",     value: store.pet.needs.hunger,    tint: Color(hex: "#F97316"))
+            needsBar(icon: "face.smiling.fill", label: "Umore",   value: store.pet.needs.happiness, tint: Color(hex: "#EC4899"))
+            needsBar(icon: "bolt.fill",         label: "Energia",  value: store.pet.needs.energy,    tint: Color(hex: "#34D399"))
+            needsBar(icon: "wind",              label: "Calma",    value: store.pet.needs.calm,      tint: Color(hex: "#60A5FA"))
+        }
+    }
+
+    private func needsBar(icon: String, label: String, value: Float, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 9, weight: .bold))
+                Text(label)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+            }
+            .foregroundStyle(tint)
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(tint.opacity(0.15))
+                        .frame(height: 6)
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [tint, tint.opacity(0.75)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: geo.size.width * CGFloat(max(0, min(1, value))), height: 6)
+                        .animation(.easeInOut(duration: 0.4), value: value)
+                }
+            }
+            .frame(height: 6)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private func careBadge(icon: String, label: String, tint: Color) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
@@ -322,7 +378,7 @@ struct MainPetView: View {
         .foregroundStyle(tint)
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(Color.white.opacity(0.92), in: Capsule())
+        .background(Color(hex: "#fdf3e3").opacity(0.92), in: Capsule())
     }
 
     private func careActionButton(icon: String, title: String, tint: Color, action: @escaping () -> Void) -> some View {
@@ -356,7 +412,7 @@ struct MainPetView: View {
         VStack(spacing: 14) {
             Text("METIME")
                 .font(.system(size: 12, weight: .black, design: .rounded))
-                .foregroundStyle(Color(hex: "#7A57B8"))
+                .foregroundStyle(Color(hex: "#3d2b1f"))
                 .rotationEffect(.degrees(-90))
                 .frame(height: 40)
                 .padding(.top, 10)
@@ -407,7 +463,7 @@ struct MainPetView: View {
                 .padding(.vertical, 12)
                 .background(
                     LinearGradient(
-                        colors: [Color(hex: "#F59E0B"), Color(hex: "#EC4899")],
+                        colors: [Color(hex: "#d4a76a"), Color(hex: "#a67c52")],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
@@ -422,14 +478,14 @@ struct MainPetView: View {
         .padding(.vertical, 12)
         .background(
             LinearGradient(
-                colors: [Color.white.opacity(0.96), Color(hex: "#F4ECFF")],
+                colors: [Color(hex: "#fdf3e3"), Color(hex: "#f5ead8")],
                 startPoint: .top,
                 endPoint: .bottom
             )
         )
         .overlay(alignment: .trailing) {
             Rectangle()
-                .fill(Color(hex: "#E6D8FF"))
+                .fill(Color(hex: "#c9a96e"))
                 .frame(width: 1)
         }
     }
@@ -441,7 +497,7 @@ struct MainPetView: View {
             HStack(spacing: 12) {
                 pill(
                     label: "Hunger",
-                    color: Color(hex: "#A78BFA"),
+                    color: Color(hex: "#d4884a"),
                     badge: store.pet.food == 0 ? "!" : nil
                 ) {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -524,6 +580,14 @@ struct MainPetView: View {
             return "Decora"
         case .meTime:
             return "Me Time"
+        case .ritual:
+            return "Rituale"
+        case .map:
+            return "Mappa"
+        case .restaurant:
+            return "Cucina"
+        case .farm:
+            return "Fattoria"
         }
     }
 
@@ -545,6 +609,14 @@ struct MainPetView: View {
             return "chair.fill"
         case .meTime:
             return "cup.and.saucer.fill"
+        case .ritual:
+            return "heart.circle.fill"
+        case .map:
+            return "map.fill"
+        case .restaurant:
+            return "fork.knife"
+        case .farm:
+            return "leaf.fill"
         }
     }
 
@@ -566,6 +638,14 @@ struct MainPetView: View {
             return Color(hex: "#A77BC7")
         case .meTime:
             return Color(hex: "#D36F8E")
+        case .ritual:
+            return Color(hex: "#e8a0a0")
+        case .map:
+            return Color(hex: "#8fa882")
+        case .restaurant:
+            return Color(hex: "#d4884a")
+        case .farm:
+            return Color(hex: "#5a9a2e")
         }
     }
 
@@ -616,7 +696,7 @@ private struct HomePetTabButton: View {
                 }
                 Text(label)
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundColor(selected ? .white : Color(hex: "#6E6488"))
+                    .foregroundColor(selected ? .white : Color(hex: "#5e4636"))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
@@ -632,7 +712,7 @@ private struct HomePetTabButton: View {
                                 endPoint: .bottomTrailing
                             )
                             : LinearGradient(
-                                colors: [Color.white.opacity(0.95), Color(hex: "#F8F1FF")],
+                                colors: [Color(hex: "#fdf3e3"), Color(hex: "#f5ead8")],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -678,7 +758,7 @@ private struct CompactTabButton: View {
                                     endPoint: .bottomTrailing
                                 )
                             )
-                            : AnyShapeStyle(Color.white.opacity(0.94))
+                            : AnyShapeStyle(Color(hex: "#fdf3e3").opacity(0.94))
                     )
             )
             .overlay(
@@ -1299,7 +1379,7 @@ struct InventoryView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(hex: "#EEF4FF"), Color(hex: "#F7EEFF")],
+                colors: [Color(hex: "#fdf3e3"), Color(hex: "#f5ead8")],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -1310,7 +1390,7 @@ struct InventoryView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Label("Zaino", systemImage: "backpack.fill")
                             .font(.system(size: 28, weight: .black, design: .rounded))
-                            .foregroundStyle(Color(hex: "#365B9C"))
+                            .foregroundStyle(Color(hex: "#8b6340"))
                         Text("Usa consumabili o prepara gli oggetti da stanza")
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundStyle(Color(hex: "#6E85B7"))
@@ -1320,7 +1400,7 @@ struct InventoryView: View {
 
                     Text("\(houseStore.inventory.reduce(0) { $0 + $1.quantity }) ogg.")
                         .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#365B9C"))
+                        .foregroundStyle(Color(hex: "#8b6340"))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(.white.opacity(0.9), in: Capsule())
@@ -1373,18 +1453,18 @@ struct InventoryView: View {
                 Text(title)
             }
             .font(.system(size: 13, weight: .bold, design: .rounded))
-            .foregroundStyle(selected ? .white : Color(hex: "#5D6DAA"))
+            .foregroundStyle(selected ? .white : Color(hex: "#8b6340"))
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
             .background(
                 selected
                     ? LinearGradient(
-                        colors: [Color(hex: "#7C8BFF"), Color(hex: "#5CA5F3")],
+                        colors: [Color(hex: "#d4a76a"), Color(hex: "#a67c52")],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                     : LinearGradient(
-                        colors: [Color.white.opacity(0.95), Color(hex: "#F4F7FF")],
+                        colors: [Color.white.opacity(0.95), Color(hex: "#fdf3e3")],
                         startPoint: .top,
                         endPoint: .bottom
                     ),
@@ -1392,7 +1472,7 @@ struct InventoryView: View {
             )
             .overlay(
                 Capsule()
-                    .stroke(selected ? Color.white.opacity(0.2) : Color(hex: "#D6E2FF"), lineWidth: 1)
+                    .stroke(selected ? Color.white.opacity(0.2) : Color(hex: "#c9a96e"), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -1416,26 +1496,26 @@ struct InventoryView: View {
                 HStack {
                     Text(definition.name)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#3E356B"))
+                        .foregroundStyle(Color(hex: "#3d2b1f"))
                     Spacer()
                     Text("x\(ownedItem.quantity)")
                         .font(.system(size: 13, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: "#6E59A5"))
+                        .foregroundStyle(Color(hex: "#5e4636"))
                 }
 
                 Text(definition.description)
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color(hex: "#7C7A9A"))
+                    .foregroundStyle(Color(hex: "#8a7260"))
                     .lineLimit(2)
 
                 HStack(spacing: 8) {
-                    badge(text: definition.category.displayName, tint: Color(hex: "#B8A6F7"))
+                    badge(text: definition.category.displayName, tint: Color(hex: "#c9a96e"))
                     if ownedItem.isPlacedInRoom {
                         badge(text: "In stanza", tint: Color(hex: "#8FD5B6"))
                     } else if definition.isConsumable {
                         badge(text: "Consumabile", tint: Color(hex: "#F7B0A8"))
                     } else if definition.isPlaceable {
-                        badge(text: "Posizionabile", tint: Color(hex: "#9CC7FF"))
+                        badge(text: "Posizionabile", tint: Color(hex: "#a8c9a0"))
                     }
                 }
             }
@@ -1452,7 +1532,7 @@ struct InventoryView: View {
                     Button(ownedItem.isPlacedInRoom ? "Sposta" : "Decora") {
                         navigationState.activeSection = .decorate
                     }
-                    .buttonStyle(InventoryActionButtonStyle(color: Color(hex: "#A78BFA")))
+                    .buttonStyle(InventoryActionButtonStyle(color: Color(hex: "#d4884a")))
                 }
             }
         }
@@ -1462,14 +1542,14 @@ struct InventoryView: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .stroke(Color.white.opacity(0.7), lineWidth: 1)
         )
-        .shadow(color: Color(hex: "#AFC3EC").opacity(0.18), radius: 12, y: 6)
+        .shadow(color: Color(hex: "#c9a96e").opacity(0.18), radius: 12, y: 6)
         .padding(.horizontal, 18)
     }
 
     private func badge(text: String, tint: Color) -> some View {
         Text(text)
             .font(.system(size: 11, weight: .bold, design: .rounded))
-            .foregroundStyle(Color(hex: "#4D4870"))
+            .foregroundStyle(Color(hex: "#5e4636"))
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(tint.opacity(0.35), in: Capsule())
@@ -1500,7 +1580,7 @@ struct DecorateView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(hex: "#F7EEFF"), Color(hex: "#FCEFD9")],
+                colors: [Color(hex: "#f5ead8"), Color(hex: "#FCEFD9")],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -1548,17 +1628,17 @@ struct DecorateView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Decora")
                         .font(.system(size: 28, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: "#7C4FCB"))
+                        .foregroundStyle(Color(hex: "#8b6340"))
                     Text("Gestisci gli arredi già acquistati e la loro posizione")
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#9A79D4"))
+                        .foregroundStyle(Color(hex: "#5e4636"))
                 }
 
                 Spacer()
 
                 Text("\(houseStore.itemsPlacedInRoom().count) attivi")
                     .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: "#7C4FCB"))
+                    .foregroundStyle(Color(hex: "#8b6340"))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(.white.opacity(0.92), in: Capsule())
@@ -1577,10 +1657,10 @@ struct DecorateView: View {
                                 Text(category.displayName)
                             }
                             .font(.system(size: 13, weight: .bold, design: .rounded))
-                            .foregroundStyle(selectedCategory == category ? .white : Color(hex: "#7A68A8"))
+                            .foregroundStyle(selectedCategory == category ? .white : Color(hex: "#5e4636"))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
-                            .background(selectedCategory == category ? Color(hex: "#A78BFA") : .white.opacity(0.88), in: Capsule())
+                            .background(selectedCategory == category ? Color(hex: "#d4884a") : .white.opacity(0.88), in: Capsule())
                         }
                         .buttonStyle(.plain)
                     }
@@ -1590,17 +1670,17 @@ struct DecorateView: View {
             HStack(spacing: 12) {
                 Image(systemName: "wand.and.stars")
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color(hex: "#A78BFA"))
+                    .foregroundStyle(Color(hex: "#d4884a"))
                     .frame(width: 38, height: 38)
                     .background(.white.opacity(0.92), in: Circle())
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Tocca per arredare")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#5D427E"))
+                        .foregroundStyle(Color(hex: "#3d2b1f"))
                     Text("Ogni arredo attivo dona un piccolo bonus di benessere al pet e cambia il mood della stanza.")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(Color(hex: "#8C76A8"))
+                        .foregroundStyle(Color(hex: "#5e4636"))
                 }
 
                 Spacer()
@@ -1613,7 +1693,7 @@ struct DecorateView: View {
         .padding(.bottom, 12)
         .background(
             LinearGradient(
-                colors: [Color(hex: "#F7EEFF"), Color(hex: "#F7EEFF").opacity(0.94)],
+                colors: [Color(hex: "#f5ead8"), Color(hex: "#f5ead8").opacity(0.94)],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -1634,21 +1714,21 @@ struct DecorateView: View {
                 HStack {
                     Text(definition.name)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#4B356C"))
+                        .foregroundStyle(Color(hex: "#3d2b1f"))
                     Spacer()
                     Text(ownedItem.isPlacedInRoom ? "Attivo" : "Disponibile")
                         .font(.system(size: 11, weight: .black, design: .rounded))
-                        .foregroundStyle(ownedItem.isPlacedInRoom ? Color(hex: "#3A8E6D") : Color(hex: "#7B5CC8"))
+                        .foregroundStyle(ownedItem.isPlacedInRoom ? Color(hex: "#3A8E6D") : Color(hex: "#8b6340"))
                 }
 
                 Text(definition.description)
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color(hex: "#84779C"))
+                    .foregroundStyle(Color(hex: "#8a7260"))
                     .lineLimit(2)
 
                 Text(positionDescription(for: ownedItem))
                     .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: "#A087C8"))
+                    .foregroundStyle(Color(hex: "#8a7260"))
             }
 
             VStack(spacing: 8) {
@@ -1659,7 +1739,7 @@ struct DecorateView: View {
                         houseStore.place(item: ownedItem, at: suggestedPosition(for: definition), on: gameStore)
                     }
                 }
-                .buttonStyle(InventoryActionButtonStyle(color: ownedItem.isPlacedInRoom ? Color(hex: "#F87171") : Color(hex: "#A78BFA")))
+                .buttonStyle(InventoryActionButtonStyle(color: ownedItem.isPlacedInRoom ? Color(hex: "#F87171") : Color(hex: "#d4884a")))
             }
         }
         .padding(14)
@@ -1717,14 +1797,14 @@ private struct EmptyStateView: View {
                 .font(.system(size: 42))
             Text(title)
                 .font(.system(size: 24, weight: .black, design: .rounded))
-                .foregroundStyle(Color(hex: "#5B4B8A"))
+                .foregroundStyle(Color(hex: "#3d2b1f"))
             Text(subtitle)
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(Color(hex: "#8E84AF"))
+                .foregroundStyle(Color(hex: "#8a7260"))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 26)
             Button(cta, action: action)
-                .buttonStyle(InventoryActionButtonStyle(color: Color(hex: "#A78BFA")))
+                .buttonStyle(InventoryActionButtonStyle(color: Color(hex: "#d4884a")))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -1751,8 +1831,8 @@ private func symbol(for definition: HouseItemDefinition) -> String {
 
 private func rarityBackground(_ rarity: ItemRarity) -> String {
     switch rarity {
-    case .common:    return "#E9E5FF"
-    case .rare:      return "#E2D4FF"
+    case .common:    return "#fdf3e3"
+    case .rare:      return "#f0e6d3"
     case .legendary: return "#FFE6BE"
     }
 }

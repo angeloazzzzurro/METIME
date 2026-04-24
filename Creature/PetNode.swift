@@ -2,74 +2,374 @@ import SpriteKit
 
 // MARK: - PetNode
 //
-// Pet kawaii con corpo blob, occhi a puntino e guancette rosa.
-// In modalità isometrica il nodo viene scalato da GardenScene (yScale = 0.75)
-// per simulare la prospettiva dall'alto a 45°.
+// Supporta due forme distinte, lette da UserDefaults("petTypeRaw"):
+//   • fiamma  — corpo a fiamma teardrop, wisp-arms, punta in cima
+//   • uovo    — corpo a uovo ovale, crepa, braccia/piedi emergono con gli stage
 
 final class PetNode: SKNode {
 
-    // MARK: - Nodi
+    // MARK: - Shape
+    private var petShape: PetType = .fiamma
 
-    private let silhouette = SKNode()
-    private let leftEar = SKShapeNode()
-    private let rightEar = SKShapeNode()
-    private let leftEarInner = SKShapeNode()
-    private let rightEarInner = SKShapeNode()
-    private let neckShadow = SKShapeNode(ellipseOf: CGSize(width: 18, height: 10))
-    private let neck = SKShapeNode(rectOf: CGSize(width: 20, height: 18), cornerRadius: 8)
-    private let body   = SKShapeNode()
-    private let leftArm = SKShapeNode(rectOf: CGSize(width: 18, height: 36), cornerRadius: 9)
-    private let rightArm = SKShapeNode(rectOf: CGSize(width: 18, height: 36), cornerRadius: 9)
-    private let leftHand = SKShapeNode(ellipseOf: CGSize(width: 20, height: 16))
-    private let rightHand = SKShapeNode(ellipseOf: CGSize(width: 20, height: 16))
-    private let leftLeg = SKShapeNode(rectOf: CGSize(width: 20, height: 28), cornerRadius: 10)
-    private let rightLeg = SKShapeNode(rectOf: CGSize(width: 20, height: 28), cornerRadius: 10)
-    private let leftFoot = SKShapeNode(ellipseOf: CGSize(width: 24, height: 14))
-    private let rightFoot = SKShapeNode(ellipseOf: CGSize(width: 24, height: 14))
-    private let eyeL   = SKShapeNode(circleOfRadius: 5)
-    private let eyeR   = SKShapeNode(circleOfRadius: 5)
-    private let cheekL = SKShapeNode(ellipseOf: CGSize(width: 18, height: 10))
-    private let cheekR = SKShapeNode(ellipseOf: CGSize(width: 18, height: 10))
-    private let muzzleShadow = SKShapeNode(ellipseOf: CGSize(width: 32, height: 20))
-    private let muzzle = SKShapeNode(ellipseOf: CGSize(width: 36, height: 24))
-    private let muzzleHighlight = SKShapeNode(ellipseOf: CGSize(width: 22, height: 10))
-    private let mouth = SKNode()
-    private let mouthLeft = SKShapeNode()
-    private let mouthRight = SKShapeNode()
-    private let nose   = SKShapeNode(circleOfRadius: 3.8)
-    private let tail   = SKShapeNode(circleOfRadius: 10)
+    // MARK: - Face nodes (shared)
+    private let eyeL      = SKShapeNode(circleOfRadius: 5.5)
+    private let eyeR      = SKShapeNode(circleOfRadius: 5.5)
+    private let cheekL    = SKShapeNode(ellipseOf: CGSize(width: 16, height: 10))
+    private let cheekR    = SKShapeNode(ellipseOf: CGSize(width: 16, height: 10))
+    private let nose      = SKShapeNode()
+    private let mouthL    = SKShapeNode()
+    private let mouthR    = SKShapeNode()
+    private let mouthNode = SKNode()
     private let accentLayer = SKNode()
 
+    // MARK: - Fiamma nodes
+    private let flameBody  = SKShapeNode()
+    private let flameInner = SKShapeNode()
+    private let leftWisp   = SKShapeNode()
+    private let rightWisp  = SKShapeNode()
+
+    // MARK: - Uovo nodes
+    private let eggBody      = SKShapeNode()
+    private let eggHighlight = SKShapeNode(ellipseOf: CGSize(width: 13, height: 20))
+    private let eggCrack     = SKShapeNode()
+    private let leftStub     = SKShapeNode(rectOf: CGSize(width: 10, height: 18), cornerRadius: 5)
+    private let rightStub    = SKShapeNode(rectOf: CGSize(width: 10, height: 18), cornerRadius: 5)
+    private let leftFoot     = SKShapeNode(ellipseOf: CGSize(width: 16, height: 10))
+    private let rightFoot    = SKShapeNode(ellipseOf: CGSize(width: 16, height: 10))
+
+    private var baseColor: PetColor = .cream
     private var currentStage = 0
+
+    // MARK: - Colors
+    private let darkInk    = UIColor(red: 0.18, green: 0.12, blue: 0.08, alpha: 1)
+    private let blushPink  = UIColor(red: 0.94, green: 0.51, blue: 0.51, alpha: 0.45)
+    private let noseBrown  = UIColor(red: 0.77, green: 0.53, blue: 0.42, alpha: 1)
+    // Fiamma
+    private let flameOrange = UIColor(red: 1.00, green: 0.55, blue: 0.26, alpha: 1)  // #ff8c42
+    private let flameDark   = UIColor(red: 0.80, green: 0.24, blue: 0.00, alpha: 1)  // #cc3d00
+    private let flameYellow = UIColor(red: 1.00, green: 0.91, blue: 0.48, alpha: 1)  // #ffe87a
+    // Uovo
+    private let eggCream   = UIColor(red: 0.99, green: 0.95, blue: 0.89, alpha: 1)   // #fdf3e3
+    private let eggBorder  = UIColor(red: 0.79, green: 0.66, blue: 0.43, alpha: 1)   // #c9a96e
+    private let footBrown  = UIColor(red: 0.55, green: 0.39, blue: 0.25, alpha: 1)   // #8b6340
+    private let footBorder = UIColor(red: 0.42, green: 0.29, blue: 0.19, alpha: 1)   // #6b4a30
 
     // MARK: - Init
 
     override init() {
         super.init()
-        buildBody()
-        buildFace()
+        let raw = UserDefaults.standard.string(forKey: "petTypeRaw") ?? ""
+        petShape = PetType(rawValue: raw) ?? .fiamma
+        buildPet()
         startIdle()
     }
 
-    required init?(coder: NSCoder) { return nil }
+    required init?(coder: NSCoder) { nil }
 
-    // MARK: - Colore corrente
+    // MARK: - Build
 
-    /// Colore base del pet (impostato da GameStore, indipendente dal mood)
-    private var baseColor: PetColor = .cream
-
-    /// Imposta il colore base con animazione fluida.
-    func setColor(_ petColor: PetColor, animated: Bool = true) {
-        baseColor = petColor
-        syncSurfaceColors(animated: animated)
+    private func buildPet() {
+        switch petShape {
+        case .fiamma: buildFiamma()
+        case .uovo:   buildUovo()
+        }
+        buildFace()
+        accentLayer.zPosition = 30
+        addChild(accentLayer)
+        syncColors(animated: false)
     }
 
-    // MARK: - Mood
+    // MARK: - Fiamma body
+
+    private func buildFiamma() {
+        // Wisp arms (behind flame body)
+        for (wisp, side) in [(leftWisp, CGFloat(-1)), (rightWisp, CGFloat(1))] {
+            wisp.path        = wispPath(side: side)
+            wisp.fillColor   = flameOrange
+            wisp.strokeColor = .clear
+            wisp.zPosition   = 3
+        }
+        leftWisp.position  = CGPoint(x: -22, y: 0)
+        rightWisp.position = CGPoint(x:  22, y: 0)
+        addChild(leftWisp)
+        addChild(rightWisp)
+
+        // Main body
+        flameBody.path        = flameBodyPath()
+        flameBody.fillColor   = flameOrange
+        flameBody.strokeColor = flameDark
+        flameBody.lineWidth   = 2.5
+        flameBody.zPosition   = 5
+        addChild(flameBody)
+
+        // Inner yellow highlight
+        flameInner.path        = flameInnerPath()
+        flameInner.fillColor   = flameYellow.withAlphaComponent(0.55)
+        flameInner.strokeColor = .clear
+        flameInner.zPosition   = 6
+        addChild(flameInner)
+    }
+
+    // MARK: - Uovo body
+
+    private func buildUovo() {
+        // Feet (appear at stage 2)
+        for foot in [leftFoot, rightFoot] {
+            foot.fillColor   = footBrown
+            foot.strokeColor = footBorder
+            foot.lineWidth   = 1.8
+            foot.alpha       = 0
+            foot.zPosition   = 2
+        }
+        leftFoot.position  = CGPoint(x: -13, y: -42)
+        rightFoot.position = CGPoint(x:  13, y: -42)
+        addChild(leftFoot)
+        addChild(rightFoot)
+
+        // Stub arms (appear at stage 1)
+        for stub in [leftStub, rightStub] {
+            stub.fillColor   = eggCream
+            stub.strokeColor = eggBorder
+            stub.lineWidth   = 1.5
+            stub.alpha       = 0
+            stub.zPosition   = 3
+        }
+        leftStub.position   = CGPoint(x: -28, y: -8)
+        leftStub.zRotation  = 0.22
+        rightStub.position  = CGPoint(x:  28, y: -8)
+        rightStub.zRotation = -0.22
+        addChild(leftStub)
+        addChild(rightStub)
+
+        // Egg body
+        eggBody.path        = eggBodyPath()
+        eggBody.fillColor   = eggCream
+        eggBody.strokeColor = eggBorder
+        eggBody.lineWidth   = 2.5
+        eggBody.zPosition   = 5
+        addChild(eggBody)
+
+        // Highlight glare
+        eggHighlight.fillColor   = UIColor.white.withAlphaComponent(0.38)
+        eggHighlight.strokeColor = .clear
+        eggHighlight.position    = CGPoint(x: -9, y: 16)
+        eggHighlight.zPosition   = 6
+        addChild(eggHighlight)
+
+        // Crack
+        eggCrack.path        = crackPath()
+        eggCrack.strokeColor = UIColor(red: 0.55, green: 0.37, blue: 0.19, alpha: 0.70)
+        eggCrack.lineWidth   = 2
+        eggCrack.lineCap     = .round
+        eggCrack.lineJoin    = .round
+        eggCrack.fillColor   = .clear
+        eggCrack.zPosition   = 7
+        addChild(eggCrack)
+    }
+
+    // MARK: - Face (shared)
+
+    private func buildFace() {
+        let (eyeOffX, eyeY): (CGFloat, CGFloat)
+        let (cheekOffX, cheekY): (CGFloat, CGFloat)
+        let noseY, mouthY: CGFloat
+
+        switch petShape {
+        case .fiamma:
+            eyeOffX = 12; eyeY = 6
+            cheekOffX = 22; cheekY = -6
+            noseY = 8; mouthY = -2
+        case .uovo:
+            eyeOffX = 12; eyeY = 10
+            cheekOffX = 20; cheekY = 0
+            noseY = 10; mouthY = 0
+        }
+
+        // Eyes
+        for eye in [eyeL, eyeR] {
+            eye.fillColor   = darkInk
+            eye.strokeColor = .clear
+            eye.zPosition   = 20
+            addChild(eye)
+            let shine = SKShapeNode(circleOfRadius: 2.2)
+            shine.fillColor   = .white
+            shine.strokeColor = .clear
+            shine.position    = CGPoint(x: 1.8, y: 1.8)
+            eye.addChild(shine)
+        }
+        eyeL.position = CGPoint(x: -eyeOffX, y: eyeY)
+        eyeR.position = CGPoint(x:  eyeOffX, y: eyeY)
+
+        // Cheeks
+        for cheek in [cheekL, cheekR] {
+            cheek.fillColor   = blushPink
+            cheek.strokeColor = .clear
+            cheek.zPosition   = 21
+            addChild(cheek)
+        }
+        cheekL.position = CGPoint(x: -cheekOffX, y: cheekY)
+        cheekR.position = CGPoint(x:  cheekOffX, y: cheekY)
+
+        // Nose
+        nose.path        = nosePath()
+        nose.fillColor   = noseBrown
+        nose.strokeColor = .clear
+        nose.position    = CGPoint(x: 0, y: noseY)
+        nose.zPosition   = 22
+        addChild(nose)
+
+        // Mouth
+        for arc in [mouthL, mouthR] {
+            arc.strokeColor = UIColor(red: 0.35, green: 0.20, blue: 0.12, alpha: 0.85)
+            arc.lineWidth   = 2.8
+            arc.lineCap     = .round
+            arc.lineJoin    = .round
+            arc.fillColor   = .clear
+        }
+        mouthNode.addChild(mouthL)
+        mouthNode.addChild(mouthR)
+        mouthNode.position  = CGPoint(x: 0, y: mouthY)
+        mouthNode.zPosition = 22
+        addChild(mouthNode)
+
+        applyMouthStyle(for: .calm)
+    }
+
+    // MARK: - Paths
+
+    private func flameBodyPath() -> CGPath {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 40))
+        path.addCurve(to: CGPoint(x: 25, y: 0),
+                      controlPoint1: CGPoint(x: 10, y: 28),
+                      controlPoint2: CGPoint(x: 30, y: 14))
+        path.addCurve(to: CGPoint(x: 0, y: -38),
+                      controlPoint1: CGPoint(x: 25, y: -14),
+                      controlPoint2: CGPoint(x: 14, y: -38))
+        path.addCurve(to: CGPoint(x: -25, y: 0),
+                      controlPoint1: CGPoint(x: -14, y: -38),
+                      controlPoint2: CGPoint(x: -25, y: -14))
+        path.addCurve(to: CGPoint(x: 0, y: 40),
+                      controlPoint1: CGPoint(x: -30, y: 14),
+                      controlPoint2: CGPoint(x: -10, y: 28))
+        path.close()
+        return path.cgPath
+    }
+
+    private func flameInnerPath() -> CGPath {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 28))
+        path.addCurve(to: CGPoint(x: 15, y: 2),
+                      controlPoint1: CGPoint(x: 6, y: 18),
+                      controlPoint2: CGPoint(x: 17, y: 10))
+        path.addCurve(to: CGPoint(x: 0, y: -20),
+                      controlPoint1: CGPoint(x: 15, y: -8),
+                      controlPoint2: CGPoint(x: 8, y: -20))
+        path.addCurve(to: CGPoint(x: -15, y: 2),
+                      controlPoint1: CGPoint(x: -8, y: -20),
+                      controlPoint2: CGPoint(x: -15, y: -8))
+        path.addCurve(to: CGPoint(x: 0, y: 28),
+                      controlPoint1: CGPoint(x: -17, y: 10),
+                      controlPoint2: CGPoint(x: -6, y: 18))
+        path.close()
+        return path.cgPath
+    }
+
+    private func wispPath(side: CGFloat) -> CGPath {
+        let path = UIBezierPath()
+        path.move(to: .zero)
+        path.addCurve(to: CGPoint(x: side * 12, y: 2),
+                      controlPoint1: CGPoint(x: side * 4, y: -7),
+                      controlPoint2: CGPoint(x: side * 10, y: -4))
+        path.addCurve(to: CGPoint(x: side * 5, y: -10),
+                      controlPoint1: CGPoint(x: side * 14, y: 9),
+                      controlPoint2: CGPoint(x: side * 11, y: 1))
+        path.close()
+        return path.cgPath
+    }
+
+    private func eggBodyPath() -> CGPath {
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 38))
+        path.addCurve(to: CGPoint(x: 24, y: 2),
+                      controlPoint1: CGPoint(x: 28, y: 34),
+                      controlPoint2: CGPoint(x: 30, y: 18))
+        path.addCurve(to: CGPoint(x: 0, y: -38),
+                      controlPoint1: CGPoint(x: 26, y: -12),
+                      controlPoint2: CGPoint(x: 16, y: -38))
+        path.addCurve(to: CGPoint(x: -24, y: 2),
+                      controlPoint1: CGPoint(x: -16, y: -38),
+                      controlPoint2: CGPoint(x: -26, y: -12))
+        path.addCurve(to: CGPoint(x: 0, y: 38),
+                      controlPoint1: CGPoint(x: -30, y: 18),
+                      controlPoint2: CGPoint(x: -28, y: 34))
+        path.close()
+        return path.cgPath
+    }
+
+    private func crackPath() -> CGPath {
+        // Zigzag crack across the upper third of the egg
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: -13, y: 22))
+        path.addLine(to: CGPoint(x: -4,  y: 30))
+        path.addLine(to: CGPoint(x:  4,  y: 25))
+        path.addLine(to: CGPoint(x:  13, y: 32))
+        return path
+    }
+
+    private func nosePath() -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x:  0, y:  4))
+        path.addLine(to: CGPoint(x: -4.5, y: -2))
+        path.addLine(to: CGPoint(x:  4.5, y: -2))
+        path.closeSubpath()
+        return path
+    }
+
+    // MARK: - Mouth
+
+    private func applyMouthStyle(for mood: PetMood) {
+        switch mood {
+        case .sleepy:
+            mouthL.path = mouthArc(side: -1, dy: 0)
+            mouthR.path = mouthArc(side:  1, dy: 0)
+        case .anxious, .sick:
+            mouthL.path = sadArc(side: -1)
+            mouthR.path = sadArc(side:  1)
+        case .happy, .evolving:
+            mouthL.path = mouthArc(side: -1, dy: -6)
+            mouthR.path = mouthArc(side:  1, dy: -6)
+        default:
+            mouthL.path = mouthArc(side: -1, dy: -3)
+            mouthR.path = mouthArc(side:  1, dy: -3)
+        }
+    }
+
+    private func mouthArc(side: CGFloat, dy: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: side * 1, y: 0))
+        path.addQuadCurve(to: CGPoint(x: side * 7, y: dy),
+                          control: CGPoint(x: side * 4, y: dy - 4))
+        return path
+    }
+
+    private func sadArc(side: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: side * 1, y: -3))
+        path.addQuadCurve(to: CGPoint(x: side * 7, y: 0),
+                          control: CGPoint(x: side * 4, y: 3))
+        return path
+    }
+
+    // MARK: - Public API
+
+    func setColor(_ petColor: PetColor, animated: Bool = true) {
+        baseColor = petColor
+        syncColors(animated: animated)
+    }
 
     func setMood(_ mood: PetMood) {
-        // Il mood non sovrascrive più il colore base — agisce solo sulla bocca
-        // e sugli effetti speciali (evolving)
-        updateMouthForMood(mood)
+        applyMouthStyle(for: mood)
         if mood == .evolving { runEvolvingEffect() }
     }
 
@@ -77,202 +377,153 @@ final class PetNode: SKNode {
         currentStage = max(0, stage)
         updateScaleForStage()
         rebuildStageDecorations()
+        updateStageFeatures()
     }
 
-    // MARK: - Interazione
-
     func bounce() {
-        // Squish isometrico: più pronunciato sull'asse X (prospettiva)
-        let squish  = SKAction.scaleX(to: 1.30, y: 0.75, duration: 0.10)
-        let stretch = SKAction.scaleX(to: 0.80, y: 1.15, duration: 0.10)
-        let restore = SKAction.scale(to: 1.00,            duration: 0.15)
+        let squish  = SKAction.scaleX(to: 1.25, y: 0.80, duration: 0.10)
+        let stretch = SKAction.scaleX(to: 0.85, y: 1.12, duration: 0.10)
+        let restore = SKAction.scale(to: 1.00, duration: 0.14)
         run(.sequence([squish, stretch, restore]))
     }
 
-    // MARK: - Build
+    // MARK: - Colors Sync
 
-    private func buildBody() {
-        addChild(silhouette)
-        silhouette.addChild(tail)
-        silhouette.addChild(leftEar)
-        silhouette.addChild(rightEar)
-        silhouette.addChild(neckShadow)
-        silhouette.addChild(neck)
-        silhouette.addChild(leftArm)
-        silhouette.addChild(rightArm)
-        silhouette.addChild(body)
-        silhouette.addChild(leftLeg)
-        silhouette.addChild(rightLeg)
-        silhouette.addChild(leftHand)
-        silhouette.addChild(rightHand)
-        silhouette.addChild(leftFoot)
-        silhouette.addChild(rightFoot)
-        addChild(accentLayer)
-
-        leftEar.path = earPath(width: 28, height: 44, roundness: 12)
-        leftEar.position = CGPoint(x: -25, y: 34)
-        leftEar.zRotation = 0.04
-
-        rightEar.path = earPath(width: 28, height: 44, roundness: 12)
-        rightEar.position = CGPoint(x: 25, y: 34)
-        rightEar.zRotation = -0.04
-
-        leftEarInner.path = earPath(width: 12, height: 26, roundness: 6)
-        leftEarInner.position = CGPoint(x: 0, y: 3)
-        leftEarInner.fillColor = UIColor(red: 1.0, green: 0.80, blue: 0.84, alpha: 0.85)
-        leftEarInner.strokeColor = .clear
-        leftEar.addChild(leftEarInner)
-
-        rightEarInner.path = earPath(width: 12, height: 26, roundness: 6)
-        rightEarInner.position = CGPoint(x: 0, y: 3)
-        rightEarInner.fillColor = UIColor(red: 1.0, green: 0.80, blue: 0.84, alpha: 0.85)
-        rightEarInner.strokeColor = .clear
-        rightEar.addChild(rightEarInner)
-
-        body.path = bodyPath()
-        body.fillColor   = UIColor(red: 0.98, green: 0.95, blue: 0.93, alpha: 1)
-        body.strokeColor = UIColor(red: 0.90, green: 0.75, blue: 0.80, alpha: 0.5)
-        body.lineWidth   = 2
-
-        neckShadow.fillColor = UIColor(red: 0.79, green: 0.67, blue: 0.73, alpha: 0.16)
-        neckShadow.strokeColor = .clear
-        neckShadow.position = CGPoint(x: 0, y: 17)
-        neckShadow.zPosition = 0.5
-
-        neck.fillColor = UIColor(red: 0.98, green: 0.95, blue: 0.93, alpha: 1)
-        neck.strokeColor = UIColor(red: 0.90, green: 0.75, blue: 0.80, alpha: 0.72)
-        neck.lineWidth = 1.6
-        neck.position = CGPoint(x: 0, y: 20)
-        neck.zPosition = 1
-
-        for limb in [leftArm, rightArm, leftHand, rightHand, leftLeg, rightLeg, leftFoot, rightFoot] {
-            limb.fillColor = UIColor(red: 0.98, green: 0.95, blue: 0.93, alpha: 1)
-            limb.strokeColor = UIColor(red: 0.78, green: 0.60, blue: 0.68, alpha: 0.82)
-            limb.lineWidth = 1.8
-        }
-        leftArm.position = CGPoint(x: -34, y: 0)
-        leftArm.zRotation = 0.28
-        leftArm.zPosition = 0
-        rightArm.position = CGPoint(x: 34, y: 0)
-        rightArm.zRotation = -0.28
-        rightArm.zPosition = 0
-
-        leftHand.position = CGPoint(x: -42, y: -14)
-        leftHand.zPosition = 4
-        rightHand.position = CGPoint(x: 42, y: -14)
-        rightHand.zPosition = 4
-
-        leftLeg.position = CGPoint(x: -16, y: -36)
-        leftLeg.zPosition = 1
-        rightLeg.position = CGPoint(x: 16, y: -36)
-        rightLeg.zPosition = 1
-
-        leftFoot.position = CGPoint(x: -16, y: -48)
-        leftFoot.zPosition = 5
-        rightFoot.position = CGPoint(x: 16, y: -48)
-        rightFoot.zPosition = 5
-
-        tail.fillColor = UIColor.white.withAlphaComponent(0.92)
-        tail.strokeColor = UIColor(red: 0.90, green: 0.75, blue: 0.80, alpha: 0.25)
-        tail.lineWidth = 1
-        tail.position = CGPoint(x: 33, y: -5)
-        tail.zPosition = -1
-
-        syncSurfaceColors(animated: false)
-    }
-
-    private func buildFace() {
-        // Occhi
-        for eye in [eyeL, eyeR] {
-            eye.fillColor   = UIColor(red: 0.20, green: 0.10, blue: 0.25, alpha: 1)
-            eye.strokeColor = .clear
-            addChild(eye)
-        }
-        eyeL.position = CGPoint(x: -15, y: 10)
-        eyeR.position = CGPoint(x:  15, y: 10)
-
-        // Riflesso occhi (punto bianco)
-        for (eye, offset) in [(eyeL, CGPoint(x: 2, y: 2)), (eyeR, CGPoint(x: 2, y: 2))] {
-            let shine = SKShapeNode(circleOfRadius: 2)
-            shine.fillColor   = .white
-            shine.strokeColor = .clear
-            shine.position    = offset
-            eye.addChild(shine)
+    private func syncColors(animated: Bool) {
+        let apply: () -> Void = {
+            switch self.petShape {
+            case .fiamma:
+                // Fiamma è sempre arancione; petColor tinge leggermente il glow interno
+                self.flameInner.fillColor = self.flameYellow.withAlphaComponent(0.55)
+            case .uovo:
+                // Egg shell tinta con petColor
+                var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+                self.baseColor.uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+                let tinted = UIColor(
+                    red:   0.99 * 0.82 + r * 0.18,
+                    green: 0.95 * 0.82 + g * 0.18,
+                    blue:  0.89 * 0.82 + b * 0.18,
+                    alpha: 1
+                )
+                self.eggBody.fillColor   = tinted
+                self.leftStub.fillColor  = tinted
+                self.rightStub.fillColor = tinted
+            }
         }
 
-        // Guancette
-        for cheek in [cheekL, cheekR] {
-            cheek.fillColor   = UIColor(red: 1.0, green: 0.55, blue: 0.65, alpha: 0.45)
-            cheek.strokeColor = .clear
-            addChild(cheek)
+        if animated {
+            let up  = SKAction.scale(to: 1.10, duration: 0.11)
+            let down = SKAction.scale(to: 1.00, duration: 0.11)
+            let col = SKAction.customAction(withDuration: 0.11) { [weak self] _, _ in
+                apply()
+                self?.updateScaleForStage()
+            }
+            run(.sequence([up, SKAction.group([down, col])]))
+        } else {
+            apply()
         }
-        cheekL.position = CGPoint(x: -24, y: -1)
-        cheekR.position = CGPoint(x:  24, y: -1)
-
-        muzzleShadow.fillColor = UIColor(red: 0.83, green: 0.70, blue: 0.74, alpha: 0.18)
-        muzzleShadow.strokeColor = .clear
-        muzzleShadow.position = CGPoint(x: 2, y: -7)
-        addChild(muzzleShadow)
-
-        muzzle.fillColor = UIColor(red: 1.0, green: 0.97, blue: 0.95, alpha: 0.96)
-        muzzle.strokeColor = UIColor(red: 0.90, green: 0.82, blue: 0.84, alpha: 0.72)
-        muzzle.lineWidth = 1.2
-        muzzle.position = CGPoint(x: 1, y: -5)
-        addChild(muzzle)
-
-        muzzleHighlight.fillColor = UIColor.white.withAlphaComponent(0.42)
-        muzzleHighlight.strokeColor = .clear
-        muzzleHighlight.position = CGPoint(x: 0, y: 4)
-        muzzle.addChild(muzzleHighlight)
-
-        nose.fillColor = UIColor(red: 0.54, green: 0.34, blue: 0.42, alpha: 0.85)
-        nose.strokeColor = .clear
-        nose.position = CGPoint(x: 0, y: -1)
-        addChild(nose)
-
-        // Bocca
-        buildSmile()
-        addChild(mouth)
     }
 
-    private func buildSmile() {
-        mouth.position    = CGPoint(x: 2, y: -3)
-        mouthLeft.strokeColor = UIColor(red: 0.20, green: 0.10, blue: 0.25, alpha: 0.86)
-        mouthLeft.lineWidth = 2.8
-        mouthLeft.lineCap = .round
-        mouthLeft.lineJoin = .round
-        mouthLeft.fillColor = .clear
-        mouthLeft.position = .zero
+    // MARK: - Stage
 
-        mouthRight.strokeColor = UIColor(red: 0.20, green: 0.10, blue: 0.25, alpha: 0.86)
-        mouthRight.lineWidth = 2.8
-        mouthRight.lineCap = .round
-        mouthRight.lineJoin = .round
-        mouthRight.fillColor = .clear
-        mouthRight.position = .zero
-
-        mouth.addChild(mouthLeft)
-        mouth.addChild(mouthRight)
-        applyMouthStyle(for: .calm)
+    private func updateScaleForStage() {
+        let scale = 1.0 + CGFloat(min(currentStage, 4)) * 0.10
+        setScale(scale)
     }
 
-    private func updateMouthForMood(_ mood: PetMood) {
-        applyMouthStyle(for: mood)
+    private func updateStageFeatures() {
+        guard petShape == .uovo else { return }
+        let showStubs = currentStage >= 1
+        let showFeet  = currentStage >= 2
+        leftStub.run(.fadeAlpha(to: showStubs ? 1.0 : 0.0, duration: 0.4))
+        rightStub.run(.fadeAlpha(to: showStubs ? 1.0 : 0.0, duration: 0.4))
+        leftFoot.run(.fadeAlpha(to: showFeet  ? 1.0 : 0.0, duration: 0.4))
+        rightFoot.run(.fadeAlpha(to: showFeet  ? 1.0 : 0.0, duration: 0.4))
     }
 
-    // MARK: - Animazione idle
-    //
-    // L'animazione verticale è ridotta rispetto alla versione piatta:
-    // in prospettiva isometrica un movimento di 5pt appare già evidente.
+    private func rebuildStageDecorations() {
+        accentLayer.removeAllChildren()
+        switch petShape {
+        case .fiamma: buildFlammaDecorations()
+        case .uovo:   buildUovoDecorations()
+        }
+    }
+
+    private func buildFlammaDecorations() {
+        if currentStage >= 1 {
+            let spark = SKShapeNode(circleOfRadius: 5)
+            spark.fillColor   = flameYellow
+            spark.strokeColor = .clear
+            spark.position    = CGPoint(x: -20, y: 44)
+            accentLayer.addChild(spark)
+        }
+        if currentStage >= 2 {
+            let spark2 = SKShapeNode(circleOfRadius: 5)
+            spark2.fillColor   = flameYellow
+            spark2.strokeColor = .clear
+            spark2.position    = CGPoint(x: 20, y: 42)
+            accentLayer.addChild(spark2)
+        }
+        if currentStage >= 3 {
+            let halo = SKShapeNode(ellipseOf: CGSize(width: 80, height: 18))
+            halo.strokeColor = flameOrange.withAlphaComponent(0.7)
+            halo.lineWidth   = 2.5
+            halo.fillColor   = .clear
+            halo.position    = CGPoint(x: 0, y: 48)
+            accentLayer.addChild(halo)
+        }
+        if currentStage >= 4 {
+            let crown = SKLabelNode(text: "✦")
+            crown.fontSize  = 18
+            crown.fontColor = flameYellow
+            crown.position  = CGPoint(x: 0, y: 62)
+            accentLayer.addChild(crown)
+        }
+    }
+
+    private func buildUovoDecorations() {
+        if currentStage >= 1 {
+            let leaf = SKShapeNode(ellipseOf: CGSize(width: 14, height: 8))
+            leaf.fillColor   = UIColor(red: 0.45, green: 0.82, blue: 0.55, alpha: 0.95)
+            leaf.strokeColor = .clear
+            leaf.zRotation   = -.pi / 5
+            leaf.position    = CGPoint(x: -14, y: 44)
+            accentLayer.addChild(leaf)
+        }
+        if currentStage >= 2 {
+            let blossom = SKLabelNode(text: "✿")
+            blossom.fontSize  = 13
+            blossom.fontColor = UIColor(red: 1.0, green: 0.62, blue: 0.8, alpha: 0.95)
+            blossom.position  = CGPoint(x: 14, y: 42)
+            accentLayer.addChild(blossom)
+        }
+        if currentStage >= 3 {
+            let halo = SKShapeNode(ellipseOf: CGSize(width: 86, height: 20))
+            halo.strokeColor = UIColor.white.withAlphaComponent(0.65)
+            halo.lineWidth   = 2
+            halo.fillColor   = .clear
+            halo.position    = CGPoint(x: 0, y: 50)
+            accentLayer.addChild(halo)
+        }
+        if currentStage >= 4 {
+            let crown = SKLabelNode(text: "✦")
+            crown.fontSize  = 18
+            crown.fontColor = UIColor(red: 1.0, green: 0.92, blue: 0.45, alpha: 1)
+            crown.position  = CGPoint(x: 0, y: 62)
+            accentLayer.addChild(crown)
+        }
+    }
+
+    // MARK: - Idle Animation
 
     private func startIdle() {
-        let up   = SKAction.moveBy(x: 0, y: 5, duration: 1.6)
-        let down = SKAction.moveBy(x: 0, y: -5, duration: 1.6)
+        let up   = SKAction.moveBy(x: 0, y: 5, duration: 1.4)
+        let down = SKAction.moveBy(x: 0, y: -5, duration: 1.4)
         up.timingMode   = .easeInEaseOut
         down.timingMode = .easeInEaseOut
-        // Leggera rotazione per effetto "respiro"
-        let tiltR = SKAction.rotate(byAngle:  0.04, duration: 1.6)
-        let tiltL = SKAction.rotate(byAngle: -0.04, duration: 1.6)
+
+        let tiltR = SKAction.rotate(byAngle:  0.03, duration: 1.4)
+        let tiltL = SKAction.rotate(byAngle: -0.03, duration: 1.4)
         tiltR.timingMode = .easeInEaseOut
         tiltL.timingMode = .easeInEaseOut
 
@@ -280,156 +531,16 @@ final class PetNode: SKNode {
         run(.repeatForever(.sequence([tiltR, tiltL])))
     }
 
-    // MARK: - Effetto evolving
+    // MARK: - Evolution Effect
 
     private func runEvolvingEffect() {
-        let scale  = SKAction.sequence([
+        let body: SKShapeNode = petShape == .fiamma ? flameBody : eggBody
+        let pulse = SKAction.sequence([
             SKAction.scale(to: 1.12, duration: 0.25),
             SKAction.scale(to: 1.00, duration: 0.25)
         ])
-        let glow = SKAction.customAction(withDuration: 0.5) { [weak self] _, _ in
-            self?.body.glowWidth = 8
-        }
-        let unglow = SKAction.customAction(withDuration: 0.5) { [weak self] _, _ in
-            self?.body.glowWidth = 0
-        }
-        run(.sequence([scale, glow, unglow]))
-    }
-
-    private func updateScaleForStage() {
-        let stageScale = 1.0 + CGFloat(min(currentStage, 4)) * 0.12
-        silhouette.setScale(stageScale)
-        accentLayer.setScale(stageScale)
-        tail.setScale(0.96 + CGFloat(min(currentStage, 4)) * 0.04)
-
-        let earStretch = 1.0 + CGFloat(min(currentStage, 4)) * 0.04
-        leftEar.yScale = earStretch
-        rightEar.yScale = earStretch
-    }
-
-    private func rebuildStageDecorations() {
-        accentLayer.removeAllChildren()
-
-        if currentStage >= 1 {
-            let leaf = SKShapeNode(ellipseOf: CGSize(width: 16, height: 9))
-            leaf.fillColor = UIColor(red: 0.45, green: 0.82, blue: 0.55, alpha: 0.95)
-            leaf.strokeColor = .clear
-            leaf.zRotation = -.pi / 5
-            leaf.position = CGPoint(x: -12, y: 57)
-            accentLayer.addChild(leaf)
-        }
-
-        if currentStage >= 2 {
-            let blossom = SKLabelNode(text: "✿")
-            blossom.fontSize = 15
-            blossom.fontColor = UIColor(red: 1.0, green: 0.62, blue: 0.8, alpha: 0.95)
-            blossom.position = CGPoint(x: 16, y: 55)
-            accentLayer.addChild(blossom)
-        }
-
-        if currentStage >= 3 {
-            let halo = SKShapeNode(ellipseOf: CGSize(width: 106, height: 28))
-            halo.strokeColor = UIColor.white.withAlphaComponent(0.65)
-            halo.lineWidth = 2
-            halo.fillColor = .clear
-            halo.position = CGPoint(x: 0, y: 72)
-            accentLayer.addChild(halo)
-        }
-
-        if currentStage >= 4 {
-            let crown = SKLabelNode(text: "✦")
-            crown.fontSize = 20
-            crown.fontColor = UIColor(red: 1.0, green: 0.92, blue: 0.45, alpha: 1)
-            crown.position = CGPoint(x: 0, y: 88)
-            accentLayer.addChild(crown)
-        }
-    }
-
-    private func syncSurfaceColors(animated: Bool) {
-        let newColor = baseColor.uiColor
-        let newStroke = baseColor.strokeUIColor
-        let applyColors = {
-            self.body.fillColor = newColor
-            self.body.strokeColor = newStroke
-            self.neck.fillColor = newColor
-            self.neck.strokeColor = newStroke.withAlphaComponent(0.82)
-            self.leftEar.fillColor = newColor
-            self.rightEar.fillColor = newColor
-            self.leftEar.strokeColor = newStroke
-            self.rightEar.strokeColor = newStroke
-            self.leftArm.fillColor = newColor
-            self.rightArm.fillColor = newColor
-            self.leftHand.fillColor = newColor
-            self.rightHand.fillColor = newColor
-            self.leftLeg.fillColor = newColor
-            self.rightLeg.fillColor = newColor
-            self.leftFoot.fillColor = newColor
-            self.rightFoot.fillColor = newColor
-            self.leftArm.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.rightArm.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.leftHand.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.rightHand.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.leftLeg.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.rightLeg.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.leftFoot.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.rightFoot.strokeColor = newStroke.withAlphaComponent(0.8)
-            self.tail.fillColor = newColor.withAlphaComponent(0.95)
-            self.tail.strokeColor = newStroke.withAlphaComponent(0.6)
-            self.muzzle.strokeColor = newStroke.withAlphaComponent(0.5)
-        }
-
-        if animated {
-            let scaleUp = SKAction.scale(to: 1.12, duration: 0.12)
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.12)
-            let colorAct = SKAction.customAction(withDuration: 0.12) { [weak self] _, _ in
-                applyColors()
-                self?.updateScaleForStage()
-            }
-            run(.sequence([scaleUp, SKAction.group([scaleDown, colorAct])]))
-        } else {
-            applyColors()
-        }
-    }
-
-    private func bodyPath() -> CGPath {
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: -30, y: -26))
-        path.addQuadCurve(to: CGPoint(x: -24, y: 22), controlPoint: CGPoint(x: -38, y: -2))
-        path.addQuadCurve(to: CGPoint(x: 0, y: 40), controlPoint: CGPoint(x: -18, y: 38))
-        path.addQuadCurve(to: CGPoint(x: 24, y: 22), controlPoint: CGPoint(x: 18, y: 38))
-        path.addQuadCurve(to: CGPoint(x: 30, y: -26), controlPoint: CGPoint(x: 38, y: -2))
-        path.addQuadCurve(to: CGPoint(x: 0, y: -40), controlPoint: CGPoint(x: 22, y: -42))
-        path.addQuadCurve(to: CGPoint(x: -30, y: -26), controlPoint: CGPoint(x: -22, y: -42))
-        path.close()
-        return path.cgPath
-    }
-
-    private func earPath(width: CGFloat, height: CGFloat, roundness: CGFloat) -> CGPath {
-        let path = UIBezierPath(roundedRect: CGRect(x: -width / 2, y: -height / 2, width: width, height: height), cornerRadius: roundness)
-        return path.cgPath
-    }
-
-    private func applyMouthStyle(for mood: PetMood) {
-        switch mood {
-        case .sleepy:
-            mouthLeft.path = singleLobePath(start: CGPoint(x: -6, y: -7), end: CGPoint(x: -1, y: -7), control: CGPoint(x: -3.5, y: -7))
-            mouthRight.path = singleLobePath(start: CGPoint(x: 1, y: -7), end: CGPoint(x: 6, y: -7), control: CGPoint(x: 3.5, y: -7))
-        case .anxious, .sick:
-            mouthLeft.path = singleLobePath(start: CGPoint(x: -6, y: -6), end: CGPoint(x: -1, y: -9), control: CGPoint(x: -3, y: -11))
-            mouthRight.path = singleLobePath(start: CGPoint(x: 1, y: -9), end: CGPoint(x: 6, y: -6), control: CGPoint(x: 3, y: -11))
-        case .happy, .evolving:
-            mouthLeft.path = singleLobePath(start: CGPoint(x: -6, y: -7), end: CGPoint(x: -1, y: -2), control: CGPoint(x: -3, y: 1))
-            mouthRight.path = singleLobePath(start: CGPoint(x: 1, y: -2), end: CGPoint(x: 6, y: -7), control: CGPoint(x: 3, y: 1))
-        default:
-            mouthLeft.path = singleLobePath(start: CGPoint(x: -6, y: -6), end: CGPoint(x: -1, y: -3), control: CGPoint(x: -3, y: 0))
-            mouthRight.path = singleLobePath(start: CGPoint(x: 1, y: -3), end: CGPoint(x: 6, y: -6), control: CGPoint(x: 3, y: 0))
-        }
-    }
-
-    private func singleLobePath(start: CGPoint, end: CGPoint, control: CGPoint) -> CGPath {
-        let path = CGMutablePath()
-        path.move(to: start)
-        path.addQuadCurve(to: end, control: control)
-        return path
+        let glow   = SKAction.customAction(withDuration: 0.5) { _, _ in body.glowWidth = 8 }
+        let unglow = SKAction.customAction(withDuration: 0.5) { _, _ in body.glowWidth = 0 }
+        run(.sequence([pulse, glow, unglow]))
     }
 }

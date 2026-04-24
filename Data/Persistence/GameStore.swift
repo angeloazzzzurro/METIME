@@ -38,6 +38,8 @@ final class GameStore: ObservableObject {
             modelContext.insert(newPet)
             save()
         }
+
+        applyDecayIfNeeded()
     }
 
     // MARK: - Actions
@@ -198,6 +200,49 @@ final class GameStore: ObservableObject {
         )
         descriptor.fetchLimit = limit
         return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    // MARK: - Time Decay
+
+    /// Decay rates per ora per ogni stat.
+    private enum DecayRate {
+        static let hunger:    Float = 1.0 / 12
+        static let happiness: Float = 1.0 / 12
+        static let energy:    Float = 1.0 / 12
+        static let calm:      Float = 1.0 / 12
+        /// Massimo numero di ore considerate (evita punizioni eccessive dopo lunghe assenze).
+        static let maxHours:  Double = 12
+    }
+
+    /// Calcola quante ore sono passate dall'ultima sessione e riduce i needs proporzionalmente.
+    /// Va chiamato al launch e ogni volta che l'app torna in foreground.
+    func applyDecayIfNeeded() {
+        let elapsed = Date.now.timeIntervalSince(pet.lastActiveDate)
+        let hours = min(elapsed / 3600, DecayRate.maxHours)
+
+        // Ignora scatti brevissimi (< 3 minuti) per evitare micro-decay su cold launch
+        guard hours > 0.05 else {
+            markActive()
+            return
+        }
+
+        let h = Float(hours)
+        objectWillChange.send()
+        pet.needs.hunger    = max(0, pet.needs.hunger    - h * DecayRate.hunger)
+        pet.needs.happiness = max(0, pet.needs.happiness - h * DecayRate.happiness)
+        pet.needs.energy    = max(0, pet.needs.energy    - h * DecayRate.energy)
+        pet.needs.calm      = max(0, pet.needs.calm      - h * DecayRate.calm)
+
+        logger.info("Decay applied: \(String(format: "%.1f", hours))h elapsed")
+        syncMood()
+        markActive()
+        save()
+    }
+
+    /// Aggiorna `lastActiveDate` al momento corrente senza applicare decay.
+    func markActive() {
+        pet.lastActiveDate = .now
+        save()
     }
 
     // MARK: - Mood Derivation

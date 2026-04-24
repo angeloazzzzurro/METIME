@@ -2,6 +2,41 @@ import SwiftUI
 import SwiftData
 import OSLog
 
+// MARK: - PetType
+
+enum PetType: String, CaseIterable {
+    case fiamma
+    case uovo
+
+    var displayName: String {
+        switch self {
+        case .fiamma: "Fiamma"
+        case .uovo:   "Uovo"
+        }
+    }
+
+    var tagline: String {
+        switch self {
+        case .fiamma: "Uno spirito ardente che cresce con te"
+        case .uovo:   "Un mistero pronto a schiudersi"
+        }
+    }
+
+    var traits: [String] {
+        switch self {
+        case .fiamma: ["Energetico", "Curioso", "Caldo"]
+        case .uovo:   ["Misterioso", "Tranquillo", "Sorpresa"]
+        }
+    }
+
+    var accentColor: Color {
+        switch self {
+        case .fiamma: Color(hex: "#ff8c42")
+        case .uovo:   Color(hex: "#8ecae6")
+        }
+    }
+}
+
 // MARK: - Mood
 
 enum PetMood: String, CaseIterable, Codable {
@@ -56,6 +91,8 @@ final class Pet {
     var moodRaw: String
     /// Indice del colore corrente nella palette PetColor (persistito)
     var colorIndex: Int
+    /// Timestamp dell'ultima volta che l'app era attiva — usato per calcolare il decay dei needs.
+    var lastActiveDate: Date
 
     @Relationship(deleteRule: .cascade) var needs: PetNeeds
 
@@ -106,13 +143,15 @@ final class Pet {
          food: Int = 3,
          mood: PetMood = .calm,
          colorIndex: Int = 0,
-         needs: PetNeeds = PetNeeds()) {
-        self.name       = name
-        self.stage      = stage
-        self.food       = food
-        self.moodRaw    = mood.rawValue
-        self.colorIndex = colorIndex
-        self.needs      = needs
+         needs: PetNeeds = PetNeeds(),
+         lastActiveDate: Date = .now) {
+        self.name           = name
+        self.stage          = stage
+        self.food           = food
+        self.moodRaw        = mood.rawValue
+        self.colorIndex     = colorIndex
+        self.needs          = needs
+        self.lastActiveDate = lastActiveDate
     }
 }
 

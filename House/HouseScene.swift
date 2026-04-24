@@ -302,7 +302,7 @@ final class HouseScene: SKScene {
         pet.setColor(petColor, animated: false)
         pet.setMood(mood)
         pet.setStage(petStage)
-        pet.setScale(min(size.width / 92, size.height / 82))
+        pet.setScale(min(size.width / 67, size.height / 83))
 
         // Ombra
         let shadow = SKShapeNode(ellipseOf: CGSize(width: size.width, height: tileH * 0.32))
@@ -565,7 +565,7 @@ final class HouseScene: SKScene {
         petNode.setStage(petStage)
         petNode.setMood(mood)
         petNode.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.18)
-        petNode.setScale(min(newSize.width / 92, newSize.height / 82))
+        petNode.setScale(min(newSize.width / 67, newSize.height / 83))
 
         petShadowNode.path = CGPath(ellipseIn: CGRect(
             x: -newSize.width / 2,

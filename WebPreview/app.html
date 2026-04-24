@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>METIME — App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/game.css"/>
+  <style>
+    /* ── Sections ── */
+    .section { display:none; flex-direction:column; gap:14px; padding-bottom:8px; }
+    .section.active { display:flex; }
+
+    /* ── Top HUD strip ── */
+    .app-hud {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 14px 8px;
+      background:linear-gradient(180deg,var(--panel),var(--panel-alt));
+      border-bottom:2px solid var(--border-lt);
+      flex-shrink:0;
+    }
+    .app-hud .logo { font-size:14px; font-weight:900; color:var(--ink); letter-spacing:.04em; }
+    .app-hud .hud-pills { display:flex; gap:6px; }
+    .hud-pill {
+      display:flex; align-items:center; gap:4px;
+      padding:5px 10px; border-radius:999px;
+      background:var(--panel); border:2px solid var(--border-lt);
+      font-size:11px; font-weight:800; color:var(--ink);
+      box-shadow:var(--inner-glow),var(--shadow-sm);
+    }
+
+    /* ══════════════════════════════════
+       PET SECTION
+    ══════════════════════════════════ */
+    :root {
+      --ac-wood:#a67c52; --ac-wood-dark:#7a5430; --ac-wood-light:#d4a76a;
+      --ac-brown-ink:#5c3d1e; --ac-ui-border:#c9a96e; --ac-cream:#fdf6e3;
+      --ac-sky:#b8cdb0; --ac-sky-light:#d4e0c8;
+      --ac-grass:#7ab648; --ac-grass-dark:#5a9a2e; --ac-grass-light:#a5d66f;
+    }
+    .pet-zone { border-radius:22px; overflow:hidden; border:3px solid var(--ac-wood); box-shadow:0 6px 0 var(--ac-wood-dark),0 18px 36px rgba(60,40,10,.22); }
+    .pet-header { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 16px; background:linear-gradient(180deg,var(--ac-wood-light),var(--ac-wood)); border-bottom:3px solid var(--ac-wood-dark); position:relative; }
+    .pet-header::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(255,255,255,.08) 18px,rgba(255,255,255,.08) 19px); pointer-events:none; }
+    .pet-header h2 { margin:0; font-size:20px; color:#fff; text-shadow:0 2px 0 rgba(90,50,10,.5); }
+    .stage-badge { background:var(--ac-cream); border:2px solid var(--ac-wood-dark); border-radius:999px; padding:4px 10px; font-weight:800; font-size:11px; color:var(--ac-brown-ink); box-shadow:inset 0 1px 0 rgba(255,255,255,.7); transition:transform .3s; }
+    .stage-badge.evolving { transform:scale(1.2); }
+
+    .world-bar { display:flex; justify-content:space-between; align-items:center; padding:5px 14px; background:rgba(0,0,0,.12); font-size:11px; font-weight:700; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.3); }
+    .world-bar button { border:0; background:rgba(255,255,255,.22); color:#fff; border-radius:999px; padding:3px 9px; font-size:10px; font-weight:800; cursor:pointer; font-family:inherit; transition:background .2s; }
+    .world-bar button:hover { background:rgba(255,255,255,.38); }
+
+    .world { position:relative; min-height:260px; overflow:hidden; background:linear-gradient(180deg,var(--ac-sky) 0%,var(--ac-sky-light) 42%,var(--ac-grass-light) 62%,var(--ac-grass) 100%); transition:background 1.2s; cursor:pointer; }
+    .world.night { background:linear-gradient(180deg,#1a1a3e,#2d2b55 35%,#3a5a3a 62%,#2d4a2d); }
+    .world::after { content:""; position:absolute; left:-14%; right:-14%; bottom:-50px; height:130px; border-radius:50%; background:radial-gradient(ellipse at 50% 20%,var(--ac-grass-light),var(--ac-grass) 50%,var(--ac-grass-dark)); box-shadow:inset 0 6px 18px rgba(90,160,40,.35); transition:background 1.2s; }
+    .world.night::after { background:radial-gradient(ellipse at 50% 20%,#3a5a3a,#2d4a2d 50%,#1e3a1e); }
+    .cloud-layer { position:absolute; top:0; left:0; right:0; height:70px; pointer-events:none; overflow:hidden; }
+    .cloud { position:absolute; font-size:32px; color:rgba(255,255,255,.6); animation:cloud-drift linear infinite; }
+    .world.night .cloud { opacity:.15; }
+    @keyframes cloud-drift { 0%{transform:translateX(-60px)} 100%{transform:translateX(calc(100vw + 60px))} }
+    .stars-layer { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity 1s; }
+    .world.night .stars-layer { opacity:1; }
+    .star { position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; animation:twinkle 2s ease-in-out infinite alternate; }
+    @keyframes twinkle { 0%{opacity:.3} 100%{opacity:1} }
+    .world-deco { position:absolute; bottom:14px; left:0; right:0; text-align:center; font-size:16px; letter-spacing:12px; pointer-events:none; opacity:.85; }
+    .tree { position:absolute; font-size:28px; z-index:0; pointer-events:none; animation:tree-sway 4s ease-in-out infinite alternate; }
+    .tree-1 { left:8%; bottom:48px; }
+    .tree-2 { right:10%; bottom:44px; animation-delay:1s; font-size:24px; }
+    @keyframes tree-sway { 0%{transform:rotate(-2deg)} 100%{transform:rotate(2deg)} }
+    .particles { position:absolute; inset:0; pointer-events:none; z-index:2; overflow:hidden; }
+    .particle { position:absolute; font-size:16px; animation:particle-rise 2s ease-out forwards; opacity:0; }
+    @keyframes particle-rise { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-70px) scale(.5) rotate(30deg)} }
+
+    /* Pet creature */
+    .speech-bubble { position:absolute; left:50%; top:-8px; transform:translateX(-50%); background:#fff; border:2px solid var(--ac-wood); border-radius:12px; padding:5px 10px; font-size:13px; font-weight:700; color:var(--ac-brown-ink); white-space:nowrap; z-index:10; opacity:0; pointer-events:none; box-shadow:0 3px 8px rgba(60,40,10,.18); }
+    .speech-bubble::after { content:""; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%); border-left:7px solid transparent; border-right:7px solid transparent; border-top:7px solid #fff; }
+    .speech-bubble.show { animation:bubble-pop 2s ease-out forwards; }
+    @keyframes bubble-pop { 0%{opacity:0;transform:translateX(-50%) translateY(6px) scale(.7)} 15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)} 75%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)} 100%{opacity:0;transform:translateX(-50%) translateY(-12px) scale(.8)} }
+
+    .pet { position:relative; width:120px; height:120px; margin:24px auto 6px; border-radius:50%; background:radial-gradient(circle at 38% 28%,rgba(255,255,255,.5),transparent 55%),linear-gradient(180deg,#fff4e6,#fde8d0 50%,#f5d6b8); border:2.5px solid var(--ac-wood); box-shadow:0 10px 24px rgba(60,40,10,.2),inset 0 -8px 16px rgba(200,170,120,.12); z-index:1; animation:pet-float 2.8s ease-in-out infinite; transform:rotateX(12deg) rotateZ(-2deg); transition:width .3s,height .3s,background .3s; cursor:pointer; user-select:none; }
+    .pet:hover { filter:brightness(1.05); }
+    .pet.squish { animation:squish .4s ease; }
+    @keyframes squish { 0%{transform:translateY(0) scale(1,1) rotateX(12deg) rotateZ(-2deg)} 30%{transform:translateY(4px) scale(1.12,.88) rotateX(12deg) rotateZ(-2deg)} 60%{transform:translateY(-4px) scale(.92,1.1) rotateX(12deg) rotateZ(-2deg)} 100%{transform:translateY(0) scale(1,1) rotateX(12deg) rotateZ(-2deg)} }
+    @keyframes pet-float { 0%,100%{transform:translateY(0) rotateX(12deg) rotateZ(-2deg)} 50%{transform:translateY(-7px) rotateX(12deg) rotateZ(-2deg)} }
+    .pet::before,.pet::after { content:""; position:absolute; width:28px; height:28px; border-radius:50%; background:linear-gradient(180deg,#fde8d0,#f5d6b8); border:2.5px solid var(--ac-wood); top:-10px; }
+    .pet::before { left:10px; }
+    .pet::after { right:10px; }
+    .ear-inner { position:absolute; width:14px; height:14px; border-radius:50%; background:radial-gradient(circle,#f0b8b8 40%,transparent 70%); top:-4px; z-index:1; pointer-events:none; }
+    .ear-inner.l { left:17px; }
+    .ear-inner.r { right:17px; }
+    .pet-eyes { position:absolute; left:50%; top:38px; width:48px; transform:translateX(-50%); display:flex; justify-content:space-between; }
+    .pet-eye { width:12px; height:12px; border-radius:50%; background:#2d1f14; position:relative; }
+    .pet-eye::after { content:""; position:absolute; width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.85); top:2px; left:2px; }
+    .pet.blink .pet-eye { height:3px; border-radius:8px; }
+    .pet.blink .pet-eye::after { opacity:0; }
+    .pet-nose { position:absolute; left:50%; top:56px; transform:translateX(-50%); width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid #c4866a; }
+    .pet-cheek { position:absolute; width:18px; height:18px; border-radius:50%; background:radial-gradient(circle,rgba(240,130,130,.5),rgba(240,130,130,0) 70%); top:66px; }
+    .cheek-l { left:14px; }
+    .cheek-r { right:14px; }
+    .pet-mouth { position:absolute; left:50%; top:65px; width:15px; height:7px; border-bottom:2.5px solid var(--ac-brown-ink); border-radius:0 0 10px 10px; transform:translateX(-50%); }
+    .pet-body-shirt { position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); width:58px; height:34px; border-radius:7px 7px 18px 18px; background:linear-gradient(180deg,#7ec8a0,#5aaa7e); border:2.5px solid #4a8a66; z-index:-1; }
+    .pet-arm { position:absolute; bottom:-12px; width:13px; height:22px; border-radius:8px; background:linear-gradient(180deg,#7ec8a0,#5aaa7e); border:2px solid #4a8a66; z-index:-1; }
+    .pet-arm.l { left:15px; transform:rotate(8deg); }
+    .pet-arm.r { right:15px; transform:rotate(-8deg); }
+    .pet-mood-txt { margin-top:10px; text-align:center; font-weight:700; color:#fff; text-shadow:0 1px 3px rgba(40,80,20,.5); position:relative; font-size:13px; z-index:1; }
+
+    /* XP bar */
+    .xp-strip { padding:6px 14px 4px; background:var(--ac-ui-bg,rgba(255,248,230,.94)); border-top:1.5px solid rgba(180,150,90,.2); }
+    .xp-label { font-size:10px; font-weight:800; color:var(--ac-brown-ink); letter-spacing:.05em; }
+    .xp-bar-wrap { margin-top:3px; height:12px; border-radius:7px; background:#e8dcc4; border:2px solid var(--ac-ui-border); overflow:hidden; position:relative; }
+    .xp-bar { height:100%; border-radius:5px; transition:width .6s ease; background:linear-gradient(90deg,#ffd54f,#ffab00,#ff6d00); }
+    .xp-bar::after { content:""; position:absolute; inset:1px 4px; border-radius:inherit; background:linear-gradient(180deg,rgba(255,255,255,.4),transparent); }
+    .xp-text { position:absolute; right:5px; top:50%; transform:translateY(-50%); font-size:9px; font-weight:800; color:var(--ac-brown-ink); }
+
+    /* Stat bars */
+    .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:10px 14px 6px; background:rgba(255,248,230,.94); }
+    .stat-card { border-radius:11px; padding:9px 11px; background:linear-gradient(180deg,#fff,#fdf3e3); border:2px solid var(--ac-ui-border); box-shadow:0 2px 0 rgba(160,130,70,.15); }
+    .stat-card small { color:var(--ac-brown-ink); font-weight:800; text-transform:uppercase; font-size:9px; letter-spacing:.05em; }
+    .stat-card .stat-val { font-size:12px; font-weight:800; color:var(--ac-brown-ink); float:right; }
+    .stat-bar-wrap { margin-top:4px; height:8px; border-radius:5px; background:#e8dcc4; border:1px solid #c9a96e; overflow:hidden; }
+    .stat-bar { height:100%; border-radius:5px; transition:width .4s ease; }
+    .bar-hunger   { background:linear-gradient(90deg,#f9a825,#ff8f00); }
+    .bar-happiness{ background:linear-gradient(90deg,#e91e90,#f06292); }
+    .bar-calm     { background:linear-gradient(90deg,#66bb6a,#43a047); }
+    .bar-energy   { background:linear-gradient(90deg,#60a5fa,#3b82f6); }
+    .stat-card.warn { border-color:#e53935; }
+    .stat-card.flash { animation:stat-flash .5s ease; }
+    @keyframes stat-flash { 0%,100%{background:linear-gradient(180deg,#fff,#fdf3e3)} 50%{background:linear-gradient(180deg,#fffde0,#fff3a0)} }
+
+    /* Action buttons */
+    .actions-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; padding:8px 14px 14px; background:rgba(255,248,230,.94); border-top:2px dashed rgba(180,150,90,.3); }
+    .ac-btn { border:0; border-radius:16px; padding:12px 4px 9px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font-weight:800; font-size:10px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.25); box-shadow:0 4px 0 rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.35); transition:transform .15s,box-shadow .15s; font-family:inherit; position:relative; overflow:hidden; }
+    .ac-btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+    .ac-btn:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.15); }
+    .ac-btn .ico { font-size:22px; }
+    .ac-btn.cooldown { pointer-events:none; filter:grayscale(.5) brightness(.8); }
+    .btn-feed     { background:linear-gradient(180deg,#ffa726,#ef6c00); }
+    .btn-play     { background:linear-gradient(180deg,#ec407a,#c2185b); }
+    .btn-meditate { background:linear-gradient(180deg,#66bb6a,#2e7d32); }
+    .btn-rest     { background:linear-gradient(180deg,#60a5fa,#3b82f6); }
+
+    /* Toast */
+    .toast-wrap { position:fixed; top:16px; right:16px; z-index:200; display:flex; flex-direction:column; gap:7px; pointer-events:none; }
+    .toast-item { background:var(--ac-cream,#fdf6e3); border:2px solid var(--ac-wood,#a67c52); border-radius:14px; padding:9px 14px; box-shadow:0 4px 12px rgba(60,40,10,.2); font-size:12px; font-weight:700; color:var(--ac-brown-ink,#5c3d1e); animation:toast-in .3s ease-out, toast-out .3s ease-in 2.2s forwards; display:flex; align-items:center; gap:7px; }
+    @keyframes toast-in { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes toast-out { from{opacity:1} to{opacity:0;transform:translateY(-10px)} }
+
+    /* ══════════════════════════════════
+       GARDEN SECTION
+    ══════════════════════════════════ */
+    .garden-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .plot {
+      border-radius:16px; border:2.5px solid var(--border-lt);
+      background:linear-gradient(180deg,#e8f5d8,#d4e8c0);
+      aspect-ratio:1; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:6px;
+      cursor:pointer; position:relative; overflow:hidden;
+      box-shadow:0 3px 0 rgba(80,120,40,.25),var(--inner-glow);
+      transition:transform .15s var(--spring),box-shadow .15s;
+    }
+    .plot:hover { transform:translateY(-3px) scale(1.04); }
+    .plot:active { transform:scale(.95); transition-duration:.05s; }
+    .plot .plant-emoji { font-size:32px; line-height:1; transition:transform .3s var(--spring); }
+    .plot:hover .plant-emoji { transform:scale(1.15); }
+    .plot .plant-name { font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:#4a7030; }
+    .plot .grow-bar-wrap { width:80%; height:5px; border-radius:999px; background:rgba(0,0,0,.1); overflow:hidden; }
+    .plot .grow-bar { height:100%; border-radius:999px; background:linear-gradient(90deg,#a8e090,#78b068); transition:width .6s var(--spring); }
+    .plot.ready { border-color:#78b068; background:linear-gradient(180deg,#d0f0b8,#b8e0a0); animation:plot-glow 1.5s ease-in-out infinite alternate; }
+    @keyframes plot-glow { 0%{box-shadow:0 3px 0 rgba(80,120,40,.25)} 100%{box-shadow:0 3px 0 rgba(80,120,40,.25),0 0 12px rgba(120,176,104,.5)} }
+    .plot.empty { background:linear-gradient(180deg,#c8b898,#b8a880); border-color:#a09070; }
+    .plot.empty .plant-emoji { font-size:22px; opacity:.5; }
+    .garden-actions { display:flex; gap:8px; }
+
+    /* ══════════════════════════════════
+       GAMES SECTION
+    ══════════════════════════════════ */
+    .game-card {
+      border-radius:22px; border:2.5px solid var(--border-lt);
+      background:linear-gradient(135deg,#fff,var(--panel-alt));
+      padding:16px; box-shadow:var(--shadow-sm),var(--inner-glow);
+      cursor:pointer; transition:transform .15s var(--spring),box-shadow .15s;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .game-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(61,43,31,.18); }
+    .game-header { display:flex; align-items:center; gap:12px; }
+    .game-icon-wrap { width:52px; height:52px; border-radius:14px; display:grid; place-items:center; font-size:26px; flex-shrink:0; }
+    .game-info h3 { margin:0; font-size:16px; font-weight:900; color:var(--ink); }
+    .game-info p { margin:4px 0 0; font-size:11px; color:var(--ink-lt); font-weight:700; }
+    .game-reward { font-size:11px; font-weight:800; }
+    .game-play-btn { border:0; border-radius:12px; padding:10px; font-size:13px; font-weight:800; color:#fff; cursor:pointer; font-family:inherit; transition:transform .1s,box-shadow .1s; box-shadow:0 3px 0 rgba(0,0,0,.18); }
+    .game-play-btn:hover { transform:translateY(-1px); }
+    .game-play-btn:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.12); }
+    .game-play-btn:disabled { opacity:.5; pointer-events:none; }
+    .minigame-area { border-radius:16px; border:2px solid var(--border-lt); background:linear-gradient(135deg,rgba(255,255,255,.8),var(--panel-alt)); padding:14px; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center; }
+    .tap-targets { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+    .tap-target { font-size:30px; cursor:pointer; transition:transform .1s; animation:tap-float 1.5s ease-in-out infinite alternate; border:0; background:none; }
+    .tap-target:hover { transform:scale(1.2); }
+    .tap-target:active { transform:scale(.8); }
+    @keyframes tap-float { 0%{transform:translateY(0)} 100%{transform:translateY(-8px)} }
+    .tap-target.hit { animation:tap-hit .3s ease-out forwards; }
+    @keyframes tap-hit { 0%{transform:scale(1.3);opacity:1} 100%{transform:scale(0);opacity:0} }
+    .score-display { font-size:36px; font-weight:900; color:var(--orange); text-shadow:0 3px 0 rgba(139,99,64,.2); }
+
+    /* ══════════════════════════════════
+       DIARY SECTION
+    ══════════════════════════════════ */
+    .diary-textarea {
+      width:100%; min-height:100px; border:2.5px solid var(--border-lt);
+      border-radius:var(--radius); background:var(--panel);
+      padding:12px; font:inherit; font-size:13px; font-weight:700;
+      color:var(--ink); resize:none;
+      box-shadow:var(--inner-glow),inset 0 1px 4px rgba(61,43,31,.06);
+    }
+    .diary-textarea:focus { outline:none; border-color:var(--orange); }
+    .diary-entries { display:flex; flex-direction:column; gap:8px; }
+    .diary-entry {
+      padding:12px 14px; border-radius:var(--radius);
+      background:var(--panel); border:2px solid var(--border-lt);
+      box-shadow:var(--shadow-sm);
+      animation:fadeUp .3s var(--spring) both;
+    }
+    .diary-entry .entry-date { font-size:10px; font-weight:800; color:var(--ink-lt); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+    .diary-entry .entry-text { font-size:13px; font-weight:700; color:var(--ink-mid); line-height:1.5; }
+    .mood-chips { display:flex; gap:6px; flex-wrap:wrap; }
+    .mood-chip { padding:7px 12px; border-radius:999px; border:2px solid var(--border-lt); background:var(--panel-alt); font-size:12px; font-weight:800; color:var(--ink-mid); cursor:pointer; transition:all .15s; }
+    .mood-chip.selected { border-color:var(--orange); background:linear-gradient(135deg,#fde8d0,#f0d8b8); color:var(--ink); }
+
+    /* ══════════════════════════════════
+       METIME — preview-faithful
+    ══════════════════════════════════ */
+    .mt-view { display:none; flex-direction:column; gap:10px; }
+    .mt-view.active { display:flex; }
+    /* Library */
+    .mt-lib-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .mt-lib-header h2 { font-size:22px; font-weight:800; color:#2C1C10; letter-spacing:-.5px; }
+    .mt-lib-badge { background:#F4E9E0; color:#C78F65; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; border:1px solid #DDBCA3; }
+    .mt-search { background:#fff; border-radius:12px; border:1px solid #E5E5E5; padding:9px 12px; display:flex; align-items:center; gap:7px; color:#ADADAD; font-size:13px; font-weight:600; }
+    .mt-chips { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+    .mt-chips::-webkit-scrollbar { display:none; }
+    .mt-chip { background:#fff; border:1px solid #E5E5E5; border-radius:20px; padding:5px 12px; font-size:11px; font-weight:700; color:#2C1C10; white-space:nowrap; flex-shrink:0; cursor:pointer; transition:all .15s; }
+    .mt-chip.active { background:#2C1C10; border-color:#2C1C10; color:#fff; }
+    .mt-sec-lbl { font-size:13px; font-weight:700; color:#2C1C10; letter-spacing:.2px; }
+    .mt-cards { display:flex; flex-direction:column; gap:8px; }
+    .mt-card { background:#fff; border-radius:16px; padding:13px 14px; border:1px solid #EFEFEF; display:flex; align-items:center; gap:12px; cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .mt-card:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08); }
+    .mt-card-icon { width:44px; height:44px; border-radius:13px; background:#F4E9E0; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+    .mt-card-body { flex:1; min-width:0; }
+    .mt-card-body h3 { font-size:13px; font-weight:700; color:#2C1C10; margin:0 0 3px; }
+    .mt-card-body p  { font-size:11px; color:#ADADAD; margin:0; }
+    .mt-card-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+    .mt-card-dur { font-size:12px; font-weight:700; color:#2C1C10; }
+    .mt-card-tag { background:#F4E9E0; color:#845430; font-size:9px; font-weight:700; padding:2px 7px; border-radius:8px; text-transform:uppercase; letter-spacing:.4px; }
+    /* Detail */
+    .mt-detail-wrap { border-radius:18px; overflow:hidden; border:1.5px solid #DDBCA3; box-shadow:0 4px 16px rgba(0,0,0,.1); }
+    .mt-detail-hero { height:210px; background:linear-gradient(150deg,#C78F65,#6B3A20); display:flex; flex-direction:column; justify-content:flex-end; padding:20px; position:relative; }
+    .mt-detail-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.2)); pointer-events:none; }
+    .mt-dh-nav { position:absolute; top:52px; left:0; right:0; display:flex; justify-content:space-between; padding:0 18px; z-index:2; }
+    .mt-dh-btn { width:34px; height:34px; background:rgba(255,255,255,.18); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; cursor:pointer; backdrop-filter:blur(6px); }
+    .mt-detail-hero h3 { color:#fff; font-size:22px; font-weight:800; letter-spacing:-.3px; margin:0 0 8px; position:relative; z-index:2; }
+    .mt-dh-tags { display:flex; gap:6px; position:relative; z-index:2; }
+    .mt-dh-tag { background:rgba(255,255,255,.18); color:#fff; font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; backdrop-filter:blur(4px); }
+    .mt-detail-body { padding:18px 20px; background:#F7F4EF; }
+    .mt-desc { font-size:12px; color:#737373; line-height:1.6; margin:0 0 14px; }
+    .mt-benefits { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+    .mt-benefit { background:#F4E9E0; border:1px solid #DDBCA3; border-radius:10px; padding:5px 10px; font-size:11px; color:#845430; font-weight:600; display:flex; align-items:center; gap:4px; }
+    .mt-steps-lbl { font-size:13px; font-weight:700; color:#2C1C10; margin-bottom:10px; }
+    .mt-step { display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; }
+    .mt-step-n { width:24px; height:24px; background:#C78F65; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; flex-shrink:0; }
+    .mt-step-b h4 { font-size:12px; font-weight:700; color:#2C1C10; margin:0 0 2px; }
+    .mt-step-b p  { font-size:11px; color:#ADADAD; line-height:1.4; margin:0; }
+    .mt-step-d { font-size:10px; color:#C78F65; font-weight:700; margin-top:2px; }
+    .mt-cta { width:100%; background:linear-gradient(135deg,#C78F65,#845430); color:#fff; border:none; border-radius:16px; padding:14px; font-size:14px; font-weight:800; letter-spacing:.2px; cursor:pointer; font-family:inherit; margin-top:4px; transition:opacity .15s; }
+    .mt-cta:hover { opacity:.9; }
+    /* Session */
+    .mt-session { background:#141210; border-radius:18px; overflow:hidden; position:relative; height:540px; }
+    .mt-session::before { content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:260px; height:260px; background:radial-gradient(circle,rgba(199,143,101,.18),transparent 70%); pointer-events:none; z-index:0; }
+    .mt-sess-topbar { position:absolute; top:16px; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:0 20px; z-index:5; }
+    .mt-sess-close { width:36px; height:36px; background:rgba(255,255,255,.09); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#F4E9E0; border:1px solid rgba(255,255,255,.07); cursor:pointer; transition:background .15s; }
+    .mt-sess-close:hover { background:rgba(255,255,255,.16); }
+    .mt-sess-cat { font-size:12px; font-weight:700; color:#DDBCA3; letter-spacing:.5px; text-transform:uppercase; }
+    .mt-timer-area { position:absolute; top:62px; left:0; right:0; display:flex; justify-content:center; z-index:2; }
+    .mt-ring-wrap { position:relative; width:190px; height:190px; }
+    .mt-ring-wrap svg { position:absolute; top:0; left:0; width:100%; height:100%; }
+    .mt-breath-orb { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(.84); width:150px; height:150px; border-radius:50%; background:radial-gradient(circle at 40% 35%,rgba(199,143,101,.22),rgba(199,143,101,.06) 60%,transparent); animation:mt-breathe 8s ease-in-out infinite; z-index:1; transition:transform .7s ease-in-out, opacity .7s ease-in-out; }
+    @keyframes mt-breathe { 0%,100%{transform:translate(-50%,-50%) scale(.84);opacity:.7} 45%,50%{transform:translate(-50%,-50%) scale(1);opacity:1} }
+    .mt-ring-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; z-index:3; pointer-events:none; }
+    .mt-ring-time  { font-size:34px; font-weight:800; color:#F4E9E0; letter-spacing:-1.5px; font-variant-numeric:tabular-nums; line-height:1; }
+    .mt-ring-phase { font-size:11px; font-weight:700; color:#DDBCA3; letter-spacing:1px; text-transform:uppercase; margin-top:5px; }
+    .mt-ring-total { font-size:10px; color:rgba(221,188,163,.4); margin-top:2px; }
+    .mt-step-card  { position:absolute; bottom:188px; left:16px; right:16px; background:rgba(255,255,255,.05); border:1px solid rgba(221,188,163,.12); border-radius:16px; padding:14px; z-index:2; backdrop-filter:blur(4px); }
+    .mt-ssc-header { display:flex; align-items:center; gap:9px; margin-bottom:7px; }
+    .mt-ssc-num    { width:22px; height:22px; background:#C78F65; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; flex-shrink:0; }
+    .mt-ssc-title  { font-size:13px; font-weight:700; color:#E9D2C1; }
+    .mt-ssc-desc   { font-size:11px; color:#DDBCA3; line-height:1.5; }
+    .mt-sess-dots  { position:absolute; bottom:170px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:2; }
+    .mt-sdot { width:6px; height:6px; border-radius:50%; background:rgba(199,143,101,.28); }
+    .mt-sdot.on { background:#C78F65; }
+    .mt-sess-prog  { position:absolute; bottom:150px; left:16px; right:16px; height:2px; background:rgba(255,255,255,.08); border-radius:2px; z-index:2; }
+    .mt-sess-prog-fill { height:100%; background:linear-gradient(90deg,#C78F65,#E8B080); border-radius:2px; transition:width .5s linear; }
+    .mt-sess-controls { position:absolute; bottom:38px; left:0; right:0; display:flex; align-items:center; justify-content:center; gap:16px; z-index:2; }
+    .mt-sc-btn { width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.09); display:flex; align-items:center; justify-content:center; font-size:18px; color:#F4E9E0; cursor:pointer; transition:background .15s; user-select:none; }
+    .mt-sc-btn:hover { background:rgba(255,255,255,.13); }
+    .mt-sc-btn.primary { width:60px; height:60px; background:linear-gradient(135deg,#C78F65,#A06030); border:none; font-size:24px; box-shadow:0 4px 20px rgba(199,143,101,.4); }
+    .mt-sc-btn.end { font-size:14px; }
+
+    /* ══════════════════════════════════
+       STORE SECTION
+    ══════════════════════════════════ */
+    .store-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .store-item { border-radius:14px; border:2.5px solid var(--border-lt); background:var(--panel); overflow:hidden; box-shadow:var(--shadow-sm); cursor:pointer; transition:transform .15s var(--spring),box-shadow .15s; }
+    .store-item:hover { transform:translateY(-3px) scale(1.03); box-shadow:var(--shadow); }
+    .store-item.bought { opacity:.7; }
+    .store-item .item-thumb { aspect-ratio:1; background:linear-gradient(135deg,#f0e8d4,#e8d8c0); display:grid; place-items:center; font-size:28px; border-bottom:2px solid var(--border-lt); }
+    .store-item .item-name { font-size:10px; font-weight:800; color:var(--ink); padding:5px 6px 2px; text-align:center; line-height:1.2; }
+    .store-item .item-price { display:flex; align-items:center; justify-content:center; gap:3px; padding:5px 6px 8px; font-size:11px; font-weight:800; color:#2d4a1e; background:linear-gradient(180deg,#b8d8a0,#7eb868); }
+    .store-item.bought .item-price { background:linear-gradient(180deg,#d8d8d8,#b0b0b0); color:#666; }
+    .store-category-tabs { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
+    .store-category-tabs::-webkit-scrollbar { display:none; }
+    .store-tab { padding:8px 14px; border-radius:999px; border:2px solid var(--border-lt); background:var(--panel-alt); font-size:11px; font-weight:800; color:var(--ink-mid); cursor:pointer; white-space:nowrap; transition:all .15s; flex-shrink:0; }
+    .store-tab.active { background:linear-gradient(135deg,#fde8d0,#f0d8b8); border-color:var(--orange); color:var(--ink); }
+
+    /* Shared section header */
+    .sec-header { display:flex; align-items:center; justify-content:space-between; }
+    .sec-title { font-size:22px; font-weight:900; color:var(--ink); margin:0; }
+    .sec-sub { font-size:12px; font-weight:700; color:var(--ink-lt); margin:2px 0 0; }
+  </style>
+</head>
+<body>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<main class="phone">
+
+  <!-- HUD -->
+  <div class="app-hud">
+    <span class="logo">METIME</span>
+    <div class="hud-pills">
+      <span class="hud-pill">🪙 <span id="hudCoins">500</span></span>
+      <span class="hud-pill">⭐ <span id="hudXP">0</span></span>
+    </div>
+  </div>
+
+  <!-- Screen -->
+  <div class="screen">
+
+    <!-- ══ PET ══ -->
+    <section id="sec-pet" class="section active">
+      <div class="pet-zone">
+        <div class="pet-header">
+          <h2>Mimi</h2>
+          <div class="stage-badge" id="stageBadge">Egg</div>
+        </div>
+        <div class="world-bar">
+          <span id="clockTxt">Giorno</span>
+          <span id="weatherTxt">Sereno</span>
+          <button id="btnDayNight">Notte</button>
+          <button id="btnWeather">Meteo</button>
+        </div>
+        <div class="world" id="world">
+          <div class="cloud-layer" id="cloudLayer"></div>
+          <div class="stars-layer" id="starsLayer"></div>
+          <div class="particles" id="particles"></div>
+          <span class="tree tree-1">🌳</span>
+          <span class="tree tree-2">🌲</span>
+          <div class="pet" id="pet">
+            <div class="speech-bubble" id="speechBubble"></div>
+            <span class="ear-inner l"></span><span class="ear-inner r"></span>
+            <div class="pet-eyes"><span class="pet-eye"></span><span class="pet-eye"></span></div>
+            <span class="pet-nose"></span>
+            <span class="pet-cheek cheek-l"></span><span class="pet-cheek cheek-r"></span>
+            <span class="pet-mouth"></span>
+            <div class="pet-body-shirt"></div>
+            <span class="pet-arm l"></span><span class="pet-arm r"></span>
+          </div>
+          <div class="pet-mood-txt" id="petMoodTxt">😊 Calm</div>
+          <div class="world-deco" id="worldDeco">🌸 🌷 🌼 🌻 🌸</div>
+        </div>
+        <div class="xp-strip">
+          <span class="xp-label">XP</span>
+          <div class="xp-bar-wrap"><div class="xp-bar" id="xpBar" style="width:0%"></div><span class="xp-text" id="xpText">0/20</span></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card" id="scHunger">
+            <small>Fame</small><span class="stat-val" id="tvHunger">80</span>
+            <div class="stat-bar-wrap"><div class="stat-bar bar-hunger" id="sbHunger" style="width:80%"></div></div>
+          </div>
+          <div class="stat-card" id="scHappiness">
+            <small>Umore</small><span class="stat-val" id="tvHappiness">80</span>
+            <div class="stat-bar-wrap"><div class="stat-bar bar-happiness" id="sbHappiness" style="width:80%"></div></div>
+          </div>
+          <div class="stat-card" id="scCalm">
+            <small>Calma</small><span class="stat-val" id="tvCalm">70</span>
+            <div class="stat-bar-wrap"><div class="stat-bar bar-calm" id="sbCalm" style="width:70%"></div></div>
+          </div>
+          <div class="stat-card" id="scEnergy">
+            <small>Energia</small><span class="stat-val" id="tvEnergy">90</span>
+            <div class="stat-bar-wrap"><div class="stat-bar bar-energy" id="sbEnergy" style="width:90%"></div></div>
+          </div>
+        </div>
+        <div class="actions-grid">
+          <button class="ac-btn btn-feed"     data-act="feed"    ><span class="ico">🍎</span>Nutri</button>
+          <button class="ac-btn btn-play"     data-act="play"    ><span class="ico">🎾</span>Gioca</button>
+          <button class="ac-btn btn-meditate" data-act="meditate"><span class="ico">🧘</span>Calma</button>
+          <button class="ac-btn btn-rest"     data-act="rest"    ><span class="ico">💤</span>Riposa</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ GIARDINO ══ -->
+    <section id="sec-garden" class="section">
+      <div class="panel">
+        <div class="sec-header">
+          <div><p class="sec-title">Giardino</p><p class="sec-sub">Piante Mimi — innaffia e raccogli!</p></div>
+          <span class="hud-pill">🌱 <span id="gardenScore">0</span></span>
+        </div>
+      </div>
+      <div class="panel panel--wood">
+        <div class="garden-grid" id="gardenGrid"></div>
+      </div>
+      <div class="panel">
+        <p style="font-size:12px;font-weight:700;color:var(--ink-lt);margin:0 0 8px;">Innaffia per far crescere. Raccogli quando sono pronte!</p>
+        <div class="garden-actions">
+          <button class="btn btn--green w-full" id="btnWaterAll">💧 Innaffia tutto</button>
+          <button class="btn btn--primary w-full" id="btnHarvestAll">🌾 Raccogli pronte</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ GIOCHI ══ -->
+    <section id="sec-games" class="section">
+      <div class="panel">
+        <div class="sec-header">
+          <div><p class="sec-title">Giochi</p><p class="sec-sub">Mini-giochi per guadagnare coin</p></div>
+          <span class="hud-pill">🔥 <span id="comboCount">0</span></span>
+        </div>
+      </div>
+
+      <!-- Clover Hunt -->
+      <div class="game-card" id="gameClover">
+        <div class="game-header">
+          <div class="game-icon-wrap" style="background:linear-gradient(135deg,#e8f5d8,#c8e8a8);">🍀</div>
+          <div class="game-info">
+            <h3>Cerca Trifogli</h3>
+            <p>Tocca i trifogli prima che scompaiano!</p>
+          </div>
+        </div>
+        <div class="minigame-area" id="cloverArea" style="display:none">
+          <div class="score-display" id="cloverScore">0</div>
+          <div class="tap-targets" id="cloverTargets"></div>
+          <div id="cloverTimer" style="font-size:13px;font-weight:800;color:var(--ink-lt);">Pronti...</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span class="game-reward" style="color:#4e8b3a;">+10 coin · +calm</span>
+          <button class="game-play-btn" id="btnClover" style="background:linear-gradient(180deg,#7dba57,#4e8b3a);">▶ Gioca</button>
+        </div>
+      </div>
+
+      <!-- Lucciole Sprint -->
+      <div class="game-card" id="gameFirefly">
+        <div class="game-header">
+          <div class="game-icon-wrap" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);">✨</div>
+          <div class="game-info">
+            <h3>Lucciole Sprint</h3>
+            <p>Cattura le lucciole luminose!</p>
+          </div>
+        </div>
+        <div class="minigame-area" id="fireflyArea" style="display:none">
+          <div class="score-display" id="fireflyScore">0</div>
+          <div class="tap-targets" id="fireflyTargets"></div>
+          <div id="fireflyTimer" style="font-size:13px;font-weight:800;color:var(--ink-lt);">Pronti...</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span class="game-reward" style="color:#c8614d;">+14 coin · -calm</span>
+          <button class="game-play-btn" id="btnFirefly" style="background:linear-gradient(180deg,#e48a5b,#c8614d);">▶ Gioca</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ DIARIO ══ -->
+    <section id="sec-diary" class="section">
+      <div class="panel">
+        <div class="sec-header">
+          <div><p class="sec-title">Diario</p><p class="sec-sub">Come ti senti oggi?</p></div>
+          <span class="hud-pill">📅 <span id="streakCount">1</span>d</span>
+        </div>
+      </div>
+      <div class="panel panel--fancy">
+        <p style="font-size:12px;font-weight:800;color:var(--ink-lt);margin:0 0 8px;text-transform:uppercase;letter-spacing:.05em;">Umore del momento</p>
+        <div class="mood-chips" id="moodChips">
+          <span class="mood-chip" data-mood="sereno">😊 Sereno</span>
+          <span class="mood-chip" data-mood="felice">🥰 Felice</span>
+          <span class="mood-chip" data-mood="calmo">🧘 Calmo</span>
+          <span class="mood-chip" data-mood="stanco">😴 Stanco</span>
+          <span class="mood-chip" data-mood="ansioso">😰 Ansioso</span>
+          <span class="mood-chip" data-mood="triste">😞 Triste</span>
+        </div>
+        <textarea class="diary-textarea" id="diaryText" placeholder="Scrivi una riflessione breve su come ti senti oggi..." style="margin-top:12px;"></textarea>
+        <button class="btn btn--primary w-full" id="btnSaveDiary" style="margin-top:10px;">Salva nota · +calm +happiness</button>
+      </div>
+      <div class="panel">
+        <p style="font-size:12px;font-weight:800;color:var(--ink-lt);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em;">Ultime riflessioni</p>
+        <div class="diary-entries" id="diaryEntries">
+          <div class="diary-entry">
+            <div class="entry-date">Ieri · 😊 Sereno</div>
+            <div class="entry-text">Passeggiata breve e pet più calmo. Buona giornata!</div>
+          </div>
+          <div class="diary-entry">
+            <div class="entry-date">2 giorni fa · 🧘 Calmo</div>
+            <div class="entry-text">Meditazione completata prima di dormire. Mi sento riposato.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ME TIME ══ -->
+    <section id="sec-metime" class="section">
+      <div class="panel">
+        <div class="sec-header">
+          <div><p class="sec-title">Me Time</p><p class="sec-sub">Prenditi cura di te</p></div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: Library -->
+      <div class="mt-view active" id="mt-library">
+        <div class="mt-lib-header">
+          <h2>Me Time</h2>
+          <span class="mt-lib-badge" id="mtLibBadge">6 attività</span>
+        </div>
+        <div class="mt-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ADADAD" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          Cerca attività...
+        </div>
+        <div class="mt-chips" id="mtChips">
+          <div class="mt-chip active" data-cat="all">Tutte</div>
+          <div class="mt-chip" data-cat="breath">🌬️ Respiro</div>
+          <div class="mt-chip" data-cat="meditation">🧘 Meditaz.</div>
+          <div class="mt-chip" data-cat="ritual">🎯 Focus</div>
+        </div>
+        <div class="mt-sec-lbl">Consigliate per te</div>
+        <div class="mt-cards" id="mtCards"></div>
+      </div>
+
+      <!-- VIEW 2: Detail -->
+      <div class="mt-view" id="mt-detail">
+        <div class="mt-detail-wrap">
+          <div class="mt-detail-hero">
+            <div class="mt-dh-nav">
+              <div class="mt-dh-btn" id="mtDetailBack">&#8249;</div>
+              <div class="mt-dh-btn">&#9825;</div>
+            </div>
+            <h3 id="mtDetailTitle">Box Breathing</h3>
+            <div class="mt-dh-tags" id="mtDetailTags"></div>
+          </div>
+          <div class="mt-detail-body">
+            <p class="mt-desc" id="mtDetailDesc"></p>
+            <div class="mt-benefits" id="mtDetailBenefits"></div>
+            <div class="mt-steps-lbl">Come funziona</div>
+            <div id="mtDetailSteps"></div>
+            <button class="mt-cta" id="mtDetailCta">Inizia sessione</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: Session -->
+      <div class="mt-view" id="mt-session">
+        <div class="mt-session">
+          <div class="mt-sess-topbar">
+            <div class="mt-sess-close" id="mtSessClose">&#10005;</div>
+            <span class="mt-sess-cat" id="mtSessCat">RESPIRA</span>
+            <div style="width:34px"></div>
+          </div>
+          <div class="mt-timer-area">
+            <div class="mt-ring-wrap">
+              <div class="mt-breath-orb" id="mtBreathOrb"></div>
+              <!-- Guide ring -->
+              <svg viewBox="0 0 190 190" fill="none">
+                <circle cx="95" cy="95" r="88" stroke="rgba(199,143,101,.15)" stroke-width="3.5"/>
+              </svg>
+              <!-- Progress arc with gradient -->
+              <svg viewBox="0 0 190 190" fill="none" style="transform:rotate(-90deg)">
+                <defs>
+                  <linearGradient id="mtArcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#C78F65"/>
+                    <stop offset="100%" stop-color="#E8B080"/>
+                  </linearGradient>
+                </defs>
+                <circle id="mtArc" cx="95" cy="95" r="88" fill="none"
+                        stroke="url(#mtArcGrad)" stroke-width="3.5"
+                        stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553"
+                        style="transition:stroke-dashoffset .5s linear;"/>
+              </svg>
+              <!-- Inner decorative ring -->
+              <svg viewBox="0 0 190 190" fill="none">
+                <circle cx="95" cy="95" r="78" stroke="rgba(221,188,163,.12)" stroke-width="1"/>
+              </svg>
+              <div class="mt-ring-center">
+                <div class="mt-ring-time" id="mtRingTime">00:00</div>
+                <div class="mt-ring-phase" id="mtRingPhase">PRONTO</div>
+                <div class="mt-ring-total" id="mtRingTotal">di 0:00</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-step-card">
+            <div class="mt-ssc-header">
+              <div class="mt-ssc-num" id="mtStepNum">1</div>
+              <div class="mt-ssc-title" id="mtStepTitle">Posizionati</div>
+            </div>
+            <div class="mt-ssc-desc" id="mtStepDesc">Siediti comodamente e chiudi gli occhi.</div>
+          </div>
+          <div class="mt-sess-dots" id="mtSessDots"></div>
+          <div class="mt-sess-prog"><div class="mt-sess-prog-fill" id="mtProgFill" style="width:0%"></div></div>
+          <div class="mt-sess-controls">
+            <div class="mt-sc-btn" id="mtPrev">&#9198;</div>
+            <div class="mt-sc-btn primary" id="mtPlayPause">&#9654;</div>
+            <div class="mt-sc-btn" id="mtNext">&#9197;</div>
+            <div class="mt-sc-btn end" id="mtComplete">&#10003; Fine</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /screen -->
+
+  <!-- Bottom Tab Bar -->
+  <nav class="tab-bar" id="tabBar">
+    <a class="tab-link active" data-sec="pet"    ><span class="tab-icon">🐰</span>Pet</a>
+    <a class="tab-link"        data-sec="garden" ><span class="tab-icon">🌿</span>Giardino</a>
+    <a class="tab-link"        data-sec="games"  ><span class="tab-icon">🎮</span>Giochi</a>
+    <a class="tab-link"        data-sec="diary"  ><span class="tab-icon">📖</span>Diario</a>
+    <a class="tab-link"        data-sec="metime" ><span class="tab-icon">☕</span>Me Time</a>
+  </nav>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════
+   SHARED STATE
+═══════════════════════════════════════ */
+const G = {
+  hunger:    80,
+  happiness: 80,
+  calm:      70,
+  energy:    90,
+  xp:        0,
+  coins:     500,
+  stage:     "egg",
+  mood:      "calm",
+  isNight:   false,
+  weather:   0,
+  combo:     0,
+  streak:    1,
+  petClicks: 0,
+  idleTime:  0,
+  ritualDone: [false,false,false],
+};
+
+const clamp = (v,min=0,max=100) => Math.max(min,Math.min(max,v));
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+document.querySelectorAll(".tab-link[data-sec]").forEach(link => {
+  link.addEventListener("click", e => {
+    e.preventDefault();
+    const sec = link.dataset.sec;
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.getElementById("sec-"+sec).classList.add("active");
+    document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
+    link.classList.add("active");
+  });
+});
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function toast(icon, msg) {
+  const t = document.createElement("div");
+  t.className = "toast-item";
+  t.innerHTML = `<span>${icon}</span>${msg}`;
+  document.getElementById("toastWrap").appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+/* ═══════════════════════════════════════
+   PET SECTION
+═══════════════════════════════════════ */
+const pet   = document.getElementById("pet");
+const speechBubble = document.getElementById("speechBubble");
+const particlesEl  = document.getElementById("particles");
+
+const stages = [
+  { key:"egg",   minXp:0,  label:"🥚 Egg",   body:"#fffef5" },
+  { key:"baby",  minXp:20, label:"🐣 Baby",  body:"#fff6ff" },
+  { key:"teen",  minXp:45, label:"🌱 Teen",  body:"#f6fff8" },
+  { key:"adult", minXp:75, label:"🌸 Adult", body:"#fffef2" },
+];
+const moodIcons = { calm:"😊", happy:"🥰", tired:"😴", anxious:"😰" };
+const weathers  = [
+  { label:"☀️ Sereno",   deco:"🌸 🌷 🌼 🌻 🌸" },
+  { label:"🌧️ Pioggia",  deco:"💧 🌧️ 💧 🌧️ 💧" },
+  { label:"🌈 Arcobaleno",deco:"🌈 🌸 🦋 🌈 🌸" },
+  { label:"🍂 Autunno",  deco:"🍂 🍁 🍃 🍂 🍁" },
+];
+const petPhrases = {
+  calm:   ["Che bella giornata!","Sto bene qui! 🌿","Coccole? 🥰","Mmm..."],
+  happy:  ["Sono felicissima!","Adoro quest'isola! 🏝️","Giochiamo! 🎉","Yay~! ✨"],
+  tired:  ["Zzz... sonno...","Ho bisogno di riposare...","Un pisolino...","Aiuto..."],
+  anxious:["Mi sento strana...","Tutto bene? 😰","Aiutami...","Ho paura..."],
+};
+const actionParticles = {
+  feed:["🍎","🍊","🍇","🍰"], play:["⭐","✨","🎉","🎈"],
+  meditate:["🍃","🌿","💚","🧘"], rest:["💤","☁️","🌙","✨"]
+};
+
+/* Clouds */
+(function(){
+  const layer = document.getElementById("cloudLayer");
+  for(let i=0;i<4;i++){
+    const c=document.createElement("span"); c.className="cloud"; c.textContent="☁️";
+    c.style.top=(8+Math.random()*35)+"px";
+    c.style.fontSize=(22+Math.random()*14)+"px";
+    c.style.animationDuration=(14+Math.random()*12)+"s";
+    c.style.animationDelay=(-Math.random()*20)+"s";
+    layer.appendChild(c);
+  }
+})();
+
+/* Stars */
+(function(){
+  const layer=document.getElementById("starsLayer");
+  for(let i=0;i<25;i++){
+    const s=document.createElement("span"); s.className="star";
+    s.style.left=Math.random()*100+"%"; s.style.top=Math.random()*50+"%";
+    s.style.animationDelay=Math.random()*2+"s";
+    layer.appendChild(s);
+  }
+})();
+
+function showSpeech(txt){
+  speechBubble.textContent=txt;
+  speechBubble.classList.remove("show");
+  void speechBubble.offsetWidth;
+  speechBubble.classList.add("show");
+}
+
+function spawnParticles(type){
+  const emojis=actionParticles[type]||["✨"];
+  const rect=pet.getBoundingClientRect();
+  const pRect=particlesEl.getBoundingClientRect();
+  for(let i=0;i<5;i++){
+    const p=document.createElement("span"); p.className="particle";
+    p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    p.style.left=(rect.left-pRect.left+rect.width/2-8+(Math.random()-.5)*50)+"px";
+    p.style.top=(rect.top-pRect.top+rect.height/3+(Math.random()-.5)*25)+"px";
+    p.style.animationDelay=(i*.07)+"s";
+    particlesEl.appendChild(p); setTimeout(()=>p.remove(),2200);
+  }
+}
+
+function flashStat(id){
+  const el=document.getElementById(id);
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+}
+
+function updateMood(){
+  const avg=(G.hunger+G.happiness+G.calm+G.energy)/4;
+  if(G.energy<25||G.hunger<25) G.mood="tired";
+  else if(G.calm<28) G.mood="anxious";
+  else if(avg>70) G.mood="happy";
+  else G.mood="calm";
+}
+
+function updateStage(){
+  let next=stages[0];
+  for(const s of stages) if(G.xp>=s.minXp) next=s;
+  if(next.key!==G.stage){
+    G.stage=next.key;
+    toast("🎉",`Evoluzione: ${next.label}!`);
+    showSpeech("Sto evolvendo!! ✨");
+    const badge=document.getElementById("stageBadge");
+    badge.classList.add("evolving");
+    setTimeout(()=>badge.classList.remove("evolving"),600);
+    spawnParticles("play");
+  }
+  document.getElementById("stageBadge").textContent=next.label;
+  pet.style.setProperty("--body",next.body);
+}
+
+function render(){
+  updateMood();
+  updateStage();
+  const h=Math.round(G.hunger), hp=Math.round(G.happiness),
+        c=Math.round(G.calm),  e=Math.round(G.energy);
+  ["Hunger","Happiness","Calm","Energy"].forEach(n=>{
+    const v=n==="Hunger"?h:n==="Happiness"?hp:n==="Calm"?c:e;
+    document.getElementById("tv"+n).textContent=v;
+    document.getElementById("sb"+n).style.width=v+"%";
+    document.getElementById("sc"+n).classList.toggle("warn",v<22);
+  });
+  document.getElementById("petMoodTxt").textContent=`${moodIcons[G.mood]||"😊"} ${G.mood}`;
+  pet.className="pet"+(" squish blink".split(" ").filter(c=>pet.classList.contains(c)).map(c=>" "+c).join(""));
+
+  // XP
+  const prev=stages.reduce((a,s)=>G.xp>=s.minXp?s.minXp:a,0);
+  const nextXp=[...stages].reverse().find(s=>G.xp<s.minXp)?.minXp||100;
+  const pct=nextXp>prev?((G.xp-prev)/(nextXp-prev))*100:100;
+  document.getElementById("xpBar").style.width=Math.min(100,pct)+"%";
+  document.getElementById("xpText").textContent=`${G.xp}/${nextXp}`;
+
+  // Global HUD
+  document.getElementById("hudCoins").textContent=G.coins;
+  document.getElementById("hudXP").textContent=G.xp;
+}
+
+/* Actions */
+function petAction(action, btn){
+  G.idleTime=0;
+  const actions={
+    feed:    {h:18,hp:5,c:-2,e:3,xp:8,  speech:"Gnam gnam! 🍎", msg:"Mimi ha mangiato!"},
+    play:    {h:-4,hp:16,c:-3,e:-8,xp:10,speech:"Evviva!! 🎉",   msg:"Giocato con Mimi!"},
+    meditate:{h:-3,hp:7,c:18,e:2, xp:9,  speech:"Ommm... 🍃",    msg:"Meditazione fatta!"},
+    rest:    {h:-5,hp:-2,c:8,e:20,xp:7,  speech:"Zzz... 💤",     msg:"Pisolino fatto!"},
+  };
+  const a=actions[action]; if(!a) return;
+  G.hunger    =clamp(G.hunger+a.h);
+  G.happiness =clamp(G.happiness+a.hp);
+  G.calm      =clamp(G.calm+a.c);
+  G.energy    =clamp(G.energy+a.e);
+  G.xp       +=a.xp;
+  const statMap={feed:"Hunger",play:"Happiness",meditate:"Calm",rest:"Energy"};
+  flashStat("sc"+statMap[action]);
+  showSpeech(a.speech);
+  toast("✨",a.msg);
+  spawnParticles(action);
+  pet.classList.remove("squish"); void pet.offsetWidth; pet.classList.add("squish");
+  if(btn){ btn.classList.add("cooldown"); setTimeout(()=>btn.classList.remove("cooldown"),1200); }
+  render();
+}
+
+document.querySelectorAll("[data-act]").forEach(btn=>{
+  btn.addEventListener("click",e=>petAction(btn.dataset.act,btn));
+});
+
+pet.addEventListener("click",()=>{
+  G.petClicks++; G.happiness=clamp(G.happiness+2); G.xp+=1; G.idleTime=0;
+  pet.classList.remove("squish"); void pet.offsetWidth; pet.classList.add("squish");
+  showSpeech((petPhrases[G.mood]||petPhrases.calm)[Math.floor(Math.random()*(petPhrases[G.mood]||petPhrases.calm).length)]);
+  spawnParticles("play");
+  if(G.petClicks%5===0) toast("💖",`Mimi ti adora! (${G.petClicks} coccole)`);
+  render();
+});
+
+/* Day/Night */
+document.getElementById("btnDayNight").addEventListener("click",()=>{
+  G.isNight=!G.isNight;
+  document.getElementById("world").classList.toggle("night",G.isNight);
+  document.getElementById("clockTxt").textContent=G.isNight?"Notte":"Giorno";
+  document.getElementById("btnDayNight").textContent=G.isNight?"Giorno":"Notte";
+  toast(G.isNight?"🌙":"☀️",G.isNight?"Notte sull'isola...":"Buongiorno!");
+});
+
+/* Weather */
+document.getElementById("btnWeather").addEventListener("click",()=>{
+  G.weather=(G.weather+1)%weathers.length;
+  const w=weathers[G.weather];
+  document.getElementById("weatherTxt").textContent=w.label;
+  document.getElementById("worldDeco").textContent=w.deco;
+  toast("🌤️","Meteo: "+w.label);
+});
+
+/* Blink */
+setInterval(()=>{ pet.classList.add("blink"); setTimeout(()=>pet.classList.remove("blink"),180); },3500+Math.random()*2000);
+
+/* Decay */
+setInterval(()=>{
+  G.idleTime++;
+  G.hunger   =clamp(G.hunger-0.25);
+  G.energy   =clamp(G.energy-0.18);
+  G.happiness=clamp(G.happiness-0.12);
+  if(G.idleTime>8&&G.stage!=="egg"){
+    const idle=["Ehi, ci sei? 🥺","Gioca con me!","Mi annoio..."];
+    showSpeech(idle[Math.floor(Math.random()*idle.length)]);
+    G.idleTime=0;
+  }
+  render();
+},5000);
+
+render();
+
+/* ═══════════════════════════════════════
+   GARDEN SECTION
+═══════════════════════════════════════ */
+const plants=[
+  {name:"Carota",   emoji:"🥕", growTime:3, grown:0, ready:false, empty:false},
+  {name:"Frago",    emoji:"🍓", growTime:4, grown:0, ready:false, empty:false},
+  {name:"Pomodoro", emoji:"🍅", growTime:5, grown:0, ready:false, empty:false},
+  {name:"Girasole", emoji:"🌻", growTime:2, grown:0, ready:false, empty:false},
+  {name:"Mais",     emoji:"🌽", growTime:6, grown:0, ready:false, empty:false},
+  {name:"---",      emoji:"🪨", growTime:0, grown:0, ready:false, empty:true},
+];
+
+function renderGarden(){
+  const grid=document.getElementById("gardenGrid");
+  grid.innerHTML="";
+  let score=0;
+  plants.forEach((p,i)=>{
+    const el=document.createElement("div");
+    el.className="plot"+(p.empty?" empty":"")+(p.ready?" ready":"");
+    const pct=p.empty?0:Math.round((p.grown/p.growTime)*100);
+    el.innerHTML=`
+      <div class="plant-emoji">${p.empty?"➕":p.emoji}</div>
+      <div class="plant-name">${p.empty?"Vuoto":p.name}</div>
+      ${!p.empty?`<div class="grow-bar-wrap"><div class="grow-bar" style="width:${pct}%"></div></div>`:""}
+    `;
+    el.addEventListener("click",()=>{
+      if(p.empty){ p.empty=false; p.grown=0; toast("🌱","Hai piantato "+plants[i].name+"!"); }
+      else if(p.ready){ score+=10; G.coins+=10; G.xp+=5; p.grown=0; p.ready=false; toast("🌾","Raccolto "+p.name+"! +10 coin"); document.getElementById("gardenScore").textContent=parseInt(document.getElementById("gardenScore").textContent)+10; render(); }
+      else { toast("💧","Innaffiata "+p.name+"!"); }
+      renderGarden();
+    });
+    grid.appendChild(el);
+  });
+}
+
+document.getElementById("btnWaterAll").addEventListener("click",()=>{
+  plants.forEach(p=>{ if(!p.empty&&!p.ready){ p.grown=Math.min(p.growTime,p.grown+1); if(p.grown>=p.growTime) p.ready=true; } });
+  toast("💧","Tutto innaffiato!");
+  renderGarden();
+});
+
+document.getElementById("btnHarvestAll").addEventListener("click",()=>{
+  let harvested=0;
+  plants.forEach(p=>{ if(p.ready){ harvested++; G.coins+=10; G.xp+=5; p.grown=0; p.ready=false; } });
+  if(harvested){ toast("🌾",`Raccolte ${harvested} piante! +${harvested*10} coin`); render(); renderGarden(); }
+  else toast("🌱","Nessuna pianta pronta ancora.");
+});
+
+renderGarden();
+
+/* Auto-grow every 30s */
+setInterval(()=>{
+  plants.forEach(p=>{ if(!p.empty&&!p.ready&&Math.random()>.6){ p.grown=Math.min(p.growTime,p.grown+1); if(p.grown>=p.growTime) p.ready=true; } });
+  renderGarden();
+},30000);
+
+/* ═══════════════════════════════════════
+   GAMES SECTION
+═══════════════════════════════════════ */
+let gameRunning=false;
+
+function runMiniGame(type){
+  if(gameRunning) return;
+  gameRunning=true;
+  const isClover=type==="clover";
+  const areaId  =isClover?"cloverArea":"fireflyArea";
+  const targetsId=isClover?"cloverTargets":"fireflyTargets";
+  const scoreId  =isClover?"cloverScore":"fireflyScore";
+  const timerId  =isClover?"cloverTimer":"fireflyTimer";
+  const btnId    =isClover?"btnClover":"btnFirefly";
+  const emoji    =isClover?"🍀":"✨";
+  const duration =8; // seconds
+
+  document.getElementById(areaId).style.display="flex";
+  document.getElementById(btnId).disabled=true;
+  let score=0, timeLeft=duration;
+  document.getElementById(scoreId).textContent="0";
+  document.getElementById(timerId).textContent=timeLeft+"s";
+
+  function addTarget(){
+    if(!gameRunning) return;
+    const targets=document.getElementById(targetsId);
+    if(targets.children.length>=6) return;
+    const t=document.createElement("button");
+    t.className="tap-target"; t.textContent=emoji;
+    t.style.animationDelay=(Math.random()*.8)+"s";
+    t.addEventListener("click",()=>{
+      t.classList.add("hit");
+      setTimeout(()=>t.remove(),300);
+      score++;
+      document.getElementById(scoreId).textContent=score;
+    });
+    targets.appendChild(t);
+    setTimeout(()=>{ if(t.parentElement) t.remove(); },2000+Math.random()*1500);
+  }
+
+  const spawnInterval=setInterval(()=>{ if(gameRunning) addTarget(); },400);
+  const countdown=setInterval(()=>{
+    timeLeft--;
+    document.getElementById(timerId).textContent=timeLeft+"s";
+    if(timeLeft<=0){
+      clearInterval(spawnInterval);
+      clearInterval(countdown);
+      gameRunning=false;
+      document.getElementById(targetsId).innerHTML="";
+      document.getElementById(timerId).textContent="Fine!";
+
+      const baseCoins=isClover?10:14;
+      const comboBonus=Math.min(G.combo,4)*2;
+      const earned=baseCoins+comboBonus+score*2;
+      G.coins+=earned; G.combo++;
+      if(isClover){ G.calm=clamp(G.calm+8); G.happiness=clamp(G.happiness+6); }
+      else { G.happiness=clamp(G.happiness+12); G.calm=clamp(G.calm-8); }
+      G.xp+=score;
+      document.getElementById("comboCount").textContent=G.combo;
+      toast("🎮",`${isClover?"Trifogli":"Lucciole"}: ${score} colpi · +${earned} coin`);
+      render();
+
+      setTimeout(()=>{
+        document.getElementById(areaId).style.display="none";
+        document.getElementById(btnId).disabled=false;
+      },1800);
+    }
+  },1000);
+
+  addTarget();
+}
+
+document.getElementById("btnClover").addEventListener("click",()=>runMiniGame("clover"));
+document.getElementById("btnFirefly").addEventListener("click",()=>runMiniGame("firefly"));
+
+/* ═══════════════════════════════════════
+   DIARY SECTION
+═══════════════════════════════════════ */
+let selectedMood=null;
+
+document.querySelectorAll(".mood-chip").forEach(chip=>{
+  chip.addEventListener("click",()=>{
+    document.querySelectorAll(".mood-chip").forEach(c=>c.classList.remove("selected"));
+    chip.classList.add("selected");
+    selectedMood=chip.dataset.mood;
+  });
+});
+
+document.getElementById("btnSaveDiary").addEventListener("click",()=>{
+  const text=document.getElementById("diaryText").value.trim();
+  if(!text&&!selectedMood){ toast("✏️","Scrivi qualcosa prima di salvare."); return; }
+  const now=new Date();
+  const label=now.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+  const moodEmoji=selectedMood?document.querySelector(`.mood-chip[data-mood="${selectedMood}"]`)?.textContent:"";
+  const entry=document.createElement("div");
+  entry.className="diary-entry";
+  entry.innerHTML=`<div class="entry-date">${label}${moodEmoji?" · "+moodEmoji:""}</div><div class="entry-text">${text||"(solo umore registrato)"}</div>`;
+  const entries=document.getElementById("diaryEntries");
+  entries.prepend(entry);
+  G.calm     =clamp(G.calm+10);
+  G.happiness=clamp(G.happiness+6);
+  G.xp      +=8;
+  document.getElementById("diaryText").value="";
+  document.querySelectorAll(".mood-chip").forEach(c=>c.classList.remove("selected"));
+  selectedMood=null;
+  toast("📖","Nota salvata! +calm +happiness");
+  render();
+});
+
+/* ═══════════════════════════════════════
+   ME TIME SECTION
+═══════════════════════════════════════ */
+
+const MT_ACTIVITIES = [
+  { id:'478', icon:'🌬️', title:'Respirazione 4-7-8', subtitle:'Respirazione · Principiante',
+    desc:'Calma il sistema nervoso e prepara al rilassamento profondo',
+    duration:480, tag:'Rilasso', cat:'breath',
+    fullDesc:'Tecnica di respirazione che calma il sistema nervoso, riduce l\'ansia e prepara a momenti di rilassamento profondo.',
+    benefits:['😌 Riduce stress','💤 Migliora sonno','🧠 Chiarezza'],
+    breathPhases:[{l:'INSPIRA',d:4},{l:'TIENI',d:7},{l:'ESPIRA',d:8}],
+    steps:[
+      {title:'Preparazione',         desc:'Siediti comodo, schiena dritta, occhi chiusi.', dur:'⏱ 1 min'},
+      {title:'Ciclo di respiro',     desc:'Inspira 4s · Trattieni 7s · Espira 8s. Ripeti 4 cicli.', dur:'⏱ 5 min'},
+      {title:'Ritorno consapevole',  desc:'Respira normalmente, osserva la calma.', dur:'⏱ 2 min'},
+    ]
+  },
+  { id:'box', icon:'🔲', title:'Box Breathing', subtitle:'Respirazione · Principiante',
+    desc:'Respira in modo guidato per ritrovare il centro',
+    duration:240, tag:'Respira', cat:'breath',
+    fullDesc:'Un esercizio di respirazione quadrata che calma il sistema nervoso e migliora la concentrazione. Perfetto in qualsiasi momento della giornata.',
+    benefits:['Riduce lo stress','Chiarisce la mente','Abbassa il cortisolo'],
+    breathPhases:[{l:'INSPIRA',d:4},{l:'TIENI',d:4},{l:'ESPIRA',d:4},{l:'ATTENDI',d:4}],
+    steps:[
+      {title:'Inspira',   desc:'Inspira lentamente attraverso il naso, gonfia il diaframma.', dur:'⏱ 4s'},
+      {title:'Tieni',     desc:'Trattieni il respiro, rilassa le spalle e il viso.', dur:'⏱ 4s'},
+      {title:'Espira',    desc:'Espira lentamente attraverso la bocca.', dur:'⏱ 4s'},
+    ]
+  },
+  { id:'mind', icon:'🧘', title:'Mindfulness base', subtitle:'Meditazione · Intermedio',
+    desc:'Presenza e silenzio per 15 minuti',
+    duration:900, tag:'Presenza', cat:'meditation',
+    fullDesc:'Una meditazione breve per sciogliere la tensione giornaliera. Lascia andare i pensieri e ritorna al respiro.',
+    benefits:['Calma la mente','Riduce l\'ansia','Favorisce il sonno'],
+    steps:[
+      {title:'Posizionati',    desc:'Siediti comodamente, schiena dritta, mani sulle ginocchia.', dur:'⏱ 2 min'},
+      {title:'Respira',        desc:'Nota ogni inspirazione ed espirazione senza controllare.', dur:'⏱ 8 min'},
+      {title:'Lascia andare',  desc:'Osserva i pensieri senza giudicarli. Torna sempre al respiro.', dur:'⏱ 5 min'},
+    ]
+  },
+  { id:'focus', icon:'🎯', title:'Focus profondo', subtitle:'Focus · Intermedio',
+    desc:'Concentrazione e produttività in 20 minuti',
+    duration:1200, tag:'Lavoro', cat:'ritual',
+    fullDesc:'Una tecnica rapida per azzerare la mente e tornare in focus. Ideale prima di una riunione o sessione di lavoro intensa.',
+    benefits:['Migliora l\'attenzione','Blocca le distrazioni','Energia mentale'],
+    steps:[
+      {title:'Reset',      desc:'Chiudi gli occhi, respira profondo 3 volte.', dur:'⏱ 2 min'},
+      {title:'Intenzione', desc:'Focalizzati su un obiettivo preciso che vuoi raggiungere.', dur:'⏱ 3 min'},
+      {title:'Deep focus', desc:'Lavora in silenzio con piena consapevolezza.', dur:'⏱ 15 min'},
+    ]
+  },
+  { id:'journal', icon:'📓', title:'Journaling mattutino', subtitle:'Journaling · Principiante',
+    desc:'Chiarezza mentale e intenzioni per la giornata',
+    duration:600, tag:'Chiarezza', cat:'ritual',
+    fullDesc:'Un rituale di scrittura guidata per fare chiarezza, esprimere gratitudine e impostare le intenzioni della giornata.',
+    benefits:['Ancoraggio al presente','Gratitudine','Boost umore'],
+    steps:[
+      {title:'Grounding',    desc:'Siediti e senti i piedi a terra. Nota 5 cose che puoi toccare.', dur:'⏱ 2 min'},
+      {title:'Scrivi',       desc:'Che cosa mi rende grato oggi? Cosa voglio portare in questa giornata?', dur:'⏱ 6 min'},
+      {title:'Intenzione',   desc:'Scrivi un\'intenzione semplice per oggi.', dur:'⏱ 2 min'},
+    ]
+  },
+  { id:'pause', icon:'☕', title:'Pausa consapevole', subtitle:'Pausa breve · Principiante',
+    desc:'Reset mentale in 5 minuti',
+    duration:300, tag:'Reset', cat:'meditation',
+    fullDesc:'Una micropausa per staccare la mente, ridurre la tensione e tornare al presente. Perfetta tra un compito e l\'altro.',
+    benefits:['Recupero energetico','Migliora l\'umore','Riduce la fatica'],
+    steps:[
+      {title:'Rallenta',        desc:'Metti giù il telefono, stendi le braccia lungo il corpo.', dur:'⏱ 1 min'},
+      {title:'Respira lento',   desc:'Inspira 4s, espira 8s. Ripeti lentamente.', dur:'⏱ 3 min'},
+      {title:'Riconnettiti',    desc:'Apri gli occhi con calma. Sei pronto.', dur:'⏱ 1 min'},
+    ]
+  },
+];
+
+let mtCurrentActivity = null;
+let mtCurrentStep = 0;
+let mtSessElapsed = 0;
+let mtSessInterval = null;
+let mtSessPlaying = false;
+let mtActiveFilter = 'all';
+
+/* ── View navigation ── */
+function mtShow(viewId) {
+  ['mt-library','mt-detail','mt-session'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById(viewId).classList.add('active');
+}
+
+/* ── Library ── */
+function renderMtLibrary() {
+  const filtered = MT_ACTIVITIES.filter(a =>
+    mtActiveFilter === 'all' ||
+    (mtActiveFilter === 'breath' && a.cat === 'breath') ||
+    (mtActiveFilter === 'meditation' && a.cat === 'meditation') ||
+    (mtActiveFilter === 'ritual' && a.cat === 'ritual')
+  );
+  document.getElementById('mtLibBadge').textContent = filtered.length + ' attività';
+  const container = document.getElementById('mtCards');
+  container.innerHTML = '';
+  filtered.forEach(a => {
+    const dur = Math.round(a.duration/60) + ' min';
+    const card = document.createElement('div');
+    card.className = 'mt-card';
+    card.innerHTML = `
+      <div class="mt-card-icon">${a.icon}</div>
+      <div class="mt-card-body"><h3>${a.title}</h3><p>${a.subtitle}</p></div>
+      <div class="mt-card-right">
+        <span class="mt-card-dur">${dur}</span>
+        <span class="mt-card-tag">${a.tag}</span>
+      </div>`;
+    card.addEventListener('click', () => openMtDetail(a));
+    container.appendChild(card);
+  });
+}
+
+document.querySelectorAll('#mtChips .mt-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#mtChips .mt-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const map = { all:'all', breath:'breath', meditation:'meditation', ritual:'ritual' };
+    mtActiveFilter = map[chip.dataset.cat] || 'all';
+    renderMtLibrary();
+  });
+});
+
+/* ── Detail ── */
+function openMtDetail(activity) {
+  mtCurrentActivity = activity;
+  document.getElementById('mtDetailTitle').textContent = activity.title;
+  document.getElementById('mtDetailDesc').textContent = activity.fullDesc;
+  const durLabel = Math.round(activity.duration/60) + ' min';
+  document.getElementById('mtDetailTags').innerHTML =
+    `<span class="mt-dh-tag">${activity.tag}</span><span class="mt-dh-tag">${durLabel}</span><span class="mt-dh-tag">${activity.subtitle.split(' · ')[1]||''}</span>`;
+  document.getElementById('mtDetailBenefits').innerHTML =
+    activity.benefits.map(b => `<span class="mt-benefit">${b}</span>`).join('');
+  document.getElementById('mtDetailSteps').innerHTML =
+    activity.steps.map((s,i) => `
+      <div class="mt-step">
+        <div class="mt-step-n">${i+1}</div>
+        <div class="mt-step-b"><h4>${s.title}</h4><p>${s.desc}</p><div class="mt-step-d">${s.dur}</div></div>
+      </div>`).join('');
+  mtShow('mt-detail');
+}
+
+document.getElementById('mtDetailBack').addEventListener('click', () => mtShow('mt-library'));
+document.getElementById('mtDetailCta').addEventListener('click', () => startMtSession());
+
+/* ── Session ── */
+function startMtSession() {
+  const a = mtCurrentActivity;
+  if (!a) return;
+  mtCurrentStep = 0;
+  mtSessElapsed = 0;
+  mtSessPlaying = false;
+  clearInterval(mtSessInterval);
+  mtSessInterval = null;
+
+  document.getElementById('mtSessCat').textContent = (a.cat === 'breath' ? 'Respirazione' : a.tag).toUpperCase();
+  document.getElementById('mtPlayPause').textContent = '\u25B6';
+
+  // Breath activities: disable CSS animation, control scale with JS
+  const orb = document.getElementById('mtBreathOrb');
+  if (a.breathPhases) {
+    orb.style.animationName = 'none';
+    orb.style.transform = 'translate(-50%,-50%) scale(0.84)';
+    orb.style.opacity = '0.7';
+  } else {
+    orb.style.animationName = '';
+    orb.style.animationPlayState = 'paused';
+  }
+
+  const dotsEl = document.getElementById('mtSessDots');
+  dotsEl.innerHTML = a.steps.map((_,i) => `<div class="mt-sdot${i===0?' on':''}"></div>`).join('');
+
+  // Ring total: "di MM:SS"
+  const tm = String(Math.floor(a.duration/60)).padStart(2,'0');
+  const ts = String(a.duration%60).padStart(2,'0');
+  document.getElementById('mtRingTotal').textContent = `di ${tm}:${ts}`;
+
+  updateMtStepCard();
+  updateMtRingDisplay();
+  mtShow('mt-session');
+}
+
+document.getElementById('mtSessClose').addEventListener('click', () => {
+  stopMtSession();
+  mtShow('mt-library');
+});
+
+document.getElementById('mtPlayPause').addEventListener('click', () => {
+  const orb = document.getElementById('mtBreathOrb');
+  if (mtSessPlaying) {
+    mtSessPlaying = false;
+    clearInterval(mtSessInterval);
+    mtSessInterval = null;
+    document.getElementById('mtPlayPause').textContent = '\u25B6';
+    if (!mtCurrentActivity?.breathPhases) orb.style.animationPlayState = 'paused';
+  } else {
+    mtSessPlaying = true;
+    document.getElementById('mtPlayPause').textContent = '\u23F8';
+    if (!mtCurrentActivity?.breathPhases) orb.style.animationPlayState = 'running';
+    mtSessInterval = setInterval(mtTick, 1000);
+  }
+});
+
+document.getElementById('mtPrev').addEventListener('click', () => {
+  if (mtCurrentStep > 0) { mtCurrentStep--; updateMtStepCard(); }
+});
+document.getElementById('mtNext').addEventListener('click', () => {
+  const a = mtCurrentActivity;
+  if (a && mtCurrentStep < a.steps.length - 1) { mtCurrentStep++; updateMtStepCard(); }
+});
+document.getElementById('mtComplete').addEventListener('click', completeMtSession);
+
+function mtTick() {
+  mtSessElapsed++;
+  updateMtRingDisplay();
+  if (mtCurrentActivity && mtSessElapsed >= mtCurrentActivity.duration) completeMtSession();
+}
+
+function updateMtRingDisplay() {
+  const a = mtCurrentActivity;
+  if (!a) return;
+
+  // Elapsed time
+  const m = String(Math.floor(mtSessElapsed/60)).padStart(2,'0');
+  const s = String(mtSessElapsed%60).padStart(2,'0');
+  document.getElementById('mtRingTime').textContent = m+':'+s;
+
+  // Progress arc
+  const progress = Math.min(mtSessElapsed / a.duration, 1);
+  document.getElementById('mtArc').setAttribute('stroke-dashoffset', (553*(1-progress)).toFixed(1));
+  document.getElementById('mtProgFill').style.width = (progress*100).toFixed(1)+'%';
+
+  // Phase label + orb control
+  const orb = document.getElementById('mtBreathOrb');
+  if (a.breathPhases) {
+    // Compute current phase and time remaining in it
+    const cycleLen = a.breathPhases.reduce((s,p)=>s+p.d, 0);
+    const tick = mtSessElapsed % cycleLen;
+    let acc = 0, currentPhase = a.breathPhases[0], phaseStart = 0;
+    for (const ph of a.breathPhases) {
+      if (tick < acc + ph.d) { currentPhase = ph; phaseStart = acc; break; }
+      acc += ph.d;
+    }
+    const timeInPhase = tick - phaseStart;
+    const remaining = currentPhase.d - timeInPhase;
+    document.getElementById('mtRingPhase').textContent = currentPhase.l + ' ' + remaining;
+
+    // Control orb scale: INSPIRA → grow, TIENI → stay big, ESPIRA/ATTENDI → shrink
+    let scale = 0.84, opacity = 0.7;
+    if (currentPhase.l === 'INSPIRA') {
+      const t = timeInPhase / currentPhase.d;
+      scale = 0.84 + 0.16 * t;
+      opacity = 0.7 + 0.3 * t;
+    } else if (currentPhase.l === 'TIENI') {
+      scale = 1.0; opacity = 1.0;
+    } else {
+      // ESPIRA or ATTENDI
+      const t = timeInPhase / currentPhase.d;
+      scale = 1.0 - 0.16 * t;
+      opacity = 1.0 - 0.3 * t;
+    }
+    orb.style.transform = `translate(-50%,-50%) scale(${scale.toFixed(3)})`;
+    orb.style.opacity = opacity.toFixed(3);
+  } else {
+    // Generic ambient phases
+    const phases = ['RESPIRA','RILASSATI','PRESENTE','OSSERVA'];
+    document.getElementById('mtRingPhase').textContent = phases[Math.floor(mtSessElapsed/30)%phases.length];
+  }
+}
+
+function updateMtStepCard() {
+  const a = mtCurrentActivity;
+  if (!a) return;
+  const step = a.steps[mtCurrentStep];
+  document.getElementById('mtStepNum').textContent = mtCurrentStep+1;
+  document.getElementById('mtStepTitle').textContent = step.title;
+  document.getElementById('mtStepDesc').textContent = step.desc;
+  document.querySelectorAll('#mtSessDots .mt-sdot').forEach((d,i) => {
+    d.classList.toggle('on', i === mtCurrentStep);
+  });
+}
+
+function stopMtSession() {
+  clearInterval(mtSessInterval);
+  mtSessInterval = null;
+  mtSessPlaying = false;
+  document.getElementById('mtPlayPause').textContent = '\u25B6';
+  const orb = document.getElementById('mtBreathOrb');
+  orb.style.animationName = '';
+  orb.style.animationPlayState = 'paused';
+}
+
+function completeMtSession() {
+  stopMtSession();
+  const bonus = Math.min(mtSessElapsed / (mtCurrentActivity ? mtCurrentActivity.duration : 240), 1);
+  G.calm      = clamp(G.calm      + Math.round(25*bonus));
+  G.happiness = clamp(G.happiness + Math.round(15*bonus));
+  G.energy    = clamp(G.energy    + Math.round(10*bonus));
+  G.xp       += Math.round(20*bonus);
+  toast('🧘', `Sessione completata! +calm +happiness (${Math.round(bonus*100)}%)`);
+  render();
+  mtShow('mt-library');
+}
+
+renderMtLibrary();
+
+/* Final render */
+render();
+</script>
+</body>
+</html>

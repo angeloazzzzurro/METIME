@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>METIME — Meditation Preview</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0B0B0F;
+    font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 40px;
+    gap: 0;
+  }
+
+  /* ── Hero header ── */
+  .hero {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .hero h1 {
+    font-size: 56px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .hero h1 span { color: #C78F65; }
+  .hero p {
+    font-size: 18px;
+    color: rgba(255,255,255,.45);
+    margin-top: 10px;
+    font-weight: 400;
+    letter-spacing: .2px;
+  }
+  .hero-sub {
+    display: inline-flex;
+    gap: 20px;
+    margin-top: 22px;
+    align-items: center;
+  }
+  .hero-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: rgba(255,255,255,.6);
+    font-weight: 500;
+  }
+
+  /* ── Phones row ── */
+  .phones {
+    display: flex;
+    align-items: flex-end;
+    gap: 28px;
+    justify-content: center;
+  }
+
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .phone-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,.35);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: 320px;
+    height: 693px;
+    background: #111115;
+    border-radius: 50px;
+    box-shadow:
+      0 0 0 1.5px #2A2A30,
+      0 0 0 3px #1A1A1F,
+      0 40px 80px rgba(0,0,0,.6),
+      0 0 60px rgba(199,143,101,.04);
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .phone.center {
+    width: 340px;
+    height: 737px;
+    border-radius: 54px;
+    box-shadow:
+      0 0 0 1.5px #3A3A42,
+      0 0 0 3px #22222A,
+      0 50px 100px rgba(0,0,0,.7),
+      0 0 80px rgba(199,143,101,.08);
+  }
+
+  /* Dynamic island */
+  .island {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px; height: 30px;
+    background: #0B0B0F;
+    border-radius: 20px;
+    z-index: 10;
+  }
+  .phone.center .island { width: 104px; height: 32px; top: 14px; }
+
+  /* Status bar */
+  .status-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 54px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 6px;
+    z-index: 9;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-bar .time { font-size: 14px; font-weight: 700; }
+  .status-bar .icons { display: flex; align-items: center; gap: 5px; }
+
+  .screen { width: 100%; height: 100%; position: relative; overflow: hidden; }
+
+  /* ══════════════════════════════════════
+     SCREEN 1 — Library
+  ══════════════════════════════════════ */
+  .lib { background: #F7F4EF; }
+
+  .lib .status-bar { color: #2C1C10; }
+
+  .lib-content { padding: 62px 22px 0; }
+
+  .lib-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .lib-header h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #2C1C10;
+    letter-spacing: -.5px;
+  }
+  .lib-header .badge {
+    background: #F4E9E0;
+    color: #C78F65;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid #DDBCA3;
+  }
+
+  .search {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E5E5E5;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #ADADAD;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .chips {
+    display: flex;
+    gap: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .chip {
+    background: white;
+    border: 1px solid #E5E5E5;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2C1C10;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .chip.active {
+    background: #2C1C10;
+    border-color: #2C1C10;
+    color: white;
+  }
+
+  .sec-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2C1C10;
+    margin-bottom: 10px;
+    letter-spacing: .2px;
+  }
+
+  .cards { display: flex; flex-direction: column; gap: 8px; }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 13px 14px;
+    border: 1px solid #EFEFEF;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 13px;
+    background: #F4E9E0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .card-body { flex: 1; min-width: 0; }
+  .card-body h3 { font-size: 13px; font-weight: 700; color: #2C1C10; margin-bottom: 3px; }
+  .card-body p  { font-size: 11px; color: #ADADAD; }
+  .card-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  }
+  .card-dur { font-size: 12px; font-weight: 700; color: #2C1C10; }
+  .card-tag {
+    background: #F4E9E0;
+    color: #845430;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  /* ══════════════════════════════════════
+     SCREEN 2 — Detail
+  ══════════════════════════════════════ */
+  .detail { background: #F7F4EF; }
+  .detail .status-bar { color: white; }
+
+  .detail-hero {
+    height: 210px;
+    background: linear-gradient(150deg, #C78F65 0%, #6B3A20 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    position: relative;
+  }
+  .detail-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.2));
+    pointer-events: none;
+  }
+  .dh-nav {
+    position: absolute;
+    top: 52px; left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 18px;
+    z-index: 2;
+  }
+  .dh-btn {
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,.18);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: white;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .detail-hero h3 {
+    color: white;
+    font-size: 22px; font-weight: 800;
+    letter-spacing: -.3px;
+    margin-bottom: 8px;
+    position: relative; z-index: 2;
+  }
+  .dh-tags { display: flex; gap: 6px; position: relative; z-index: 2; }
+  .dh-tag {
+    background: rgba(255,255,255,.18);
+    color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .detail-body {
+    padding: 18px 20px;
+    overflow: hidden;
+  }
+  .detail-desc {
+    font-size: 12px; color: #737373; line-height: 1.6; margin-bottom: 16px;
+  }
+  .dt { font-size: 13px; font-weight: 700; color: #2C1C10; margin-bottom: 10px; }
+
+  .step {
+    display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px;
+  }
+  .step-n {
+    width: 24px; height: 24px;
+    background: #C78F65;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; color: white;
+    flex-shrink: 0;
+  }
+  .step-b h4 { font-size: 12px; font-weight: 700; color: #2C1C10; margin-bottom: 2px; }
+  .step-b p  { font-size: 11px; color: #ADADAD; line-height: 1.4; }
+  .step-d    { font-size: 10px; color: #C78F65; font-weight: 700; margin-top: 2px; }
+
+  .benefits {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .benefit {
+    background: #F4E9E0;
+    border: 1px solid #DDBCA3;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 11px; color: #845430; font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .cta {
+    width: 100%;
+    background: linear-gradient(135deg, #C78F65, #845430);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 14px;
+    font-size: 14px; font-weight: 800;
+    letter-spacing: .2px;
+    cursor: pointer;
+  }
+
+  /* ══════════════════════════════════════
+     SCREEN 3 — Active Session
+  ══════════════════════════════════════ */
+  .session { background: #141210; }
+  .session .status-bar { color: #F4E9E0; }
+
+  .sess-topbar {
+    position: absolute;
+    top: 54px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px;
+    z-index: 5;
+  }
+  .sess-close {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,.09);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #F4E9E0;
+    border: 1px solid rgba(255,255,255,.07);
+  }
+  .sess-cat {
+    font-size: 12px; font-weight: 700; color: #DDBCA3;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+
+  /* Ambient glow */
+  .session::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(199,143,101,.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .timer-area {
+    position: absolute;
+    top: 100px; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .ring-wrap {
+    position: relative;
+    width: 190px; height: 190px;
+  }
+  .ring-wrap svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  /* Breathing bubble */
+  .breath-orb {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.84);
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%,
+      rgba(199,143,101,.22) 0%,
+      rgba(199,143,101,.06) 60%,
+      transparent 100%);
+    animation: breathe 4s ease-in-out infinite;
+    z-index: 1;
+  }
+  @keyframes breathe {
+    0%,100% { transform: translate(-50%,-50%) scale(0.84); opacity: .7; }
+    45%      { transform: translate(-50%,-50%) scale(1.0);  opacity: 1;  }
+    50%      { transform: translate(-50%,-50%) scale(1.0);  opacity: 1;  }
+    95%      { transform: translate(-50%,-50%) scale(0.84); opacity: .7; }
+  }
+
+  .ring-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 3;
+  }
+  .ring-time {
+    font-size: 34px; font-weight: 800;
+    color: #F4E9E0;
+    letter-spacing: -1.5px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .ring-phase {
+    font-size: 11px; font-weight: 700;
+    color: #DDBCA3;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 5px;
+    animation: phaseSwap 4s ease-in-out infinite;
+  }
+  @keyframes phaseSwap {
+    0%,40%   { opacity: 1; }
+    45%,55%  { opacity: 0; }
+    60%,100% { opacity: 1; }
+  }
+  .ring-total {
+    font-size: 10px; color: rgba(221,188,163,.4); margin-top: 2px;
+  }
+
+  .sess-step-card {
+    position: absolute;
+    bottom: 188px; left: 20px; right: 20px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(221,188,163,.12);
+    border-radius: 16px;
+    padding: 14px;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .ssc-header { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+  .ssc-num {
+    width: 22px; height: 22px;
+    background: #C78F65;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; color: white;
+    flex-shrink: 0;
+  }
+  .ssc-title { font-size: 13px; font-weight: 700; color: #E9D2C1; }
+  .ssc-desc  { font-size: 11px; color: #DDBCA3; line-height: 1.5; }
+
+  .sess-dots {
+    position: absolute;
+    bottom: 170px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 6px;
+    z-index: 2;
+  }
+  .sdot { width: 6px; height: 6px; border-radius: 50%; background: rgba(199,143,101,.28); }
+  .sdot.on { background: #C78F65; }
+
+  .sess-progress {
+    position: absolute;
+    bottom: 150px; left: 20px; right: 20px;
+    height: 2px;
+    background: rgba(255,255,255,.08);
+    border-radius: 2px;
+    z-index: 2;
+  }
+  .sess-progress-fill {
+    height: 100%; width: 35%;
+    background: linear-gradient(90deg, #C78F65, #E8B080);
+    border-radius: 2px;
+  }
+
+  .sess-controls {
+    position: absolute;
+    bottom: 38px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px;
+    z-index: 2;
+  }
+  .sc-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.09);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #F4E9E0;
+    cursor: pointer;
+  }
+  .sc-btn.primary {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #C78F65, #A06030);
+    border: none;
+    font-size: 24px;
+    box-shadow: 0 4px 20px rgba(199,143,101,.4);
+  }
+  .sc-btn.end { font-size: 14px; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 72px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .fb {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 12px; font-weight: 600; color: rgba(255,255,255,.5);
+    display: flex; align-items: center; gap: 7px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>ME<span>TIME</span></h1>
+  <p>Sezione meditazione — anteprima design</p>
+  <div class="hero-sub">
+    <div class="hero-badge">🌬️ Respirazione</div>
+    <div class="hero-badge">🧘 Meditazione</div>
+    <div class="hero-badge">🎯 Focus</div>
+    <div class="hero-badge">📓 Journaling</div>
+  </div>
+</div>
+
+<!-- Phones -->
+<div class="phones">
+
+  <!-- Phone 1: Library -->
+  <div class="phone-wrap">
+    <div class="phone-label">Libreria</div>
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen lib">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="#2C1C10"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx=".8"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="#2C1C10" stroke-width="1.5"><path d="M1 8.5C3.5 5.5 11.5 5.5 14 8.5"/><path d="M3 11C5 8.8 10 8.8 12 11"/><circle cx="7.5" cy="13" r="1.2" fill="#2C1C10" stroke="none"/></svg>
+            <svg width="24" height="12" viewBox="0 0 24 12" fill="#2C1C10"><rect x="0" y="1" width="21" height="10" rx="2.5" fill="none" stroke="#2C1C10" stroke-width="1.2"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5"/><path d="M22 4.5v3a1.5 1.5 0 0 0 0-3z"/></svg>
+          </div>
+        </div>
+
+        <div class="lib-content">
+          <div class="lib-header">
+            <h2>Me Time</h2>
+            <span class="badge">7 attività</span>
+          </div>
+
+          <div class="search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ADADAD" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            Cerca attività...
+          </div>
+
+          <div class="chips">
+            <div class="chip active">Tutte</div>
+            <div class="chip">🌬️ Respiro</div>
+            <div class="chip">🧘 Meditaz.</div>
+            <div class="chip">🎯 Focus</div>
+          </div>
+
+          <div class="sec-title">Consigliate per te</div>
+
+          <div class="cards">
+            <div class="card">
+              <div class="card-icon">🌬️</div>
+              <div class="card-body">
+                <h3>Respirazione 4-7-8</h3>
+                <p>Respirazione · Principiante</p>
+              </div>
+              <div class="card-right">
+                <span class="card-dur">8 min</span>
+                <span class="card-tag">Rilasso</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🧘</div>
+              <div class="card-body">
+                <h3>Mindfulness base</h3>
+                <p>Meditazione · Intermedio</p>
+              </div>
+              <div class="card-right">
+                <span class="card-dur">15 min</span>
+                <span class="card-tag">Presenza</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">🎯</div>
+              <div class="card-body">
+                <h3>Focus profondo</h3>
+                <p>Focus · Intermedio</p>
+              </div>
+              <div class="card-right">
+                <span class="card-dur">20 min</span>
+                <span class="card-tag">Lavoro</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">📓</div>
+              <div class="card-body">
+                <h3>Journaling mattutino</h3>
+                <p>Journaling · Principiante</p>
+              </div>
+              <div class="card-right">
+                <span class="card-dur">10 min</span>
+                <span class="card-tag">Chiarezza</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-icon">☕</div>
+              <div class="card-body">
+                <h3>Pausa consapevole</h3>
+                <p>Pausa breve · Principiante</p>
+              </div>
+              <div class="card-right">
+                <span class="card-dur">5 min</span>
+                <span class="card-tag">Reset</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone 2: Detail (center, bigger) -->
+  <div class="phone-wrap">
+    <div class="phone-label">Dettaglio attività</div>
+    <div class="phone center">
+      <div class="island"></div>
+      <div class="screen detail">
+        <div class="status-bar" style="color:white;">
+          <span class="time" style="color:white;">9:41</span>
+          <div class="icons" style="filter:brightness(0) invert(1);">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx=".8"/></svg>
+            <svg width="24" height="12" viewBox="0 0 24 12" fill="white"><rect x="0" y="1" width="21" height="10" rx="2.5" fill="none" stroke="white" stroke-width="1.2"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5"/><path d="M22 4.5v3a1.5 1.5 0 0 0 0-3z"/></svg>
+          </div>
+        </div>
+
+        <div class="detail-hero">
+          <div class="dh-nav">
+            <div class="dh-btn">‹</div>
+            <div class="dh-btn">♡</div>
+          </div>
+          <h3>Respirazione 4-7-8</h3>
+          <div class="dh-tags">
+            <span class="dh-tag">🌬️ Respirazione</span>
+            <span class="dh-tag">8 min</span>
+            <span class="dh-tag">Principiante</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          <p class="detail-desc">
+            Tecnica di respirazione che calma il sistema nervoso, riduce l'ansia e prepara a momenti di rilassamento profondo.
+          </p>
+
+          <div class="benefits">
+            <span class="benefit">😌 Riduce stress</span>
+            <span class="benefit">💤 Migliora sonno</span>
+            <span class="benefit">🧠 Chiarezza</span>
+          </div>
+
+          <div class="dt">Passaggi della sessione</div>
+
+          <div class="step">
+            <div class="step-n">1</div>
+            <div class="step-b">
+              <h4>Preparazione</h4>
+              <p>Siediti comodo, schiena dritta, occhi chiusi.</p>
+              <div class="step-d">⏱ 1 min</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">2</div>
+            <div class="step-b">
+              <h4>Ciclo di respiro</h4>
+              <p>Inspira 4s · Trattieni 7s · Espira 8s. Ripeti 4 cicli.</p>
+              <div class="step-d">⏱ 5 min</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">3</div>
+            <div class="step-b">
+              <h4>Ritorno consapevole</h4>
+              <p>Respira normalmente, osserva la calma.</p>
+              <div class="step-d">⏱ 2 min</div>
+            </div>
+          </div>
+
+          <button class="cta">▶ Inizia sessione</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone 3: Active Session -->
+  <div class="phone-wrap">
+    <div class="phone-label">Sessione attiva</div>
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen session">
+        <div class="status-bar">
+          <span class="time" style="color:#F4E9E0;">9:41</span>
+          <div class="icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="#F4E9E0"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx=".8"/></svg>
+            <svg width="24" height="12" viewBox="0 0 24 12" fill="#F4E9E0"><rect x="0" y="1" width="21" height="10" rx="2.5" fill="none" stroke="#F4E9E0" stroke-width="1.2"/><rect x="1.5" y="2.5" width="14" height="7" rx="1.5"/><path d="M22 4.5v3a1.5 1.5 0 0 0 0-3z"/></svg>
+          </div>
+        </div>
+
+        <div class="sess-topbar">
+          <div class="sess-close">✕</div>
+          <span class="sess-cat">Respirazione</span>
+          <div style="width:36px;"></div>
+        </div>
+
+        <div class="timer-area">
+          <div class="ring-wrap">
+            <div class="breath-orb"></div>
+
+            <!-- Guide ring -->
+            <svg viewBox="0 0 190 190">
+              <circle cx="95" cy="95" r="88"
+                fill="none" stroke="rgba(199,143,101,0.15)" stroke-width="3.5"/>
+            </svg>
+            <!-- Progress arc -->
+            <svg viewBox="0 0 190 190" style="position:absolute;top:0;left:0;transform:rotate(-90deg)">
+              <circle cx="95" cy="95" r="88"
+                fill="none"
+                stroke="url(#arcGrad)"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-dasharray="553"
+                stroke-dashoffset="360"/>
+              <defs>
+                <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#C78F65"/>
+                  <stop offset="100%" stop-color="#E8B080"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <!-- Inner ring -->
+            <svg viewBox="0 0 190 190" style="position:absolute;top:0;left:0;">
+              <circle cx="95" cy="95" r="78"
+                fill="none" stroke="rgba(221,188,163,0.12)" stroke-width="1"/>
+            </svg>
+
+            <div class="ring-center">
+              <div class="ring-time">05:18</div>
+              <div class="ring-phase">Inspira</div>
+              <div class="ring-total">di 08:00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sess-step-card">
+          <div class="ssc-header">
+            <div class="ssc-num">2</div>
+            <div class="ssc-title">Ciclo di respiro</div>
+          </div>
+          <div class="ssc-desc">
+            Inspira per 4s · Trattieni 7s · Espira lentamente per 8s. Lascia che il corpo si ammorbidisca.
+          </div>
+        </div>
+
+        <div class="sess-dots">
+          <div class="sdot"></div>
+          <div class="sdot on"></div>
+          <div class="sdot"></div>
+        </div>
+
+        <div class="sess-progress">
+          <div class="sess-progress-fill"></div>
+        </div>
+
+        <div class="sess-controls">
+          <div class="sc-btn">⏮</div>
+          <div class="sc-btn primary">⏸</div>
+          <div class="sc-btn">⏭</div>
+          <div class="sc-btn end">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer badges -->
+<div class="footer">
+  <div class="fb">📱 SwiftUI</div>
+  <div class="fb">🗃️ SwiftData</div>
+  <div class="fb">🎯 iOS 17+</div>
+</div>
+
+</body>
+</html>

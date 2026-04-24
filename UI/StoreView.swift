@@ -3,10 +3,10 @@ import SwiftUI
 // MARK: - Store Color Tokens (file-private)
 
 private extension Color {
-    static let storeBg        = Color(hex: "#E8D5F5")
-    static let storePrimary   = Color(hex: "#7B5CC8")
-    static let storeDark      = Color(hex: "#3D2080")
-    static let storeBtn       = Color(hex: "#5C3D9E")
+    static let storeBg        = Color(hex: "#f5ead8")
+    static let storePrimary   = Color(hex: "#8b6340")
+    static let storeDark      = Color(hex: "#3d2b1f")
+    static let storeBtn       = Color(hex: "#a67c52")
     static let statGreenBg    = Color(hex: "#C6F0D6")
     static let statGreenFg    = Color(hex: "#1A7A3A")
     static let statPinkBg     = Color(hex: "#FFD6E0")
@@ -67,7 +67,7 @@ private func storeSymbolColor(for item: HouseItemDefinition) -> Color {
     switch item.category {
     case .food:        return Color(hex: "#F97316")
     case .essentials:  return Color(hex: "#3B82F6")
-    case .decorations: return Color(hex: "#8B5CF6")
+    case .decorations: return Color(hex: "#d4884a")
     case .specials:    return Color(hex: "#F59E0B")
     }
 }
@@ -136,7 +136,7 @@ struct StoreView: View {
             .foregroundStyle(Color.storePrimary)
             .padding(.horizontal, compact ? 12 : 16)
             .padding(.vertical, compact ? 7 : 8)
-            .background(.white, in: Capsule())
+            .background(Color(hex: "#fdf3e3"), in: Capsule())
             .overlay(Capsule().strokeBorder(Color.storePrimary, lineWidth: 1.5))
         }
         .padding(.horizontal, compact ? 12 : 16)
@@ -173,7 +173,7 @@ struct StoreView: View {
             .frame(maxWidth: .infinity)
         }
         .padding(.vertical, compact ? 9 : 11)
-        .background(.white, in: Capsule())
+        .background(Color(hex: "#fdf3e3"), in: Capsule())
         .shadow(color: Color.storePrimary.opacity(0.12), radius: 8, y: 3)
     }
 
@@ -268,7 +268,7 @@ private struct StoreCategoryTab: View {
                         Capsule().fill(Color.storePrimary)
                     } else {
                         Capsule()
-                            .fill(.white)
+                            .fill(Color(hex: "#fdf3e3"))
                             .overlay(Capsule().strokeBorder(Color.storePrimary, lineWidth: 1.5))
                     }
                 }
@@ -293,7 +293,7 @@ struct StoreItemCard: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             cardContent
-                .background(.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .background(Color(hex: "#fdf3e3"), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .shadow(color: Color.storePrimary.opacity(0.09), radius: 8, y: 3)
 
             if isRare {
@@ -547,7 +547,7 @@ private struct GemPackRow: View {
             .buttonStyle(.plain)
         }
         .padding(14)
-        .background(.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(Color(hex: "#fdf3e3"), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .shadow(color: Color.storePrimary.opacity(0.08), radius: 6, y: 2)
     }
 }

@@ -34,6 +34,10 @@ final class GameStore: ObservableObject {
             self.pet = existing
         } else {
             let newPet = Pet()
+            if let setupName = UserDefaults.standard.string(forKey: "petSetupName"), !setupName.isEmpty {
+                newPet.setName(setupName)
+                UserDefaults.standard.removeObject(forKey: "petSetupName")
+            }
             self.pet = newPet
             modelContext.insert(newPet)
             save()

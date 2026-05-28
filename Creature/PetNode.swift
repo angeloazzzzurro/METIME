@@ -77,6 +77,7 @@ final class PetNode: SKNode {
         accentLayer.zPosition = 30
         addChild(accentLayer)
         syncColors(animated: false)
+        updateStageFeatures(animated: false)
     }
 
     // MARK: - Fiamma body
@@ -431,14 +432,21 @@ final class PetNode: SKNode {
         setScale(scale)
     }
 
-    private func updateStageFeatures() {
+    private func updateStageFeatures(animated: Bool = true) {
         guard petShape == .uovo else { return }
         let showStubs = currentStage >= 1
         let showFeet  = currentStage >= 2
-        leftStub.run(.fadeAlpha(to: showStubs ? 1.0 : 0.0, duration: 0.4))
-        rightStub.run(.fadeAlpha(to: showStubs ? 1.0 : 0.0, duration: 0.4))
-        leftFoot.run(.fadeAlpha(to: showFeet  ? 1.0 : 0.0, duration: 0.4))
-        rightFoot.run(.fadeAlpha(to: showFeet  ? 1.0 : 0.0, duration: 0.4))
+        if animated && parent != nil {
+            leftStub.run(.fadeAlpha(to: showStubs ? 1.0 : 0.0, duration: 0.4))
+            rightStub.run(.fadeAlpha(to: showStubs ? 1.0 : 0.0, duration: 0.4))
+            leftFoot.run(.fadeAlpha(to: showFeet  ? 1.0 : 0.0, duration: 0.4))
+            rightFoot.run(.fadeAlpha(to: showFeet  ? 1.0 : 0.0, duration: 0.4))
+        } else {
+            leftStub.alpha  = showStubs ? 1.0 : 0.0
+            rightStub.alpha = showStubs ? 1.0 : 0.0
+            leftFoot.alpha  = showFeet  ? 1.0 : 0.0
+            rightFoot.alpha = showFeet  ? 1.0 : 0.0
+        }
     }
 
     private func rebuildStageDecorations() {

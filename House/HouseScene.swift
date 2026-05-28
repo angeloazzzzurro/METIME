@@ -318,13 +318,6 @@ final class HouseScene: SKScene {
         shadow.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 0.05)
         shadow.zPosition = 499
 
-        // Animazione idle
-        let bob = SKAction.sequence([
-            SKAction.moveBy(x: 0, y: 5, duration: 0.95),
-            SKAction.moveBy(x: 0, y: -5, duration: 0.95)
-        ])
-        pet.run(SKAction.repeatForever(bob))
-
         addChild(shadow)
         addChild(pet)
         petNode = pet
@@ -577,10 +570,6 @@ final class HouseScene: SKScene {
 
         guard animated else { return }
         petNode.position = previousPosition
-        petNode.run(.repeatForever(.sequence([
-            .moveBy(x: 0, y: 5, duration: 0.95),
-            .moveBy(x: 0, y: -5, duration: 0.95)
-        ])))
         petNode.run(.move(to: CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.18), duration: 0.2))
         runEvolutionCelebration()
     }

@@ -10,18 +10,20 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(160deg, #FFB6C1 0%, #E8C4F0 50%, #C4B0F8 100%);
+      background: radial-gradient(ellipse at 50% 0%, #F5B8CF 0%, #E8C4F0 45%, #D0B8F8 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 16px;
+      overflow-x: hidden;
     }
 
     .phone-frame {
-      width: 375px;
-      min-height: 812px;
-      background: linear-gradient(160deg, #FFB6C1 0%, #E8C4F0 50%, #C4B0F8 100%);
+      width: 390px;
+      max-width: 430px;
+      min-height: 844px;
+      background: radial-gradient(ellipse at 50% 0%, #F5B8CF 0%, #E8C4F0 45%, #D0B8F8 100%);
       border-radius: 44px;
       box-shadow: 0 30px 80px rgba(100, 60, 160, 0.35), 0 0 0 1px rgba(255,255,255,0.3);
       overflow: hidden;
@@ -30,7 +32,7 @@
       flex-direction: column;
     }
 
-    /* Floating background decorations */
+    /* Background decorations */
     .bg-deco {
       position: absolute;
       inset: 0;
@@ -40,13 +42,12 @@
     }
     .bg-star {
       position: absolute;
-      font-size: 14px;
-      opacity: 0.5;
+      opacity: 0.4;
       animation: bg-float 4s ease-in-out infinite alternate;
     }
     @keyframes bg-float {
       0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-12px) rotate(15deg); }
+      100% { transform: translateY(-10px) rotate(15deg); }
     }
 
     /* Scrollable content */
@@ -59,150 +60,281 @@
     }
     .content::-webkit-scrollbar { display: none; }
 
-    /* Header card */
+    /* ── HEADER CARD ── */
     .header-card {
       background: #fff;
       border-radius: 24px;
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 20px;
+      margin-bottom: 0;
       box-shadow: 0 4px 20px rgba(150, 100, 200, 0.15);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .header-title {
+      font-size: 32px;
+      font-weight: 700;
+      font-style: italic;
+      color: #7B4FCC;
+    }
+    .header-mood {
+      font-size: 14px;
+      color: #9B7BC8;
+      text-align: center;
       margin-bottom: 16px;
     }
-    .header-title { font-size: 28px; font-weight: 800; color: #2d1f4e; }
-    .header-sub { font-size: 13px; color: #9b8bbf; margin-top: 2px; font-weight: 600; }
-    .header-icon { font-size: 32px; }
 
-    /* Stats grid */
+    /* Stat pills grid 2x2 */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 16px;
     }
     .stat-pill {
-      background: #fff;
-      border-radius: 20px;
-      padding: 12px 14px;
-      box-shadow: 0 2px 12px rgba(150, 100, 200, 0.1);
+      height: 36px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-pill-inner {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+    }
+    .stat-pill-bar {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      border-radius: 18px;
+      transition: width 0.4s ease;
+    }
+    .stat-pill-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
     }
     .stat-pill-label {
       font-size: 12px;
       font-weight: 700;
-      color: #666;
-      margin-bottom: 6px;
+      color: #444;
+      white-space: nowrap;
     }
-    .stat-bar-wrap {
-      height: 8px;
-      border-radius: 999px;
-      background: #f0edf8;
-      overflow: hidden;
-    }
-    .stat-bar {
-      height: 100%;
-      border-radius: 999px;
-      transition: width 0.4s ease;
-    }
-    .bar-pink   { background: linear-gradient(90deg, #ff8db0, #ffb3cc); }
-    .bar-green  { background: linear-gradient(90deg, #60d394, #a5f0c5); }
-    .bar-purple { background: linear-gradient(90deg, #9b8bbf, #c4b0f8); }
-    .bar-orange { background: linear-gradient(90deg, #ff9f5a, #ffcc88); }
-    .stat-val { font-size: 11px; font-weight: 800; color: #888; float: right; margin-bottom: 4px; }
-
-    /* Pet scene */
-    .pet-scene {
-      position: relative;
-      min-height: 280px;
+    .stat-pill-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin-bottom: 16px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    /* Pill colour variants */
+    .pill-pink   { background: #FFB8D4; }
+    .pill-pink   .stat-pill-bar { background: #FF6B9D; }
+    .pill-green  { background: #C8F0C8; }
+    .pill-green  .stat-pill-bar { background: #4CAF50; }
+    .pill-purple { background: #D4C8F8; }
+    .pill-purple .stat-pill-bar { background: #7C4DCC; }
+    .pill-yellow { background: #FFE8B0; }
+    .pill-yellow .stat-pill-bar { background: #FFA726; }
+
+    /* ── ISO SCENE ── */
+    .scene-wrap {
+      position: relative;
+      height: 380px;
+      margin: 16px 0;
       overflow: hidden;
     }
 
-    /* Pet blob */
-    .pet-blob {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 32%, #fff 0%, #e0d4f8 55%, #c4b0f8 100%);
-      box-shadow: 0 12px 40px rgba(150, 100, 200, 0.3);
-      position: relative;
-      cursor: pointer;
-      animation: pet-float 2.8s ease-in-out infinite;
-      user-select: none;
-      z-index: 2;
-    }
-    @keyframes pet-float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
-    }
-    .pet-blob.squish { animation: pet-squish 0.4s ease; }
-    @keyframes pet-squish {
-      0%   { transform: scale(1, 1); }
-      30%  { transform: scale(1.14, 0.88); }
-      60%  { transform: scale(0.92, 1.1); }
-      100% { transform: scale(1, 1); }
-    }
-
-    /* Pet eyes */
-    .pet-eyes {
+    /* isometric tile grid */
+    .iso-tiles {
+      width: 260px;
+      height: 260px;
+      display: grid;
+      grid-template-columns: repeat(4, 65px);
+      grid-template-rows: repeat(4, 65px);
+      gap: 3px;
+      transform: rotateX(55deg) rotateZ(45deg);
       position: absolute;
       top: 70px;
       left: 50%;
+      margin-left: -130px;
+      transform-origin: center center;
+    }
+    .tile {
+      background: #B8E09A;
+      border-radius: 6px;
+    }
+    .tile:nth-child(even) { background: #C8EAA8; }
+
+    /* Objects in scene — positioned relative to .scene-wrap */
+    .scene-obj {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Big tree */
+    .tree-trunk {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 15px;
+      height: 30px;
+      background: #8B5E3C;
+      border-radius: 3px;
+    }
+    .tree-crown {
+      position: absolute;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      background: #5DBD5B;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(50,120,50,0.3);
+    }
+    .tree-wrap {
+      left: 8%;
+      top: 22%;
+      width: 80px;
+      height: 100px;
+    }
+    @keyframes tree-sway {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+    .tree-crown { animation: tree-sway 3s ease-in-out infinite; }
+
+    /* Bush */
+    .bush-wrap {
+      right: 14%;
+      top: 38%;
+      width: 70px;
+      height: 50px;
+    }
+    .bush-c {
+      position: absolute;
+      background: #4A9E4A;
+      border-radius: 50%;
+    }
+    .bush-c1 { width: 38px; height: 38px; bottom: 0; left: 0; }
+    .bush-c2 { width: 30px; height: 30px; bottom: 4px; left: 20px; }
+    .bush-c3 { width: 34px; height: 34px; bottom: 0; left: 32px; }
+
+    /* Pet blob */
+    .pet-blob {
+      position: absolute;
+      left: 43%;
+      top: 42%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 105px;
+      background: radial-gradient(circle at 35% 30%, #E8D4FF, #A87FDE);
+      border: 2.5px solid #8B6CC8;
+      border-radius: 55% 55% 50% 50%;
+      cursor: pointer;
+      user-select: none;
+      z-index: 10;
+      animation: pet-float 2.5s ease-in-out infinite;
+    }
+    @keyframes pet-float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-6px); }
+    }
+    .pet-blob.squish { animation: pet-squish 0.4s ease forwards; }
+    @keyframes pet-squish {
+      0%   { transform: translateX(-50%) scale(1, 1); }
+      30%  { transform: translateX(-50%) scale(1.14, 0.88); }
+      60%  { transform: translateX(-50%) scale(0.92, 1.1); }
+      100% { transform: translateX(-50%) scale(1, 1); }
+    }
+
+    .pet-eyes {
+      position: absolute;
+      top: 36px;
+      left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 24px;
+      gap: 22px;
     }
     .pet-eye {
-      width: 16px;
-      height: 16px;
-      background: #2d1f4e;
+      width: 14px;
+      height: 14px;
+      background: #1a1030;
       border-radius: 50%;
       position: relative;
+      transition: height 0.1s;
     }
     .pet-eye::after {
       content: '';
       position: absolute;
-      width: 5px; height: 5px;
+      width: 4px; height: 4px;
       background: rgba(255,255,255,0.9);
       border-radius: 50%;
       top: 2px; left: 2px;
     }
     .pet-blob.blink .pet-eye {
-      height: 3px;
-      border-radius: 8px;
+      height: 2px;
+      border-radius: 4px;
     }
     .pet-blob.blink .pet-eye::after { opacity: 0; }
 
-    /* Cheeks */
     .pet-cheek {
       position: absolute;
-      width: 28px; height: 18px;
+      width: 20px;
+      height: 13px;
       border-radius: 50%;
-      background: rgba(255, 160, 180, 0.45);
-      top: 94px;
+      background: radial-gradient(circle, rgba(255,140,170,0.5), rgba(255,140,170,0));
+      top: 52px;
     }
-    .pet-cheek-l { left: 26px; }
-    .pet-cheek-r { right: 26px; }
+    .pet-cheek-l { left: 14px; }
+    .pet-cheek-r { right: 14px; }
 
-    /* Smile */
     .pet-smile {
       position: absolute;
-      top: 104px;
+      top: 62px;
       left: 50%;
       transform: translateX(-50%);
-      width: 24px; height: 12px;
+      width: 22px;
+      height: 11px;
       border-bottom: 3px solid #7a5fad;
-      border-radius: 0 0 16px 16px;
+      border-radius: 0 0 14px 14px;
+    }
+
+    .pet-shadow {
+      position: absolute;
+      left: 43%;
+      top: calc(42% + 108px);
+      transform: translateX(-50%);
+      width: 80px;
+      height: 14px;
+      background: radial-gradient(ellipse, rgba(100,60,160,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 9;
+      animation: shadow-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes shadow-pulse {
+      0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.5; }
+      50% { transform: translateX(-50%) scaleX(0.8); opacity: 0.25; }
     }
 
     /* Speech bubble */
     .speech-bubble {
       position: absolute;
-      top: -14px;
+      top: -36px;
       left: 50%;
       transform: translateX(-50%);
       background: #fff;
@@ -215,7 +347,7 @@
       box-shadow: 0 4px 12px rgba(100, 60, 180, 0.15);
       opacity: 0;
       pointer-events: none;
-      z-index: 10;
+      z-index: 20;
     }
     .speech-bubble::after {
       content: '';
@@ -236,26 +368,16 @@
       100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.85); }
     }
 
-    /* Ground hill */
-    .ground-hill {
-      position: absolute;
-      bottom: -20px; left: -15%; right: -15%;
-      height: 80px;
-      background: radial-gradient(ellipse at 50% 100%, #a8e6a3 0%, #7acc76 60%, #5bb857 100%);
-      border-radius: 50%;
-      z-index: 1;
-    }
-
-    /* Flowers */
+    /* Flowers on tiles */
     .flower {
       position: absolute;
-      font-size: 18px;
-      z-index: 2;
-      animation: flower-sway 3s ease-in-out infinite alternate;
+      font-size: 28px;
+      z-index: 5;
+      animation: flower-pulse 2s ease-in-out infinite alternate;
     }
-    @keyframes flower-sway {
-      0% { transform: rotate(-4deg); }
-      100% { transform: rotate(4deg); }
+    @keyframes flower-pulse {
+      0% { transform: scale(0.9); }
+      100% { transform: scale(1.05); }
     }
 
     /* Particles */
@@ -263,7 +385,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      z-index: 5;
+      z-index: 20;
       overflow: hidden;
     }
     .particle {
@@ -277,20 +399,15 @@
       100% { opacity: 0; transform: translateY(-70px) scale(0.4) rotate(30deg); }
     }
 
-    /* Action card */
+    /* ── BOTTOM ACTION CARD ── */
     .action-card {
       background: #fff;
-      border-radius: 28px;
-      padding: 18px 16px;
-      box-shadow: 0 4px 20px rgba(150, 100, 200, 0.15);
-      margin-bottom: 16px;
-    }
-    .action-card-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #9b8bbf;
-      text-align: center;
-      margin-bottom: 14px;
+      border-radius: 28px 28px 0 0;
+      padding: 20px 16px 32px;
+      box-shadow: 0 -4px 20px rgba(150, 100, 200, 0.1);
+      margin: 0 -16px -90px;
+      position: relative;
+      z-index: 5;
     }
     .action-btns {
       display: grid;
@@ -298,47 +415,58 @@
       gap: 10px;
     }
     .action-btn {
-      border: none;
-      border-radius: 20px;
-      padding: 14px 6px 10px;
-      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
-      font-weight: 800;
-      font-size: 10px;
+      gap: 7px;
+      border: none;
+      background: none;
+      cursor: pointer;
       font-family: inherit;
-      transition: transform 0.15s, box-shadow 0.15s;
-      position: relative;
-      overflow: hidden;
       text-decoration: none;
+      padding: 0;
     }
-    .action-btn:hover { transform: translateY(-2px); }
-    .action-btn:active { transform: translateY(1px); }
-    .action-btn .btn-ico { font-size: 22px; }
-    .action-btn .btn-lbl { font-size: 11px; font-weight: 800; }
+    .action-btn-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .action-btn:hover .action-btn-circle { transform: translateY(-3px); }
+    .action-btn:active .action-btn-circle { transform: scale(0.93); }
+    .action-btn-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
 
-    .btn-meditate {
-      background: linear-gradient(160deg, #e8d8ff, #d4bcff);
-      color: #5a3a9a;
-      box-shadow: 0 6px 16px rgba(140, 100, 220, 0.25);
+    .btn-meditate .action-btn-circle {
+      background: #9B6FE8;
+      box-shadow: 0 4px 12px rgba(155,111,232,0.3);
     }
-    .btn-food {
-      background: linear-gradient(160deg, #ffe0d8, #ffbcb0);
-      color: #a83a2a;
-      box-shadow: 0 6px 16px rgba(220, 100, 80, 0.2);
+    .btn-meditate .action-btn-label { color: #9B6FE8; }
+
+    .btn-food .action-btn-circle {
+      background: #E87060;
+      box-shadow: 0 4px 12px rgba(232,112,96,0.3);
     }
-    .btn-play {
-      background: linear-gradient(160deg, #d0eeff, #b0d8ff);
-      color: #2a5a9a;
-      box-shadow: 0 6px 16px rgba(80, 140, 220, 0.2);
+    .btn-food .action-btn-label { color: #E87060; }
+
+    .btn-play .action-btn-circle {
+      background: #5B9EE8;
+      box-shadow: 0 4px 12px rgba(91,158,232,0.3);
     }
-    .btn-journal {
-      background: linear-gradient(160deg, #ffe8d0, #ffd4a8);
-      color: #8a4a10;
-      box-shadow: 0 6px 16px rgba(200, 130, 50, 0.2);
+    .btn-play .action-btn-label { color: #5B9EE8; }
+
+    .btn-journal .action-btn-circle {
+      background: #E8A840;
+      box-shadow: 0 4px 12px rgba(232,168,64,0.3);
     }
+    .btn-journal .action-btn-label { color: #E8A840; }
+
     .action-btn.cooldown { pointer-events: none; filter: grayscale(0.4) brightness(0.9); }
 
     /* Toast */
@@ -377,7 +505,7 @@
       justify-content: space-around;
       align-items: center;
       padding: 10px 8px 18px;
-      z-index: 10;
+      z-index: 20;
     }
     .tab-item {
       display: flex;
@@ -408,54 +536,92 @@
 
   <div class="phone-frame">
     <!-- Background decorations -->
-    <div class="bg-deco" id="bgDeco">
-      <span class="bg-star" style="top:8%;left:8%;animation-delay:0s">✨</span>
-      <span class="bg-star" style="top:12%;right:12%;animation-delay:0.5s">💫</span>
-      <span class="bg-star" style="top:30%;left:5%;animation-delay:1s">⭐</span>
-      <span class="bg-star" style="top:20%;right:6%;animation-delay:1.5s">✨</span>
-      <span class="bg-star" style="top:55%;left:7%;animation-delay:0.7s">💕</span>
-      <span class="bg-star" style="top:48%;right:5%;animation-delay:1.2s">✨</span>
+    <div class="bg-deco">
+      <span class="bg-star" style="font-size:12px;top:7%;left:7%;animation-delay:0s">✨</span>
+      <span class="bg-star" style="font-size:14px;top:13%;right:10%;animation-delay:0.5s">💫</span>
+      <span class="bg-star" style="font-size:13px;top:28%;left:4%;animation-delay:1s">⭐</span>
+      <span class="bg-star" style="font-size:11px;top:22%;right:5%;animation-delay:1.5s">✨</span>
+      <span class="bg-star" style="font-size:12px;top:52%;left:6%;animation-delay:0.7s">💕</span>
+      <span class="bg-star" style="font-size:16px;top:46%;right:4%;animation-delay:1.2s">✨</span>
+      <span class="bg-star" style="font-size:11px;top:68%;left:8%;animation-delay:0.3s">🌸</span>
+      <span class="bg-star" style="font-size:13px;top:75%;right:7%;animation-delay:0.9s">💜</span>
     </div>
 
     <div class="content">
+
       <!-- Header card -->
       <div class="header-card">
-        <div>
-          <div class="header-title">MeTime</div>
-          <div class="header-sub" id="moodSub">Mood: calm</div>
+        <div class="header-top">
+          <span class="header-title">MeTime</span>
         </div>
-        <span class="header-icon">🌸</span>
+        <div class="header-mood" id="moodSub">Mood: calm 🌸</div>
+
+        <!-- Stats grid 2×2 -->
+        <div class="stats-grid">
+          <!-- Felicità -->
+          <div class="stat-pill pill-pink">
+            <div class="stat-pill-bar" id="happinessBar" style="width:72%"></div>
+            <div class="stat-pill-content">
+              <span class="stat-pill-label">💗 Felicità</span>
+              <span class="stat-pill-icon">❤️</span>
+            </div>
+          </div>
+          <!-- Fame -->
+          <div class="stat-pill pill-green">
+            <div class="stat-pill-bar" id="hungerBar" style="width:65%"></div>
+            <div class="stat-pill-content">
+              <span class="stat-pill-label">🍀 Fame</span>
+              <span class="stat-pill-icon">🌿</span>
+            </div>
+          </div>
+          <!-- Calma -->
+          <div class="stat-pill pill-purple">
+            <div class="stat-pill-bar" id="calmBar" style="width:80%"></div>
+            <div class="stat-pill-content">
+              <span class="stat-pill-label">🌙 Calma</span>
+              <span class="stat-pill-icon">🌙</span>
+            </div>
+          </div>
+          <!-- Energia -->
+          <div class="stat-pill pill-yellow">
+            <div class="stat-pill-bar" id="energyBar" style="width:58%"></div>
+            <div class="stat-pill-content">
+              <span class="stat-pill-label">⚡ Energia</span>
+              <span class="stat-pill-icon">⚡</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Stats grid -->
-      <div class="stats-grid">
-        <div class="stat-pill">
-          <div><span class="stat-val" id="happinessTxt">72</span></div>
-          <div class="stat-pill-label">💗 Felicità</div>
-          <div class="stat-bar-wrap"><div class="stat-bar bar-pink" id="happinessBar" style="width:72%"></div></div>
-        </div>
-        <div class="stat-pill">
-          <div><span class="stat-val" id="hungerTxt">65</span></div>
-          <div class="stat-pill-label">🍀 Fame</div>
-          <div class="stat-bar-wrap"><div class="stat-bar bar-green" id="hungerBar" style="width:65%"></div></div>
-        </div>
-        <div class="stat-pill">
-          <div><span class="stat-val" id="calmTxt">80</span></div>
-          <div class="stat-pill-label">🌙 Calma</div>
-          <div class="stat-bar-wrap"><div class="stat-bar bar-purple" id="calmBar" style="width:80%"></div></div>
-        </div>
-        <div class="stat-pill">
-          <div><span class="stat-val" id="energyTxt">58</span></div>
-          <div class="stat-pill-label">⚡ Energia</div>
-          <div class="stat-bar-wrap"><div class="stat-bar bar-orange" id="energyBar" style="width:58%"></div></div>
-        </div>
-      </div>
-
-      <!-- Pet scene -->
-      <div class="pet-scene" id="petScene">
+      <!-- Isometric scene -->
+      <div class="scene-wrap" id="petScene">
         <div class="particles" id="particles"></div>
 
-        <!-- Pet blob -->
+        <!-- ISO tile grid -->
+        <div class="iso-tiles">
+          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        </div>
+
+        <!-- Big tree — top-left of diamond -->
+        <div class="scene-obj tree-wrap">
+          <div class="tree-trunk"></div>
+          <div class="tree-crown"></div>
+        </div>
+
+        <!-- Bush — right of diamond -->
+        <div class="scene-obj bush-wrap">
+          <div class="bush-c bush-c1"></div>
+          <div class="bush-c bush-c2"></div>
+          <div class="bush-c bush-c3"></div>
+        </div>
+
+        <!-- Pet shadow -->
+        <div class="pet-shadow"></div>
+
+        <!-- Pet blob — centre of diamond -->
         <div class="pet-blob" id="petBlob">
           <div class="speech-bubble" id="speechBubble">Ciao! 💜</div>
           <div class="pet-eyes">
@@ -467,37 +633,36 @@
           <div class="pet-smile"></div>
         </div>
 
-        <!-- Ground and flowers -->
-        <div class="ground-hill"></div>
-        <span class="flower" style="bottom:28px;left:22%">🌸</span>
-        <span class="flower" style="bottom:24px;left:38%;animation-delay:0.4s">🌷</span>
-        <span class="flower" style="bottom:28px;right:22%;animation-delay:0.8s">🌼</span>
-        <span class="flower" style="bottom:22px;right:12%;animation-delay:1.2s">🌸</span>
-        <span class="flower" style="bottom:30px;left:10%;animation-delay:0.6s">🌷</span>
+        <!-- Flowers -->
+        <span class="flower" style="top:32%;left:28%;animation-delay:0s">🌸</span>
+        <span class="flower" style="top:38%;left:62%;animation-delay:0.3s">🌼</span>
+        <span class="flower" style="top:60%;left:24%;animation-delay:0.6s">🌷</span>
+        <span class="flower" style="top:65%;left:70%;animation-delay:0.9s">🌸</span>
+        <span class="flower" style="top:72%;left:45%;animation-delay:0.15s">🌼</span>
       </div>
 
-      <!-- Action card -->
+      <!-- Bottom action card -->
       <div class="action-card">
-        <div class="action-card-title">Cosa fai con il tuo pet?</div>
         <div class="action-btns">
           <button class="action-btn btn-meditate" data-action="meditate">
-            <span class="btn-ico">🔮</span>
-            <span class="btn-lbl">Medita</span>
+            <div class="action-btn-circle">✨</div>
+            <span class="action-btn-label">Medita</span>
           </button>
           <button class="action-btn btn-food" data-action="feed">
-            <span class="btn-ico">🥕</span>
-            <span class="btn-lbl">Cibo</span>
+            <div class="action-btn-circle">🥕</div>
+            <span class="action-btn-label">Cibo</span>
           </button>
           <button class="action-btn btn-play" data-action="play">
-            <span class="btn-ico">🎮</span>
-            <span class="btn-lbl">Gioca</span>
+            <div class="action-btn-circle">🎮</div>
+            <span class="action-btn-label">Gioca</span>
           </button>
           <a class="action-btn btn-journal" href="journal.html">
-            <span class="btn-ico">📖</span>
-            <span class="btn-lbl">Diario</span>
+            <div class="action-btn-circle">📖</div>
+            <span class="action-btn-label">Diario</span>
           </a>
         </div>
       </div>
+
     </div>
 
     <!-- Tab bar -->
@@ -528,11 +693,11 @@
     };
     const clamp = v => Math.max(0, Math.min(100, v));
 
-    const petBlob = document.getElementById('petBlob');
-    const speechBubble = document.getElementById('speechBubble');
-    const particlesEl = document.getElementById('particles');
+    const petBlob       = document.getElementById('petBlob');
+    const speechBubble  = document.getElementById('speechBubble');
+    const particlesEl   = document.getElementById('particles');
     const toastContainer = document.getElementById('toastContainer');
-    const moodSub = document.getElementById('moodSub');
+    const moodSub       = document.getElementById('moodSub');
 
     const moodPhrases = {
       calm:    ['Che bella giornata! 🌸', 'Sto bene! 🍀', 'Mmm... fame? 🥕', 'Coccole! 🥰'],
@@ -542,7 +707,7 @@
     };
 
     const actionParticles = {
-      meditate: ['🔮','✨','💜','🌙'],
+      meditate: ['✨','💜','🌙','🔮'],
       feed:     ['🥕','🍎','🌿','💚'],
       play:     ['🎮','⭐','🎉','💫']
     };
@@ -564,14 +729,14 @@
 
     function spawnParticles(type) {
       const emojis = actionParticles[type] || ['✨'];
-      const rect = petBlob.getBoundingClientRect();
-      const pRect = particlesEl.getBoundingClientRect();
+      const sceneRect = particlesEl.getBoundingClientRect();
+      const blobRect  = petBlob.getBoundingClientRect();
       for (let i = 0; i < 6; i++) {
         const p = document.createElement('span');
         p.className = 'particle';
         p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        p.style.left = (rect.left - pRect.left + rect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
-        p.style.top  = (rect.top  - pRect.top  + rect.height / 3 + (Math.random() - 0.5) * 30) + 'px';
+        p.style.left = (blobRect.left - sceneRect.left + blobRect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
+        p.style.top  = (blobRect.top  - sceneRect.top  + blobRect.height / 3 + (Math.random() - 0.5) * 30) + 'px';
         p.style.animationDelay = (i * 0.07) + 's';
         particlesEl.appendChild(p);
         setTimeout(() => p.remove(), 2000);
@@ -588,13 +753,13 @@
 
     function render() {
       updateMood();
-      const moodLabels = { calm: 'Mood: calm', happy: 'Mood: felice 🥰', tired: 'Mood: stanco 😴', anxious: 'Mood: ansioso 😰' };
-      moodSub.textContent = moodLabels[state.mood] || 'Mood: calm';
-
-      document.getElementById('happinessTxt').textContent = Math.round(state.happiness);
-      document.getElementById('hungerTxt').textContent    = Math.round(state.hunger);
-      document.getElementById('calmTxt').textContent      = Math.round(state.calm);
-      document.getElementById('energyTxt').textContent    = Math.round(state.energy);
+      const moodLabels = {
+        calm:    'Mood: calm 🌸',
+        happy:   'Mood: felice 🥰',
+        tired:   'Mood: stanco 😴',
+        anxious: 'Mood: ansioso 😰'
+      };
+      moodSub.textContent = moodLabels[state.mood] || 'Mood: calm 🌸';
 
       document.getElementById('happinessBar').style.width = state.happiness + '%';
       document.getElementById('hungerBar').style.width    = state.hunger + '%';
@@ -623,36 +788,36 @@
       }
     });
 
-    // Blink
+    // Blink every 3-4 seconds
     setInterval(() => {
       petBlob.classList.add('blink');
       setTimeout(() => petBlob.classList.remove('blink'), 180);
-    }, 3500 + Math.random() * 2000);
+    }, 3000 + Math.random() * 1500);
 
-    // Actions
+    // Action buttons
     document.querySelectorAll('[data-action]').forEach(btn => {
-      btn.addEventListener('click', e => {
+      btn.addEventListener('click', () => {
         const action = btn.dataset.action;
         state.idleTime = 0;
 
         if (action === 'feed') {
-          state.hunger = clamp(state.hunger + 18);
-          state.happiness = clamp(state.happiness + 5);
-          state.energy = clamp(state.energy + 3);
+          state.hunger     = clamp(state.hunger + 18);
+          state.happiness  = clamp(state.happiness + 5);
+          state.energy     = clamp(state.energy + 3);
           showToast('🥕 Mimi ha mangiato!');
           showSpeech('Gnam gnam! 🥕');
         } else if (action === 'play') {
-          state.happiness = clamp(state.happiness + 16);
-          state.energy = clamp(state.energy - 8);
-          state.calm = clamp(state.calm - 3);
+          state.happiness  = clamp(state.happiness + 16);
+          state.energy     = clamp(state.energy - 8);
+          state.calm       = clamp(state.calm - 3);
           showToast('🎮 Giocato con Mimi!');
           showSpeech('Evviva!! 🎉');
         } else if (action === 'meditate') {
-          state.calm = clamp(state.calm + 18);
-          state.happiness = clamp(state.happiness + 7);
-          state.energy = clamp(state.energy + 2);
-          showToast('🔮 Meditazione fatta!');
-          showSpeech('Ommm... 🔮');
+          state.calm       = clamp(state.calm + 18);
+          state.happiness  = clamp(state.happiness + 7);
+          state.energy     = clamp(state.energy + 2);
+          showToast('✨ Meditazione fatta!');
+          showSpeech('Ommm... ✨');
         }
 
         spawnParticles(action);
@@ -669,8 +834,8 @@
     // Stat decay
     setInterval(() => {
       state.idleTime++;
-      state.hunger = clamp(state.hunger - 0.3);
-      state.energy = clamp(state.energy - 0.2);
+      state.hunger    = clamp(state.hunger - 0.3);
+      state.energy    = clamp(state.energy - 0.2);
       state.happiness = clamp(state.happiness - 0.15);
       if (state.idleTime > 8) {
         const p = ['Ehi, ci sei? 🥺', 'Gioca con me!', 'Mi annoio...', 'Vieni qui! 👋'];

@@ -6,1184 +6,678 @@
   <title>METIME - Home Pet</title>
   <link rel="stylesheet" href="../assets/kawaii.css" />
   <style>
-    /* ── Animal Crossing palette ── */
-    :root {
-      --ac-sky: #b8cdb0;
-      --ac-sky-light: #d4e0c8;
-      --ac-grass: #7ab648;
-      --ac-grass-dark: #5a9a2e;
-      --ac-grass-light: #a5d66f;
-      --ac-wood: #a67c52;
-      --ac-wood-dark: #7a5430;
-      --ac-wood-light: #d4a76a;
-      --ac-sand: #f5e6c8;
-      --ac-cream: #fdf6e3;
-      --ac-leaf: #3d8b37;
-      --ac-brown-ink: #5c3d1e;
-      --ac-ui-bg: rgba(255, 248, 230, 0.94);
-      --ac-ui-border: #c9a96e;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(160deg, #FFB6C1 0%, #E8C4F0 50%, #C4B0F8 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
     }
 
-    .pet-zone { padding: 0; overflow: hidden; background: none; border: 3px solid var(--ac-wood); border-radius: 28px; box-shadow: 0 6px 0 var(--ac-wood-dark), 0 18px 36px rgba(60,40,10,0.22); }
+    .phone-frame {
+      width: 375px;
+      min-height: 812px;
+      background: linear-gradient(160deg, #FFB6C1 0%, #E8C4F0 50%, #C4B0F8 100%);
+      border-radius: 44px;
+      box-shadow: 0 30px 80px rgba(100, 60, 160, 0.35), 0 0 0 1px rgba(255,255,255,0.3);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
 
-    /* ── Header bar (wooden plank) ── */
-    .pet-header {
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      padding: 12px 18px;
-      background: linear-gradient(180deg, var(--ac-wood-light) 0%, var(--ac-wood) 100%);
-      border-bottom: 3px solid var(--ac-wood-dark);
+    /* Floating background decorations */
+    .bg-deco {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .bg-star {
+      position: absolute;
+      font-size: 14px;
+      opacity: 0.5;
+      animation: bg-float 4s ease-in-out infinite alternate;
+    }
+    @keyframes bg-float {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-12px) rotate(15deg); }
+    }
+
+    /* Scrollable content */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 16px 90px;
+      position: relative;
+      z-index: 1;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    /* Header card */
+    .header-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(150, 100, 200, 0.15);
+      margin-bottom: 16px;
+    }
+    .header-title { font-size: 28px; font-weight: 800; color: #2d1f4e; }
+    .header-sub { font-size: 13px; color: #9b8bbf; margin-top: 2px; font-weight: 600; }
+    .header-icon { font-size: 32px; }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-pill {
+      background: #fff;
+      border-radius: 20px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 12px rgba(150, 100, 200, 0.1);
+    }
+    .stat-pill-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .stat-bar-wrap {
+      height: 8px;
+      border-radius: 999px;
+      background: #f0edf8;
+      overflow: hidden;
+    }
+    .stat-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .bar-pink   { background: linear-gradient(90deg, #ff8db0, #ffb3cc); }
+    .bar-green  { background: linear-gradient(90deg, #60d394, #a5f0c5); }
+    .bar-purple { background: linear-gradient(90deg, #9b8bbf, #c4b0f8); }
+    .bar-orange { background: linear-gradient(90deg, #ff9f5a, #ffcc88); }
+    .stat-val { font-size: 11px; font-weight: 800; color: #888; float: right; margin-bottom: 4px; }
+
+    /* Pet scene */
+    .pet-scene {
+      position: relative;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    /* Pet blob */
+    .pet-blob {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%, #fff 0%, #e0d4f8 55%, #c4b0f8 100%);
+      box-shadow: 0 12px 40px rgba(150, 100, 200, 0.3);
+      position: relative;
+      cursor: pointer;
+      animation: pet-float 2.8s ease-in-out infinite;
+      user-select: none;
+      z-index: 2;
+    }
+    @keyframes pet-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .pet-blob.squish { animation: pet-squish 0.4s ease; }
+    @keyframes pet-squish {
+      0%   { transform: scale(1, 1); }
+      30%  { transform: scale(1.14, 0.88); }
+      60%  { transform: scale(0.92, 1.1); }
+      100% { transform: scale(1, 1); }
+    }
+
+    /* Pet eyes */
+    .pet-eyes {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 24px;
+    }
+    .pet-eye {
+      width: 16px;
+      height: 16px;
+      background: #2d1f4e;
+      border-radius: 50%;
       position: relative;
     }
-    .pet-header::after {
-      content: ""; position: absolute; inset: 0;
-      background: repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(255,255,255,0.08) 18px, rgba(255,255,255,0.08) 19px);
-      pointer-events: none;
+    .pet-eye::after {
+      content: '';
+      position: absolute;
+      width: 5px; height: 5px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      top: 2px; left: 2px;
     }
-    .pet-header h2 { margin: 0; font-size: 26px; color: #fff; text-shadow: 0 2px 0 rgba(90,50,10,0.5); letter-spacing: 0.03em; }
-    .badge {
-      background: var(--ac-cream); border: 2px solid var(--ac-wood-dark); border-radius: 999px;
-      padding: 5px 12px; font-weight: 800; font-size: 11px; color: var(--ac-brown-ink);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
-      transition: transform 0.3s ease;
+    .pet-blob.blink .pet-eye {
+      height: 3px;
+      border-radius: 8px;
     }
-    .badge.evolving { transform: scale(1.2); }
+    .pet-blob.blink .pet-eye::after { opacity: 0; }
 
-    /* ── Time / weather toolbar ── */
-    .world-toolbar {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 14px; background: rgba(0,0,0,0.12);
-      font-size: 12px; font-weight: 700; color: #fff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    /* Cheeks */
+    .pet-cheek {
+      position: absolute;
+      width: 28px; height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 160, 180, 0.45);
+      top: 94px;
     }
-    .world-toolbar button {
-      border: 0; background: rgba(255,255,255,0.22); color: #fff;
-      border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 800;
-      cursor: pointer; font-family: inherit; transition: background 0.2s;
-    }
-    .world-toolbar button:hover { background: rgba(255,255,255,0.38); }
+    .pet-cheek-l { left: 26px; }
+    .pet-cheek-r { right: 26px; }
 
-    /* ── Island world ── */
-    .world {
-      position: relative; min-height: 340px; padding: 16px; overflow: hidden;
-      background: linear-gradient(180deg, var(--ac-sky) 0%, var(--ac-sky-light) 42%, var(--ac-grass-light) 62%, var(--ac-grass) 100%);
-      transition: background 1.2s ease;
-      cursor: pointer;
-    }
-    .world.night {
-      background: linear-gradient(180deg, #1a1a3e 0%, #2d2b55 35%, #3a5a3a 62%, #2d4a2d 100%);
-    }
-    .world.night .world-deco { filter: brightness(0.5); }
-    .world.night .mood { color: #c8d8ff; }
-
-    /* clouds layer */
-    .cloud-layer {
-      position: absolute; top: 0; left: 0; right: 0; height: 80px;
-      pointer-events: none; overflow: hidden;
-    }
-    .cloud {
-      position: absolute; font-size: 36px; color: rgba(255,255,255,0.6);
-      animation: cloud-drift linear infinite; will-change: transform;
-    }
-    .world.night .cloud { opacity: 0.15; }
-    @keyframes cloud-drift {
-      0% { transform: translateX(-60px); }
-      100% { transform: translateX(calc(100vw + 60px)); }
+    /* Smile */
+    .pet-smile {
+      position: absolute;
+      top: 104px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px; height: 12px;
+      border-bottom: 3px solid #7a5fad;
+      border-radius: 0 0 16px 16px;
     }
 
-    /* grass hill */
-    .world::after {
-      content: ""; position: absolute; left: -14%; right: -14%; bottom: -50px;
-      height: 130px; border-radius: 50%;
-      background: radial-gradient(ellipse at 50% 20%, var(--ac-grass-light) 0%, var(--ac-grass) 50%, var(--ac-grass-dark) 100%);
-      box-shadow: inset 0 6px 18px rgba(90,160,40,0.35);
-      transition: background 1.2s ease;
-    }
-    .world.night::after {
-      background: radial-gradient(ellipse at 50% 20%, #3a5a3a 0%, #2d4a2d 50%, #1e3a1e 100%);
-    }
-
-    /* ── Stars overlay (night) ── */
-    .stars {
-      position: absolute; inset: 0; pointer-events: none; opacity: 0;
-      transition: opacity 1s ease;
-    }
-    .world.night .stars { opacity: 1; }
-    .star {
-      position: absolute; width: 3px; height: 3px; border-radius: 50%;
-      background: #fff; animation: twinkle 2s ease-in-out infinite alternate;
-    }
-    @keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 1; } }
-
-    /* ── Flowers & decorations ── */
-    .world-deco {
-      position: absolute; bottom: 14px; left: 0; right: 0; z-index: 0;
-      text-align: center; font-size: 18px; letter-spacing: 14px;
-      pointer-events: none; opacity: 0.85;
-      transition: filter 0.5s;
-    }
-
-    /* ── Trees ── */
-    .tree { position: absolute; font-size: 32px; z-index: 0; pointer-events: none;
-      animation: tree-sway 4s ease-in-out infinite alternate; }
-    .tree-1 { left: 8%; bottom: 52px; animation-delay: 0s; }
-    .tree-2 { right: 10%; bottom: 48px; animation-delay: 1s; font-size: 28px; }
-    @keyframes tree-sway { 0% { transform: rotate(-2deg); } 100% { transform: rotate(2deg); } }
-
-    /* ── Floating particles (hearts, leaves, etc.) ── */
-    .particles { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
-    .particle {
-      position: absolute; font-size: 18px;
-      animation: particle-rise 2s ease-out forwards;
-      opacity: 0;
-    }
-    @keyframes particle-rise {
-      0%   { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-80px) scale(0.5) rotate(30deg); }
-    }
-
-    /* ── Speech bubble on pet ── */
+    /* Speech bubble */
     .speech-bubble {
-      position: absolute; left: 50%; top: -10px; transform: translateX(-50%);
-      background: #fff; border: 2px solid var(--ac-wood); border-radius: 14px;
-      padding: 6px 12px; font-size: 14px; font-weight: 700; color: var(--ac-brown-ink);
-      white-space: nowrap; z-index: 10;
-      opacity: 0; pointer-events: none;
-      animation: none;
-      box-shadow: 0 3px 8px rgba(60,40,10,0.18);
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border-radius: 16px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #4a3580;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(100, 60, 180, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
     }
     .speech-bubble::after {
-      content: ""; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-      border-left: 8px solid transparent; border-right: 8px solid transparent;
-      border-top: 8px solid #fff;
+      content: '';
+      position: absolute;
+      bottom: -7px; left: 50%;
+      transform: translateX(-50%);
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 7px solid #fff;
     }
     .speech-bubble.show {
-      animation: bubble-pop 2s ease-out forwards;
+      animation: bubble-show 2.2s ease-out forwards;
     }
-    @keyframes bubble-pop {
+    @keyframes bubble-show {
       0%   { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.7); }
       15%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
       75%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(0.8); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.85); }
     }
 
-    /* ── AC Villager Pet creature ── */
-    .pet {
-      --body: #fff4e6;
-      position: relative; width: 140px; height: 140px; margin: 32px auto 8px;
+    /* Ground hill */
+    .ground-hill {
+      position: absolute;
+      bottom: -20px; left: -15%; right: -15%;
+      height: 80px;
+      background: radial-gradient(ellipse at 50% 100%, #a8e6a3 0%, #7acc76 60%, #5bb857 100%);
       border-radius: 50%;
-      background:
-        radial-gradient(circle at 38% 28%, rgba(255,255,255,0.50) 0%, transparent 55%),
-        linear-gradient(180deg, #fff4e6 0%, #fde8d0 50%, #f5d6b8 100%);
-      border: 2.5px solid var(--ac-wood);
-      box-shadow: 0 10px 24px rgba(60,40,10,0.2), inset 0 -8px 16px rgba(200,170,120,0.12);
       z-index: 1;
-      animation: float 2.8s ease-in-out infinite;
-      transform: rotateX(12deg) rotateZ(-2deg);
-      transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, transform 0.2s;
-      cursor: pointer; user-select: none;
     }
-    .pet:hover { filter: brightness(1.05); }
-    .pet.squish { animation: squish 0.4s ease; }
-    @keyframes squish {
-      0%   { transform: translateY(0) scale(1,1) rotateX(12deg) rotateZ(-2deg); }
-      30%  { transform: translateY(4px) scale(1.12, 0.88) rotateX(12deg) rotateZ(-2deg); }
-      60%  { transform: translateY(-4px) scale(0.92, 1.1) rotateX(12deg) rotateZ(-2deg); }
-      100% { transform: translateY(0) scale(1,1) rotateX(12deg) rotateZ(-2deg); }
-    }
-    .pet.dragging { animation: none !important; cursor: grabbing; }
 
-    /* Small round ears on top (AC villager style) */
-    .pet::before,
-    .pet::after {
-      content: ""; position: absolute;
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(180deg, #fde8d0, #f5d6b8);
-      border: 2.5px solid var(--ac-wood);
-      top: -12px;
-    }
-    .pet::before { left: 12px; }
-    .pet::after  { right: 12px; }
-    .pet:hover::before, .pet:hover::after { transform: scale(1.05); }
-
-    /* Inner ear pink spot */
-    .ear-inner {
+    /* Flowers */
+    .flower {
       position: absolute;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #f0b8b8 40%, transparent 70%);
-      top: -5px; z-index: 1; pointer-events: none;
+      font-size: 18px;
+      z-index: 2;
+      animation: flower-sway 3s ease-in-out infinite alternate;
     }
-    .ear-inner.l { left: 20px; }
-    .ear-inner.r { right: 20px; }
+    @keyframes flower-sway {
+      0% { transform: rotate(-4deg); }
+      100% { transform: rotate(4deg); }
+    }
 
-    /* Small bead eyes (AC dot style) */
-    .eyes { position: absolute; left: 50%; top: 46px; width: 56px; transform: translateX(-50%); display: flex; justify-content: space-between; transition: all 0.3s; }
-    .eye  {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: #2d1f14; position: relative;
-      transition: height 0.2s, border-radius 0.2s;
-    }
-    .eye::after {
-      content: "";
+    /* Particles */
+    .particles {
       position: absolute;
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.85);
-      top: 2px; left: 2px;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
     }
-    .pet.blink .eye { height: 3px; border-radius: 8px; }
-    .pet.blink .eye::after { opacity: 0; }
-
-    /* Small triangle nose */
-    .nose {
+    .particle {
       position: absolute;
-      left: 50%; top: 68px;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 7px solid #c4866a;
+      font-size: 16px;
+      animation: p-rise 1.8s ease-out forwards;
+      opacity: 0;
+    }
+    @keyframes p-rise {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-70px) scale(0.4) rotate(30deg); }
     }
 
-    /* Round rosy cheeks (AC signature) */
-    .cheek {
-      position: absolute; width: 22px; height: 22px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(240,130,130,0.50) 0%, rgba(240,130,130,0) 70%);
-      top: 82px; transition: width 0.3s, background 0.3s;
+    /* Action card */
+    .action-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 18px 16px;
+      box-shadow: 0 4px 20px rgba(150, 100, 200, 0.15);
+      margin-bottom: 16px;
     }
-    .cheek-l { left: 18px; }
-    .cheek-r { right: 18px; }
-    .pet:hover .cheek { width: 26px; background: radial-gradient(circle, rgba(240,120,120,0.60) 0%, rgba(240,120,120,0) 70%); }
-
-    /* Simple smile arc */
-    .mouth {
-      position: absolute; left: 50%; top: 80px; width: 18px; height: 9px;
-      border-bottom: 2.5px solid var(--ac-brown-ink); border-radius: 0 0 12px 12px;
-      transform: translateX(-50%); transition: all 0.3s;
-      border-left: none; border-right: none; border-top: none;
+    .action-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #9b8bbf;
+      text-align: center;
+      margin-bottom: 14px;
     }
-    .mouth::before { display: none; }
-
-    /* Villager body with shirt */
-    .pet-body {
-      position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
-      width: 68px; height: 40px;
-      border-radius: 8px 8px 20px 20px;
-      background: linear-gradient(180deg, #7ec8a0, #5aaa7e);
-      border: 2.5px solid #4a8a66;
-      z-index: -1;
+    .action-btns {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
     }
-    .pet-body::before {
-      content: "";
-      position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
-      width: 20px; height: 10px;
-      border-radius: 0 0 10px 10px;
-      background: #fde8d0;
-      border-bottom: 1.5px solid var(--ac-wood);
-    }
-    /* Stubby arms */
-    .pet-arm {
-      position: absolute; bottom: -14px; width: 16px; height: 26px;
-      border-radius: 9px;
-      background: linear-gradient(180deg, #7ec8a0, #5aaa7e);
-      border: 2px solid #4a8a66;
-      z-index: -1;
-    }
-    .pet-arm.l { left: 18px; transform: rotate(8deg); }
-    .pet-arm.r { right: 18px; transform: rotate(-8deg); }
-    /* Stubby feet */
-    .pet-foot {
-      position: absolute; bottom: -36px; width: 22px; height: 14px;
-      border-radius: 0 0 11px 11px;
-      background: #8b6340;
-      border: 2px solid #6b4a30;
-    }
-    .pet-foot.l { left: 36px; }
-    .pet-foot.r { right: 36px; }
-
-    .mood { margin-top: 12px; text-align: center; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(40,80,20,0.5); z-index: 1; position: relative; font-size: 14px; }
-
-    /* ── XP progress bar ── */
-    .xp-bar-section {
-      padding: 8px 16px 4px; background: var(--ac-ui-bg);
-      border-top: 2px solid rgba(180,150,90,0.2);
-    }
-    .xp-label { font-size: 11px; font-weight: 800; color: var(--ac-brown-ink); letter-spacing: 0.06em; }
-    .xp-bar-wrap {
-      margin-top: 4px; height: 14px; border-radius: 8px;
-      background: #e8dcc4; border: 2px solid var(--ac-ui-border); overflow: hidden;
+    .action-btn {
+      border: none;
+      border-radius: 20px;
+      padding: 14px 6px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-weight: 800;
+      font-size: 10px;
+      font-family: inherit;
+      transition: transform 0.15s, box-shadow 0.15s;
       position: relative;
+      overflow: hidden;
     }
-    .xp-bar {
-      height: 100%; border-radius: 6px; transition: width 0.6s ease;
-      background: linear-gradient(90deg, #ffd54f, #ffab00, #ff6d00);
-      position: relative;
-    }
-    .xp-bar::after {
-      content: ""; position: absolute; inset: 2px 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
-      border-radius: 4px;
-    }
-    .xp-text { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: var(--ac-brown-ink); }
+    .action-btn:hover { transform: translateY(-2px); }
+    .action-btn:active { transform: translateY(1px); }
+    .action-btn .btn-ico { font-size: 22px; }
+    .action-btn .btn-lbl { font-size: 11px; font-weight: 800; }
 
-    /* ── Stages ── */
-    .stage-egg  { width: 110px; height: 140px; border-radius: 50% 50% 44% 44%; }
-    .stage-egg .eyes, .stage-egg .mouth, .stage-egg .cheek, .stage-egg .ear-inner,
-    .stage-egg .nose, .stage-egg .pet-body, .stage-egg .pet-arm, .stage-egg .pet-foot,
-    .stage-egg::before, .stage-egg::after { opacity: 0; }
-    .stage-baby { width: 120px; height: 120px; }
-    .stage-teen { width: 140px; height: 140px; }
-    .stage-adult { width: 160px; height: 160px; }
+    .btn-meditate {
+      background: linear-gradient(160deg, #e8d8ff, #d4bcff);
+      color: #5a3a9a;
+      box-shadow: 0 6px 16px rgba(140, 100, 220, 0.25);
+    }
+    .btn-food {
+      background: linear-gradient(160deg, #ffe0d8, #ffbcb0);
+      color: #a83a2a;
+      box-shadow: 0 6px 16px rgba(220, 100, 80, 0.2);
+    }
+    .btn-play {
+      background: linear-gradient(160deg, #d0eeff, #b0d8ff);
+      color: #2a5a9a;
+      box-shadow: 0 6px 16px rgba(80, 140, 220, 0.2);
+    }
+    .btn-journal {
+      background: linear-gradient(160deg, #ffe8d0, #ffd4a8);
+      color: #8a4a10;
+      box-shadow: 0 6px 16px rgba(200, 130, 50, 0.2);
+    }
+    .action-btn.cooldown { pointer-events: none; filter: grayscale(0.4) brightness(0.9); }
 
-    /* ── Moods ── */
-    .mood-happy .mouth  { width: 18px; height: 10px; }
-    .mood-calm .mouth   { width: 14px; height: 6px; border-bottom-width: 2.5px; }
-    .mood-tired .mouth  { width: 14px; height: 4px; border-bottom-width: 2px; border-radius: 14px 14px 0 0; transform: translateX(-50%) translateY(8px); }
-    .mood-tired .eye    { height: 4px; border-radius: 8px; }
-    .mood-tired .eye::after { opacity: 0; }
-    .mood-anxious .mouth { width: 10px; height: 12px; border: 2px solid var(--ac-brown-ink); border-top: 0; border-radius: 0 0 10px 10px; }
-    .mood-anxious .mouth::before { display: none; }
-
-    /* ── Stats as AC-style bars ── */
-    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 14px 16px 6px; background: var(--ac-ui-bg); }
-    .stat {
-      border-radius: 12px; padding: 10px 12px;
-      background: linear-gradient(180deg, #fff 0%, var(--ac-sand) 100%);
-      border: 2px solid var(--ac-ui-border);
-      box-shadow: 0 2px 0 rgba(160,130,70,0.18);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .stat:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(160,130,70,0.22); }
-    .stat small { color: var(--ac-brown-ink); font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; }
-    .stat .bar-wrap {
-      margin-top: 5px; height: 10px; border-radius: 6px;
-      background: #e8dcc4; border: 1px solid #c9a96e; overflow: hidden;
-    }
-    .stat .bar {
-      height: 100%; border-radius: 6px; transition: width 0.4s ease;
-    }
-    .stat .bar-hunger   { background: linear-gradient(90deg, #f9a825, #ff8f00); }
-    .stat .bar-happiness { background: linear-gradient(90deg, #e91e90, #f06292); }
-    .stat .bar-calm     { background: linear-gradient(90deg, #66bb6a, #43a047); }
-    .stat .bar-energy   { background: linear-gradient(90deg, #d4a843, #b88a30); }
-    .stat .val { font-size: 13px; font-weight: 800; color: var(--ac-brown-ink); float: right; margin-top: -1px; }
-    .stat.flash { animation: stat-flash 0.5s ease; }
-    @keyframes stat-flash {
-      0%, 100% { background: linear-gradient(180deg, #fff 0%, var(--ac-sand) 100%); }
-      50% { background: linear-gradient(180deg, #fffde0 0%, #fff3a0 100%); }
-    }
-
-    /* ── NookPhone-style action buttons ── */
-    .actions {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-      padding: 10px 16px 16px; background: var(--ac-ui-bg);
-      border-top: 2px dashed rgba(180,150,90,0.3);
-    }
-    .ac-btn {
-      border: 0; border-radius: 18px; padding: 14px 6px 10px; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      font-weight: 800; font-size: 11px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.25);
-      box-shadow: 0 4px 0 rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.35);
-      transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-      font-family: inherit; position: relative; overflow: hidden;
-    }
-    .ac-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    .ac-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
-    .ac-btn .ico { font-size: 24px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2)); transition: transform 0.2s; }
-    .ac-btn:hover .ico { transform: scale(1.15) rotate(-5deg); }
-    .ac-btn .ripple {
-      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.35);
-      width: 80px; height: 80px; transform: scale(0); animation: ripple-out 0.5s ease-out;
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      top: 20px; right: 16px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       pointer-events: none;
     }
-    @keyframes ripple-out { to { transform: scale(2.5); opacity: 0; } }
-
-    .feed     { background: linear-gradient(180deg, #ffa726, #ef6c00); }
-    .play     { background: linear-gradient(180deg, #ec407a, #c2185b); }
-    .meditate { background: linear-gradient(180deg, #66bb6a, #2e7d32); }
-    .rest     { background: linear-gradient(180deg, #8fa882, #6d8a60); }
-
-    /* ── Cooldown overlay ── */
-    .ac-btn.cooldown { pointer-events: none; filter: grayscale(0.5) brightness(0.8); }
-
-    /* ── Toast notifications ── */
-    .toast-container {
-      position: fixed; top: 16px; right: 16px; z-index: 100;
-      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
-    }
     .toast {
-      background: var(--ac-cream); border: 2px solid var(--ac-wood);
-      border-radius: 16px; padding: 10px 16px;
-      box-shadow: 0 4px 12px rgba(60,40,10,0.2);
-      font-size: 13px; font-weight: 700; color: var(--ac-brown-ink);
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px 16px;
+      box-shadow: 0 6px 20px rgba(100, 60, 180, 0.2);
+      font-size: 13px;
+      font-weight: 700;
+      color: #4a3580;
       animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2.2s forwards;
       display: flex; align-items: center; gap: 8px;
     }
-    .toast .toast-ico { font-size: 20px; }
-    @keyframes toast-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+    @keyframes toast-in { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
 
-    /* ── Sidebar: AC speech-bubble style ── */
-    .side .card.mini {
-      background: var(--ac-cream); border: 3px solid var(--ac-wood);
-      border-radius: 20px; padding: 16px;
-      box-shadow: 0 4px 0 var(--ac-wood-dark), 0 12px 28px rgba(60,40,10,0.16);
+    /* Bottom tab bar */
+    .tab-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(200, 180, 240, 0.3);
+      border-radius: 0 0 44px 44px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 8px 18px;
+      z-index: 10;
     }
-    .side .mini h3 { margin: 0 0 8px; font-size: 18px; color: var(--ac-brown-ink); }
-    .side .mini h3::before { content: "🍃 "; }
-    .side .mini p { color: #7a5e3a; }
-
-    .side .entry {
-      border: 2px solid var(--ac-ui-border); background: #fff8e8;
-      border-radius: 14px; padding: 10px 12px; font-size: 13px; color: #6b5030;
-      position: relative;
-      animation: entry-in 0.3s ease-out;
-    }
-    @keyframes entry-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    .side .entry strong { color: var(--ac-brown-ink); }
-
-    /* ── Idle hint text ── */
-    .idle-hint {
-      text-align: center; font-size: 12px; color: rgba(255,255,255,0.6);
-      margin-top: 4px; z-index: 1; position: relative;
-      animation: pulse-hint 3s ease-in-out infinite;
-    }
-    @keyframes pulse-hint { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
-
-    /* ══ ISOMETRIC BAROQUE BED ══ */
-    .iso-bed {
-      position: absolute; right: 13%; bottom: 48px; z-index: 1;
-      width: 118px; height: 82px;
-      transform: rotateX(60deg) rotateZ(-45deg);
-      transform-origin: 50% 60%;
-      transform-style: preserve-3d;
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-decoration: none;
       cursor: pointer;
-      transition: filter 0.3s, transform 0.3s;
+      padding: 4px 12px;
+      border-radius: 16px;
+      transition: background 0.2s;
+      border: none;
+      background: none;
+      font-family: inherit;
     }
-    .iso-bed:hover { filter: brightness(1.08); transform: rotateX(60deg) rotateZ(-45deg) translateY(-4px); }
-    .iso-bed.resting { animation: bed-glow 1.5s ease-in-out infinite alternate; }
-    @keyframes bed-glow {
-      0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
-      100% { filter: brightness(1.1) drop-shadow(0 0 8px rgba(201,162,60,0.5)); }
+    .tab-item.active { background: rgba(150, 100, 220, 0.12); }
+    .tab-icon { font-size: 22px; }
+    .tab-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #9b8bbf;
     }
-
-    /* Bed shadow on ground */
-    .bed-shadow {
-      position: absolute; bottom: -10px; left: 50%; width: 130px; height: 20px;
-      transform: translateX(-50%);
-      background: radial-gradient(ellipse, rgba(40,20,0,0.28) 0%, rgba(40,20,0,0.12) 45%, transparent 72%);
-      border-radius: 50%;
-    }
-
-    /* Legs (gold claw feet) */
-    .bed-leg {
-      position: absolute; width: 10px; height: 18px;
-      background: linear-gradient(135deg, #e8cc6a, #c9a23c, #8b6914);
-      border-radius: 0 0 5px 5px; z-index: 0;
-      box-shadow: inset 1px 0 0 #f5e6a3, 0 3px 4px rgba(40,20,0,0.16);
-    }
-    .bed-leg::after {
-      content: ""; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
-      width: 12px; height: 5px; border-radius: 50%;
-      background: #c9a23c; box-shadow: 0 1px 0 #8b6914;
-    }
-    .bed-leg-fl { left: 10px;  bottom: 2px; }
-    .bed-leg-fr { right: 10px; bottom: 2px; }
-    .bed-leg-bl { left: 14px;  top: 10px; height: 12px; opacity: 0.8; }
-    .bed-leg-br { right: 14px; top: 10px; height: 12px; opacity: 0.8; }
-
-    /* Frame (gold carved rail) */
-    .bed-frame-iso {
-      position: absolute; left: 6px; right: 6px; top: 16px; bottom: 14px;
-      background: linear-gradient(180deg, #e8cc6a, #c9a23c, #8b6914);
-      border: 1.5px solid #8b6914; border-radius: 6px; z-index: 1;
-      box-shadow: inset 0 1px 0 #f5e6a3, 0 2px 4px rgba(40,20,0,0.25);
-      clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%);
-    }
-    .bed-frame-iso::before {
-      content: ""; position: absolute; inset: 3px 7px;
-      border: 1px solid rgba(245,230,163,0.5); border-radius: 2px;
-    }
-    .bed-frame-side {
-      position: absolute; right: 6px; top: 22px; bottom: 14px; width: 16px; z-index: 1;
-      background: linear-gradient(180deg, #c49430, #8b6914 72%, #654b0f);
-      border-right: 1.5px solid #6f5310;
-      border-bottom: 1.5px solid #6f5310;
-      clip-path: polygon(0 0, 100% 12%, 100% 100%, 0 88%);
-      box-shadow: inset 1px 0 0 rgba(245,230,163,0.35);
-      opacity: 0.95;
-    }
-
-    /* Headboard (baroque carved wood + gold) */
-    .bed-headboard {
-      position: absolute; left: 12px; right: 12px; top: 8px; height: 22px; z-index: 3;
-      background: linear-gradient(180deg, #7a5430, #5c3a1e, #3a2010);
-      border: 2px solid #8b6914; border-radius: 9px 9px 3px 3px;
-      box-shadow: inset 0 2px 0 #f5e6a3, inset 0 -3px 8px rgba(0,0,0,0.3), 0 3px 6px rgba(40,20,0,0.3);
-      overflow: hidden;
-    }
-    /* Gold inlay arch */
-    .bed-headboard::before {
-      content: ""; position: absolute; inset: 4px 8px 5px;
-      border: 1.5px solid #c9a23c; border-radius: 8px 8px 2px 2px;
-      box-shadow: inset 0 0 0 1px rgba(201,162,60,0.2);
-    }
-    /* Central medallion */
-    .bed-headboard::after {
-      content: ""; position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
-      width: 14px; height: 14px; border-radius: 50%;
-      background: radial-gradient(circle, #f5e6a3 20%, #c9a23c 60%, #8b6914 100%);
-      border: 1px solid #8b6914; box-shadow: 0 0 4px rgba(201,162,60,0.5);
-    }
-    /* Crown */
-    .bed-crown {
-      position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
-      font-size: 12px; z-index: 4; filter: drop-shadow(0 1px 2px rgba(40,20,0,0.4));
-    }
-    /* Scrollwork */
-    .bed-scroll {
-      position: absolute; top: 2px; font-size: 10px; color: #c9a23c; z-index: 4;
-      filter: drop-shadow(0 1px 0 #8b6914);
-    }
-    .bed-scroll-l { left: 4px; transform: scaleX(-1); }
-    .bed-scroll-r { right: 4px; }
-
-    /* Footboard */
-    .bed-footboard {
-      position: absolute; left: 6px; right: 6px; bottom: 12px; height: 14px; z-index: 3;
-      background: linear-gradient(180deg, #7a5430, #5c3a1e);
-      border: 1.5px solid #8b6914; border-radius: 2px 2px 6px 6px;
-      box-shadow: inset 0 1px 0 #f5e6a3, 0 2px 4px rgba(40,20,0,0.2);
-      clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
-    }
-    .bed-footboard::before {
-      content: ""; position: absolute; inset: 3px 6px;
-      border: 1px solid #c9a23c; border-radius: 2px 2px 4px 4px;
-    }
-
-    /* Mattress */
-    .bed-mattress {
-      position: absolute; left: 10px; right: 10px; top: 18px; bottom: 24px;
-      background: linear-gradient(180deg, #fff8f0, #f5ead6, #e8d8b8);
-      border: 1px solid #d4bfa0; border-radius: 5px; z-index: 2;
-      box-shadow: inset 0 -2px 6px rgba(160,130,90,0.15), inset 0 1px 0 rgba(255,255,255,0.5);
-      clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%);
-    }
-    .bed-mattress-front {
-      position: absolute; left: 14px; right: 14px; bottom: 18px; height: 11px; z-index: 2;
-      background: linear-gradient(180deg, #e8d8b8, #d8c2a2 80%, #c0a47f);
-      border: 1px solid #c4aa86;
-      border-top: 0;
-      clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
-    }
-
-    /* Blanket (velvet burgundy) */
-    .bed-blanket {
-      position: absolute; left: 12px; right: 12px; top: 34px; bottom: 24px;
-      background:
-        radial-gradient(circle at 30% 30%, #8e2a50 0%, transparent 50%),
-        linear-gradient(180deg, #8e2a50 0%, #6b1838 40%, #4a0e26 100%);
-      border: 1.5px solid #4a0e26; border-radius: 4px; z-index: 2;
-      box-shadow: inset 0 2px 0 rgba(255,255,255,0.1), inset 0 -4px 10px rgba(0,0,0,0.2);
-      overflow: hidden;
-      clip-path: polygon(16% 0, 84% 0, 100% 100%, 0 100%);
-    }
-    /* Baroque embroidery */
-    .bed-blanket::before {
-      content: ""; position: absolute; inset: 4px 6px;
-      border: 1px solid #c9a23c; border-radius: 2px;
-      box-shadow: inset 0 0 0 2px #6b1838, inset 0 0 0 3px rgba(201,162,60,0.3);
-    }
-    .bed-blanket::after {
-      content: ""; position: absolute; top: 50%; left: 50%;
-      width: 14px; height: 14px; transform: translate(-50%,-50%) rotate(45deg);
-      border: 1px solid #c9a23c;
-    }
-
-    /* Pillows */
-    .bed-pillow {
-      position: absolute; top: 22px; z-index: 3;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(40,20,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4);
-    }
-    .bed-pillow-l {
-      width: 28px; height: 12px; left: 18px;
-      background: linear-gradient(180deg, #fff0e8, #e8d4c2, #d4bfa0);
-      border: 1px solid #c8a88e;
-    }
-    .bed-pillow-r {
-      width: 28px; height: 12px; right: 18px;
-      background: linear-gradient(180deg, #f0e0f4, #dcc0e0, #c8a4c4);
-      border: 1px solid #b094b4;
-    }
-    /* Crown pillow */
-    .bed-pillow-crown {
-      width: 22px; height: 10px; left: 50%; top: 24px; transform: translateX(-50%);
-      background: linear-gradient(180deg, #8e2a50, #6b1838);
-      border: 1px solid #c9a23c; border-radius: 4px;
-    }
-    .bed-pillow-crown::before {
-      content: "♛"; position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 7px; color: #c9a23c;
-    }
-
-    /* Gold tassels */
-    .bed-tassel {
-      position: absolute; bottom: 20px; width: 4px; height: 7px; z-index: 3;
-      background: linear-gradient(180deg, #c9a23c, #8b6914); border-radius: 0 0 2px 2px;
-    }
-    .bed-tassel::after {
-      content: ""; position: absolute; bottom: -2px; left: 0; width: 4px; height: 4px;
-      border-radius: 50%; background: #c9a23c;
-    }
-    .bed-tassel-1 { left: 12px; }
-    .bed-tassel-2 { left: 50%; transform: translateX(-50%); }
-    .bed-tassel-3 { right: 12px; }
-
-    /* ZZZ floating (shown when resting) */
-    .bed-zzz {
-      position: absolute; top: -18px; right: 4px; z-index: 5;
-      font-weight: 900; color: #c9a23c; opacity: 0;
-      text-shadow: 0 1px 1px rgba(40,20,0,0.3);
-      transition: opacity 0.5s;
-    }
-    .iso-bed.resting .bed-zzz { opacity: 1; animation: zzz-bob 2.5s ease-in-out infinite; }
-    @keyframes zzz-bob {
-      0%,100% { transform: translateY(0); opacity: 0.7; }
-      50% { transform: translateY(-8px); opacity: 1; }
-    }
-
-    /* Tooltip */
-    .bed-tooltip {
-      position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
-      background: #fdf6e3; border: 1.5px solid #c9a23c; border-radius: 8px;
-      padding: 3px 8px; font-size: 9px; font-weight: 800; color: #5c3a1e;
-      white-space: nowrap; opacity: 0; transition: opacity 0.2s;
-      pointer-events: none; box-shadow: 0 2px 4px rgba(40,20,0,0.15);
-    }
-    .iso-bed:hover .bed-tooltip { opacity: 1; }
-
-    .iso-bed { display: none; }
-
-    @keyframes float { 0%,100%{ transform: translateY(0) rotateX(12deg) rotateZ(-2deg);} 50%{ transform: translateY(-8px) rotateX(12deg) rotateZ(-2deg);} }
-    @keyframes drift { 0%{ transform: translateX(-30px); } 100%{ transform: translateX(30px); } }
-    @media (max-width: 780px) { .actions { grid-template-columns: repeat(2, 1fr); } }
+    .tab-item.active .tab-label { color: #7a4fbf; }
   </style>
 </head>
 <body>
-  <div class="clouds"></div>
-  <div class="sparkles"></div>
   <div class="toast-container" id="toastContainer"></div>
-  <main class="wrap">
-    <nav class="top-nav">
-      <a class="nav-link active" href="home-pet.html">🏠 Pet</a>
-      <a class="nav-link" href="care-ritual.html">Rituale</a>
-      <a class="nav-link" href="journal.html">Diario</a>
-      <a class="nav-link" href="garden-plants.html">Giardino</a>
-      <a class="nav-link" href="token-games.html">Giochi</a>
-      <a class="nav-link" href="../index.html">Casa</a>
-      <a class="nav-link" href="hub.html">🍳 Ristorante</a>
+
+  <div class="phone-frame">
+    <!-- Background decorations -->
+    <div class="bg-deco" id="bgDeco">
+      <span class="bg-star" style="top:8%;left:8%;animation-delay:0s">✨</span>
+      <span class="bg-star" style="top:12%;right:12%;animation-delay:0.5s">💫</span>
+      <span class="bg-star" style="top:30%;left:5%;animation-delay:1s">⭐</span>
+      <span class="bg-star" style="top:20%;right:6%;animation-delay:1.5s">✨</span>
+      <span class="bg-star" style="top:55%;left:7%;animation-delay:0.7s">💕</span>
+      <span class="bg-star" style="top:48%;right:5%;animation-delay:1.2s">✨</span>
+    </div>
+
+    <div class="content">
+      <!-- Header card -->
+      <div class="header-card">
+        <div>
+          <div class="header-title">MeTime</div>
+          <div class="header-sub" id="moodSub">Mood: calm</div>
+        </div>
+        <span class="header-icon">🌸</span>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid">
+        <div class="stat-pill">
+          <div><span class="stat-val" id="happinessTxt">72</span></div>
+          <div class="stat-pill-label">💗 Felicità</div>
+          <div class="stat-bar-wrap"><div class="stat-bar bar-pink" id="happinessBar" style="width:72%"></div></div>
+        </div>
+        <div class="stat-pill">
+          <div><span class="stat-val" id="hungerTxt">65</span></div>
+          <div class="stat-pill-label">🍀 Fame</div>
+          <div class="stat-bar-wrap"><div class="stat-bar bar-green" id="hungerBar" style="width:65%"></div></div>
+        </div>
+        <div class="stat-pill">
+          <div><span class="stat-val" id="calmTxt">80</span></div>
+          <div class="stat-pill-label">🌙 Calma</div>
+          <div class="stat-bar-wrap"><div class="stat-bar bar-purple" id="calmBar" style="width:80%"></div></div>
+        </div>
+        <div class="stat-pill">
+          <div><span class="stat-val" id="energyTxt">58</span></div>
+          <div class="stat-pill-label">⚡ Energia</div>
+          <div class="stat-bar-wrap"><div class="stat-bar bar-orange" id="energyBar" style="width:58%"></div></div>
+        </div>
+      </div>
+
+      <!-- Pet scene -->
+      <div class="pet-scene" id="petScene">
+        <div class="particles" id="particles"></div>
+
+        <!-- Pet blob -->
+        <div class="pet-blob" id="petBlob">
+          <div class="speech-bubble" id="speechBubble">Ciao! 💜</div>
+          <div class="pet-eyes">
+            <div class="pet-eye"></div>
+            <div class="pet-eye"></div>
+          </div>
+          <div class="pet-cheek pet-cheek-l"></div>
+          <div class="pet-cheek pet-cheek-r"></div>
+          <div class="pet-smile"></div>
+        </div>
+
+        <!-- Ground and flowers -->
+        <div class="ground-hill"></div>
+        <span class="flower" style="bottom:28px;left:22%">🌸</span>
+        <span class="flower" style="bottom:24px;left:38%;animation-delay:0.4s">🌷</span>
+        <span class="flower" style="bottom:28px;right:22%;animation-delay:0.8s">🌼</span>
+        <span class="flower" style="bottom:22px;right:12%;animation-delay:1.2s">🌸</span>
+        <span class="flower" style="bottom:30px;left:10%;animation-delay:0.6s">🌷</span>
+      </div>
+
+      <!-- Action card -->
+      <div class="action-card">
+        <div class="action-card-title">Cosa fai con il tuo pet?</div>
+        <div class="action-btns">
+          <button class="action-btn btn-meditate" data-action="meditate">
+            <span class="btn-ico">🔮</span>
+            <span class="btn-lbl">Medita</span>
+          </button>
+          <button class="action-btn btn-food" data-action="feed">
+            <span class="btn-ico">🥕</span>
+            <span class="btn-lbl">Cibo</span>
+          </button>
+          <button class="action-btn btn-play" data-action="play">
+            <span class="btn-ico">🎮</span>
+            <span class="btn-lbl">Gioca</span>
+          </button>
+          <a class="action-btn btn-journal" href="journal.html" style="text-decoration:none">
+            <span class="btn-ico">📖</span>
+            <span class="btn-lbl">Diario</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <nav class="tab-bar">
+      <a class="tab-item active" href="home-pet.html">
+        <span class="tab-icon">🐾</span>
+        <span class="tab-label">Pet</span>
+      </a>
+      <a class="tab-item" href="hub.html">
+        <span class="tab-icon">🏠</span>
+        <span class="tab-label">Casa</span>
+      </a>
+      <a class="tab-item" href="care-ritual.html">
+        <span class="tab-icon">✨</span>
+        <span class="tab-label">Cura</span>
+      </a>
+      <a class="tab-item" href="journal.html">
+        <span class="tab-icon">📖</span>
+        <span class="tab-label">Diario</span>
+      </a>
     </nav>
-
-    <section class="hero">
-      <div class="tag">🍃 mockup pagina separata</div>
-      <h1>Mimi's Island</h1>
-      <p class="subtitle">La tua isola personale. Tocca Mimi, prenditi cura di lei e guarda l'isola fiorire!</p>
-    </section>
-
-    <section class="grid-2">
-      <article class="card pet-zone">
-        <div class="pet-header">
-          <h2>🍃 Mimi</h2>
-          <div class="badge" id="stageText">🥚 Egg</div>
-        </div>
-        <div class="world-toolbar">
-          <span id="clockText">🕐 Giorno</span>
-          <span id="weatherText">☀️ Sereno</span>
-          <button id="weatherBtn" title="Cambia meteo">🌤️ Meteo</button>
-          <button id="dayNightBtn" title="Giorno / Notte">🌙 Notte</button>
-        </div>
-        <div class="world" id="world">
-          <div class="cloud-layer" id="cloudLayer"></div>
-          <div class="stars" id="starsLayer"></div>
-          <div class="particles" id="particles"></div>
-          <span class="tree tree-1">🌳</span>
-          <span class="tree tree-2">🌲</span>
-
-          <!-- Isometric Baroque Bed -->
-          <div class="iso-bed" id="isoBed" title="Letto di Mimi">
-            <div class="bed-shadow"></div>
-            <div class="bed-leg bed-leg-fl"></div>
-            <div class="bed-leg bed-leg-fr"></div>
-            <div class="bed-leg bed-leg-bl"></div>
-            <div class="bed-leg bed-leg-br"></div>
-            <div class="bed-frame-iso"></div>
-            <div class="bed-frame-side"></div>
-            <div class="bed-headboard">
-              <span class="bed-scroll bed-scroll-l">❧</span>
-              <span class="bed-scroll bed-scroll-r">❧</span>
-            </div>
-            <span class="bed-crown">👑</span>
-            <div class="bed-footboard"></div>
-            <div class="bed-mattress"></div>
-            <div class="bed-mattress-front"></div>
-            <div class="bed-pillow bed-pillow-l"></div>
-            <div class="bed-pillow bed-pillow-r"></div>
-            <div class="bed-pillow bed-pillow-crown"></div>
-            <div class="bed-blanket"></div>
-            <div class="bed-tassel bed-tassel-1"></div>
-            <div class="bed-tassel bed-tassel-2"></div>
-            <div class="bed-tassel bed-tassel-3"></div>
-            <div class="bed-zzz"><span style="font-size:12px">Z</span><span style="font-size:9px">z</span><span style="font-size:7px">z</span></div>
-            <div class="bed-tooltip">🛏️ Clicca per riposare</div>
-          </div>
-          <div class="pet stage-egg mood-calm" id="pet">
-            <div class="speech-bubble" id="speechBubble">❤️</div>
-            <span class="ear-inner l"></span><span class="ear-inner r"></span>
-            <div class="eyes">
-              <span class="eye"></span>
-              <span class="eye"></span>
-            </div>
-            <span class="nose"></span>
-            <span class="cheek cheek-l"></span><span class="cheek cheek-r"></span>
-            <span class="mouth"></span>
-            <div class="pet-body"></div>
-            <span class="pet-arm l"></span><span class="pet-arm r"></span>
-            <span class="pet-foot l"></span><span class="pet-foot r"></span>
-          </div>
-          <div class="mood" id="moodText">😊 Calm</div>
-          <div class="idle-hint" id="idleHint">tocca Mimi per accarezzarla!</div>
-          <div class="world-deco" id="worldDeco">🌸 🌷 🌼 🌻 🌸 🌷</div>
-        </div>
-
-        <div class="xp-bar-section">
-          <span class="xp-label">⭐ XP</span>
-          <div class="xp-bar-wrap">
-            <div class="xp-bar" id="xpBar" style="width:0%"></div>
-            <span class="xp-text" id="xpText">0 / 20</span>
-          </div>
-        </div>
-
-        <div class="stats">
-          <div class="stat" id="statHunger">
-            <small>🍎 Hunger</small><span class="val" id="hungerTxt">52</span>
-            <div class="bar-wrap"><div class="bar bar-hunger" id="hungerBar" style="width:52%"></div></div>
-          </div>
-          <div class="stat" id="statHappiness">
-            <small>💖 Happiness</small><span class="val" id="happinessTxt">54</span>
-            <div class="bar-wrap"><div class="bar bar-happiness" id="happinessBar" style="width:54%"></div></div>
-          </div>
-          <div class="stat" id="statCalm">
-            <small>🧘 Calm</small><span class="val" id="calmTxt">58</span>
-            <div class="bar-wrap"><div class="bar bar-calm" id="calmBar" style="width:58%"></div></div>
-          </div>
-          <div class="stat" id="statEnergy">
-            <small>⚡ Energy</small><span class="val" id="energyTxt">48</span>
-            <div class="bar-wrap"><div class="bar bar-energy" id="energyBar" style="width:48%"></div></div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="ac-btn feed" data-action="feed"><span class="ico">🍎</span>Feed</button>
-          <button class="ac-btn play" data-action="play"><span class="ico">🎾</span>Play</button>
-          <button class="ac-btn meditate" data-action="meditate"><span class="ico">🧘</span>Meditate</button>
-          <button class="ac-btn rest" data-action="rest"><span class="ico">💤</span>Rest</button>
-        </div>
-      </article>
-
-      <aside class="side">
-        <section class="card mini">
-          <h3>Evolution</h3>
-          <p>XP soglie: Baby 20, Teen 45, Adult 75. Se calm o energy scendono troppo, il mood peggiora.</p>
-        </section>
-        <section class="card mini">
-          <h3>Attività recenti</h3>
-          <div class="timeline" id="log">
-            <div class="entry"><strong>🏝️ Start</strong>Mimi aspetta le tue cure sull'isola.</div>
-          </div>
-        </section>
-      </aside>
-    </section>
-  </main>
+  </div>
 
   <script>
-    /* ── State ── */
-    const state = { hunger: 52, happiness: 54, calm: 58, energy: 48, xp: 0, stage: "egg", mood: "calm", isNight: false, weather: 0, petClicks: 0, idleTime: 0 };
-    const stages = [
-      { key: "egg", minXp: 0, label: "Egg", icon: "🥚", body: "#fffef5" },
-      { key: "baby", minXp: 20, label: "Baby", icon: "🐣", body: "#fff6ff" },
-      { key: "teen", minXp: 45, label: "Teen", icon: "🌱", body: "#f6fff8" },
-      { key: "adult", minXp: 75, label: "Adult", icon: "🌸", body: "#fffef2" }
-    ];
-    const moodIcons = { calm: "😊", happy: "🥰", tired: "😴", anxious: "😰" };
-    const weathers = [
-      { label: "☀️ Sereno", deco: "🌸 🌷 🌼 🌻 🌸 🌷" },
-      { label: "🌧️ Pioggia", deco: "💧 🌧️ 💧 🌧️ 💧 🌧️" },
-      { label: "🌈 Arcobaleno", deco: "🌈 🌸 🦋 🌈 🌸 🦋" },
-      { label: "🍂 Autunno", deco: "🍂 🍁 🍃 🍂 🍁 🍃" }
-    ];
-    const petPhrases = {
-      calm:    ["Che bella giornata!", "Sto bene qui! 🌿", "Mmm... fame?", "Coccole? 🥰"],
-      happy:   ["Sono felicissima!", "Adoro quest'isola! 🏝️", "Giochiamo! 🎉", "Yay~! ✨"],
-      tired:   ["Zzz... sonno...", "Muoio di fame... 😫", "Ho bisogno di riposare...", "Un pisolino..."],
-      anxious: ["Mi sento strana...", "Tutto bene? 😰", "Aiutami...", "Ho paura..."]
+    const state = {
+      hunger: 65, happiness: 72, calm: 80, energy: 58,
+      mood: 'calm', petClicks: 0, idleTime: 0
     };
-    const actionParticles = { feed: ["🍎","🍊","🍇","🍰"], play: ["⭐","✨","🎉","🎈"], meditate: ["🍃","🌿","💚","🧘"], rest: ["💤","☁️","🌙","✨"] };
+    const clamp = v => Math.max(0, Math.min(100, v));
 
-    const clamp = (v) => Math.max(0, Math.min(100, v));
-    const pet = document.getElementById("pet");
-    const moodText = document.getElementById("moodText");
-    const stageText = document.getElementById("stageText");
-    const logEl = document.getElementById("log");
-    const world = document.getElementById("world");
-    const speechBubble = document.getElementById("speechBubble");
-    const particlesEl = document.getElementById("particles");
-    const toastContainer = document.getElementById("toastContainer");
+    const petBlob = document.getElementById('petBlob');
+    const speechBubble = document.getElementById('speechBubble');
+    const particlesEl = document.getElementById('particles');
+    const toastContainer = document.getElementById('toastContainer');
+    const moodSub = document.getElementById('moodSub');
 
-    /* ── Init clouds ── */
-    (function initClouds() {
-      const layer = document.getElementById("cloudLayer");
-      for (let i = 0; i < 4; i++) {
-        const c = document.createElement("span");
-        c.className = "cloud";
-        c.textContent = "☁️";
-        c.style.top = (8 + Math.random() * 40) + "px";
-        c.style.fontSize = (24 + Math.random() * 18) + "px";
-        c.style.animationDuration = (14 + Math.random() * 12) + "s";
-        c.style.animationDelay = (-Math.random() * 20) + "s";
-        layer.appendChild(c);
-      }
-    })();
+    const moodPhrases = {
+      calm:    ['Che bella giornata! 🌸', 'Sto bene! 🍀', 'Mmm... fame? 🥕', 'Coccole! 🥰'],
+      happy:   ['Sono felicissima! 💕', 'Yay~! ✨', 'Adoro questo posto! 🌈', 'Giochiamo! 🎉'],
+      tired:   ['Zzz... 😴', 'Ho bisogno di riposare...', 'Ho fame... 😫'],
+      anxious: ['Mi sento strana... 😰', 'Tutto ok? 💙', 'Aiutami!']
+    };
 
-    /* ── Init stars ── */
-    (function initStars() {
-      const layer = document.getElementById("starsLayer");
-      for (let i = 0; i < 30; i++) {
-        const s = document.createElement("span");
-        s.className = "star";
-        s.style.left = Math.random() * 100 + "%";
-        s.style.top = Math.random() * 50 + "%";
-        s.style.animationDelay = Math.random() * 2 + "s";
-        s.style.width = s.style.height = (2 + Math.random() * 2) + "px";
-        layer.appendChild(s);
-      }
-    })();
+    const actionParticles = {
+      meditate: ['🔮','✨','💜','🌙'],
+      feed:     ['🥕','🍎','🌿','💚'],
+      play:     ['🎮','⭐','🎉','💫']
+    };
 
-    /* ── Toast notification ── */
-    function showToast(icon, msg) {
-      const t = document.createElement("div");
-      t.className = "toast";
-      t.innerHTML = `<span class="toast-ico">${icon}</span>${msg}`;
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
       toastContainer.appendChild(t);
       setTimeout(() => t.remove(), 2600);
     }
 
-    /* ── Spawn particles ── */
-    function spawnParticles(type) {
-      const emojis = actionParticles[type] || ["✨"];
-      const rect = pet.getBoundingClientRect();
-      const pRect = particlesEl.getBoundingClientRect();
-      for (let i = 0; i < 6; i++) {
-        const p = document.createElement("span");
-        p.className = "particle";
-        p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        p.style.left = (rect.left - pRect.left + rect.width / 2 - 9 + (Math.random() - 0.5) * 60) + "px";
-        p.style.top = (rect.top - pRect.top + rect.height / 3 + (Math.random() - 0.5) * 30) + "px";
-        p.style.animationDelay = (i * 0.08) + "s";
-        particlesEl.appendChild(p);
-        setTimeout(() => p.remove(), 2200);
-      }
-    }
-
-    /* ── Speech bubble ── */
     function showSpeech(text) {
       speechBubble.textContent = text;
-      speechBubble.classList.remove("show");
+      speechBubble.classList.remove('show');
       void speechBubble.offsetWidth;
-      speechBubble.classList.add("show");
+      speechBubble.classList.add('show');
     }
 
-    /* ── Button ripple ── */
-    function addRipple(btn, e) {
-      const r = document.createElement("span");
-      r.className = "ripple";
-      const rect = btn.getBoundingClientRect();
-      r.style.left = (e.clientX - rect.left - 40) + "px";
-      r.style.top = (e.clientY - rect.top - 40) + "px";
-      btn.appendChild(r);
-      setTimeout(() => r.remove(), 500);
+    function spawnParticles(type) {
+      const emojis = actionParticles[type] || ['✨'];
+      const rect = petBlob.getBoundingClientRect();
+      const pRect = particlesEl.getBoundingClientRect();
+      for (let i = 0; i < 6; i++) {
+        const p = document.createElement('span');
+        p.className = 'particle';
+        p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        p.style.left = (rect.left - pRect.left + rect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
+        p.style.top  = (rect.top  - pRect.top  + rect.height / 3 + (Math.random() - 0.5) * 30) + 'px';
+        p.style.animationDelay = (i * 0.07) + 's';
+        particlesEl.appendChild(p);
+        setTimeout(() => p.remove(), 2000);
+      }
     }
 
-    /* ── Pet click / tap ── */
-    pet.addEventListener("click", () => {
-      state.petClicks++;
-      state.happiness = clamp(state.happiness + 2);
-      state.calm = clamp(state.calm + 1);
-      state.xp += 1;
-      state.idleTime = 0;
-
-      // Squish animation
-      pet.classList.remove("squish");
-      void pet.offsetWidth;
-      pet.classList.add("squish");
-
-      // Speech bubble with random phrase
-      const phrases = petPhrases[state.mood] || petPhrases.calm;
-      showSpeech(phrases[Math.floor(Math.random() * phrases.length)]);
-
-      // Heart particles
-      spawnParticles("play");
-      render();
-
-      if (state.petClicks % 5 === 0) {
-        showToast("💖", `Mimi ti adora! (${state.petClicks} coccole)`);
-      }
-    });
-
-    /* ── Pet drag ── */
-    let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
-    pet.addEventListener("pointerdown", (e) => {
-      if (e.pointerType === "touch" || e.button === 0) {
-        isDragging = true;
-        pet.classList.add("dragging");
-        pet.setPointerCapture(e.pointerId);
-        const rect = pet.getBoundingClientRect();
-        const parentRect = pet.parentElement.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left - rect.width / 2;
-        dragOffsetY = e.clientY - rect.top - rect.height / 2;
-      }
-    });
-    document.addEventListener("pointermove", (e) => {
-      if (!isDragging) return;
-      const parentRect = world.getBoundingClientRect();
-      const x = e.clientX - parentRect.left - pet.offsetWidth / 2 - dragOffsetX;
-      const y = e.clientY - parentRect.top - pet.offsetHeight / 2 - dragOffsetY;
-      pet.style.position = "absolute";
-      pet.style.left = Math.max(0, Math.min(parentRect.width - pet.offsetWidth, x)) + "px";
-      pet.style.top = Math.max(0, Math.min(parentRect.height - pet.offsetHeight, y)) + "px";
-      pet.style.margin = "0";
-    });
-    document.addEventListener("pointerup", () => {
-      if (isDragging) {
-        isDragging = false;
-        pet.classList.remove("dragging");
-        // Snap back to center
-        pet.style.position = "";
-        pet.style.left = "";
-        pet.style.top = "";
-        pet.style.margin = "";
-      }
-    });
-
-    /* ── Blink loop ── */
-    setInterval(() => {
-      pet.classList.add("blink");
-      setTimeout(() => pet.classList.remove("blink"), 180);
-    }, 3500 + Math.random() * 2000);
-
-    /* ── Day / Night toggle ── */
-    document.getElementById("dayNightBtn").addEventListener("click", () => {
-      state.isNight = !state.isNight;
-      world.classList.toggle("night", state.isNight);
-      document.getElementById("clockText").textContent = state.isNight ? "🌙 Notte" : "🕐 Giorno";
-      document.getElementById("dayNightBtn").textContent = state.isNight ? "☀️ Giorno" : "🌙 Notte";
-      showToast(state.isNight ? "🌙" : "☀️", state.isNight ? "È arrivata la notte..." : "Buongiorno sull'isola!");
-    });
-
-    /* ── Weather toggle ── */
-    document.getElementById("weatherBtn").addEventListener("click", () => {
-      state.weather = (state.weather + 1) % weathers.length;
-      const w = weathers[state.weather];
-      document.getElementById("weatherText").textContent = w.label;
-      document.getElementById("worldDeco").textContent = w.deco;
-      showToast("🌤️", `Meteo: ${w.label}`);
-    });
-
-    /* ── Idle behavior ── */
-    setInterval(() => {
-      state.idleTime++;
-      if (state.idleTime > 8 && state.stage !== "egg") {
-        const idlePhrases = ["Ehi, ci sei? 🥺", "Gioca con me!", "Mi annoio...", "Vieni qui! 👋"];
-        showSpeech(idlePhrases[Math.floor(Math.random() * idlePhrases.length)]);
-        state.idleTime = 0;
-      }
-      // Stat decay over time
-      state.hunger = clamp(state.hunger - 0.3);
-      state.energy = clamp(state.energy - 0.2);
-      state.happiness = clamp(state.happiness - 0.15);
-      render();
-    }, 5000);
-
-    /* ── Log ── */
-    function addLog(title, text) {
-      const item = document.createElement("div");
-      item.className = "entry";
-      item.innerHTML = `<strong>${title}</strong>${text}`;
-      logEl.prepend(item);
-      while (logEl.children.length > 6) logEl.removeChild(logEl.lastElementChild);
-    }
-
-    /* ── Mood / Stage / Render ── */
     function updateMood() {
       const avg = (state.hunger + state.happiness + state.calm + state.energy) / 4;
-      if (state.energy < 26 || state.hunger < 26) state.mood = "tired";
-      else if (state.calm < 30) state.mood = "anxious";
-      else if (avg > 70) state.mood = "happy";
-      else state.mood = "calm";
-    }
-
-    function updateStage() {
-      let next = stages[0];
-      for (const s of stages) if (state.xp >= s.minXp) next = s;
-      if (next.key !== state.stage) {
-        state.stage = next.key;
-        addLog("🎉 Evolution", `Mimi è diventata ${next.label}!`);
-        showToast("🎉", `Evoluzione: ${next.icon} ${next.label}!`);
-        showSpeech("Sto evolvendo!! ✨");
-        stageText.classList.add("evolving");
-        setTimeout(() => stageText.classList.remove("evolving"), 600);
-        spawnParticles("play");
-      }
-      stageText.textContent = `${next.icon} ${next.label}`;
-      pet.style.setProperty("--body", next.body);
-    }
-
-    function getNextStageXp() {
-      for (const s of stages) if (state.xp < s.minXp) return s.minXp;
-      return 100;
-    }
-    function getPrevStageXp() {
-      let prev = 0;
-      for (const s of stages) if (state.xp >= s.minXp) prev = s.minXp;
-      return prev;
+      if (state.energy < 25 || state.hunger < 25) state.mood = 'tired';
+      else if (state.calm < 30) state.mood = 'anxious';
+      else if (avg > 72) state.mood = 'happy';
+      else state.mood = 'calm';
     }
 
     function render() {
       updateMood();
-      updateStage();
-      const h = Math.round(state.hunger), hp = Math.round(state.happiness),
-            c = Math.round(state.calm), e = Math.round(state.energy);
-      document.getElementById("hungerTxt").textContent = h;
-      document.getElementById("happinessTxt").textContent = hp;
-      document.getElementById("calmTxt").textContent = c;
-      document.getElementById("energyTxt").textContent = e;
-      document.getElementById("hungerBar").style.width = h + "%";
-      document.getElementById("happinessBar").style.width = hp + "%";
-      document.getElementById("calmBar").style.width = c + "%";
-      document.getElementById("energyBar").style.width = e + "%";
-      moodText.textContent = `${moodIcons[state.mood] || "😊"} ${state.mood} · XP ${state.xp}`;
-      pet.className = `pet stage-${state.stage} mood-${state.mood}` +
-        (pet.classList.contains("squish") ? " squish" : "") +
-        (pet.classList.contains("blink") ? " blink" : "") +
-        (pet.classList.contains("dragging") ? " dragging" : "");
+      const moodLabels = { calm: 'Mood: calm', happy: 'Mood: felice 🥰', tired: 'Mood: stanco 😴', anxious: 'Mood: ansioso 😰' };
+      moodSub.textContent = moodLabels[state.mood] || 'Mood: calm';
 
-      // XP bar
-      const prevXp = getPrevStageXp(), nextXp = getNextStageXp();
-      const pct = nextXp > prevXp ? ((state.xp - prevXp) / (nextXp - prevXp)) * 100 : 100;
-      document.getElementById("xpBar").style.width = Math.min(100, pct) + "%";
-      document.getElementById("xpText").textContent = `${state.xp} / ${nextXp}`;
+      document.getElementById('happinessTxt').textContent = Math.round(state.happiness);
+      document.getElementById('hungerTxt').textContent    = Math.round(state.hunger);
+      document.getElementById('calmTxt').textContent      = Math.round(state.calm);
+      document.getElementById('energyTxt').textContent    = Math.round(state.energy);
 
-      // Low stat warnings
-      if (h < 20) document.getElementById("statHunger").style.borderColor = "#e53935";
-      else document.getElementById("statHunger").style.borderColor = "";
-      if (e < 20) document.getElementById("statEnergy").style.borderColor = "#e53935";
-      else document.getElementById("statEnergy").style.borderColor = "";
+      document.getElementById('happinessBar').style.width = state.happiness + '%';
+      document.getElementById('hungerBar').style.width    = state.hunger + '%';
+      document.getElementById('calmBar').style.width      = state.calm + '%';
+      document.getElementById('energyBar').style.width    = state.energy + '%';
     }
 
-    /* ── Flash stats ── */
-    function flashStat(id) {
-      const el = document.getElementById(id);
-      el.classList.remove("flash");
-      void el.offsetWidth;
-      el.classList.add("flash");
-    }
-
-    /* ── Actions ── */
-    function act(action, btn) {
+    // Pet click
+    petBlob.addEventListener('click', () => {
+      state.petClicks++;
+      state.happiness = clamp(state.happiness + 2);
+      state.calm = clamp(state.calm + 1);
       state.idleTime = 0;
-      const actionMessages = {
-        feed: { title: "🍎 Feed", msg: "Mimi ha mangiato una mela fresca!", speech: "Gnam gnam! 🍎", toast: "🍎 Mimi ha mangiato!" },
-        play: { title: "🎾 Play", msg: "Che divertimento nel giardino!", speech: "Evviva!! 🎉", toast: "🎾 Giocato con Mimi!" },
-        meditate: { title: "🧘 Meditate", msg: "Rituale di respirazione completato.", speech: "Ommm... 🍃", toast: "🧘 Meditazione fatta!" },
-        rest: { title: "💤 Rest", msg: "Pisolino sotto l'albero.", speech: "Zzz... 💤", toast: "💤 Pisolino fatto!" }
-      };
 
-      if (action === "feed") {
-        state.hunger = clamp(state.hunger + 18); state.happiness = clamp(state.happiness + 5);
-        state.energy = clamp(state.energy + 3); state.calm = clamp(state.calm - 2); state.xp += 8;
-        flashStat("statHunger"); flashStat("statHappiness");
-      } else if (action === "play") {
-        state.happiness = clamp(state.happiness + 16); state.energy = clamp(state.energy - 8);
-        state.calm = clamp(state.calm - 3); state.hunger = clamp(state.hunger - 4); state.xp += 10;
-        flashStat("statHappiness");
-      } else if (action === "meditate") {
-        state.calm = clamp(state.calm + 18); state.happiness = clamp(state.happiness + 7);
-        state.energy = clamp(state.energy + 2); state.hunger = clamp(state.hunger - 3); state.xp += 9;
-        flashStat("statCalm");
-      } else if (action === "rest") {
-        state.energy = clamp(state.energy + 20); state.calm = clamp(state.calm + 8);
-        state.happiness = clamp(state.happiness - 2); state.hunger = clamp(state.hunger - 5); state.xp += 7;
-        flashStat("statEnergy");
-      }
+      petBlob.classList.remove('squish');
+      void petBlob.offsetWidth;
+      petBlob.classList.add('squish');
 
-      state.hunger = clamp(state.hunger - 1);
-      state.energy = clamp(state.energy - 1);
-      state.calm = clamp(state.calm - 0.5);
-
-      const info = actionMessages[action];
-      addLog(info.title, info.msg);
-      showSpeech(info.speech);
-      showToast(info.toast.charAt(0), info.toast);
-      spawnParticles(action);
-
-      // Squish
-      pet.classList.remove("squish"); void pet.offsetWidth; pet.classList.add("squish");
-
-      // Cooldown
-      btn.classList.add("cooldown");
-      setTimeout(() => btn.classList.remove("cooldown"), 1200);
-
+      const phrases = moodPhrases[state.mood] || moodPhrases.calm;
+      showSpeech(phrases[Math.floor(Math.random() * phrases.length)]);
+      spawnParticles('play');
       render();
-    }
 
-    document.querySelectorAll("[data-action]").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        addRipple(button, e);
-        act(button.dataset.action, button);
+      if (state.petClicks % 5 === 0) {
+        showToast(`💖 Mimi ti adora! (${state.petClicks} coccole)`);
+      }
+    });
+
+    // Blink
+    setInterval(() => {
+      petBlob.classList.add('blink');
+      setTimeout(() => petBlob.classList.remove('blink'), 180);
+    }, 3500 + Math.random() * 2000);
+
+    // Actions
+    document.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const action = btn.dataset.action;
+        state.idleTime = 0;
+
+        if (action === 'feed') {
+          state.hunger = clamp(state.hunger + 18);
+          state.happiness = clamp(state.happiness + 5);
+          state.energy = clamp(state.energy + 3);
+          showToast('🥕 Mimi ha mangiato!');
+          showSpeech('Gnam gnam! 🥕');
+        } else if (action === 'play') {
+          state.happiness = clamp(state.happiness + 16);
+          state.energy = clamp(state.energy - 8);
+          state.calm = clamp(state.calm - 3);
+          showToast('🎮 Giocato con Mimi!');
+          showSpeech('Evviva!! 🎉');
+        } else if (action === 'meditate') {
+          state.calm = clamp(state.calm + 18);
+          state.happiness = clamp(state.happiness + 7);
+          state.energy = clamp(state.energy + 2);
+          showToast('🔮 Meditazione fatta!');
+          showSpeech('Ommm... 🔮');
+        }
+
+        spawnParticles(action);
+        petBlob.classList.remove('squish');
+        void petBlob.offsetWidth;
+        petBlob.classList.add('squish');
+
+        btn.classList.add('cooldown');
+        setTimeout(() => btn.classList.remove('cooldown'), 1200);
+        render();
       });
     });
 
-    /* ── Bed click = rest shortcut ── */
-    const isoBed = document.getElementById("isoBed");
-    if (isoBed) isoBed.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const restBtn = document.querySelector('[data-action="rest"]');
-      if (!restBtn.classList.contains("cooldown")) {
-        isoBed.classList.add("resting");
-        setTimeout(() => isoBed.classList.remove("resting"), 3000);
-        addRipple(restBtn, e);
-        act("rest", restBtn);
-        showSpeech("Che letto regale! 👑💤");
+    // Stat decay
+    setInterval(() => {
+      state.idleTime++;
+      state.hunger = clamp(state.hunger - 0.3);
+      state.energy = clamp(state.energy - 0.2);
+      state.happiness = clamp(state.happiness - 0.15);
+      if (state.idleTime > 8) {
+        const p = ['Ehi, ci sei? 🥺', 'Gioca con me!', 'Mi annoio...', 'Vieni qui! 👋'];
+        showSpeech(p[Math.floor(Math.random() * p.length)]);
+        state.idleTime = 0;
       }
-    });
-
-    /* ── World click = tap grass to spawn flower ── */
-    world.addEventListener("click", (e) => {
-      if (e.target === world || e.target.classList.contains("cloud-layer")) {
-        const rect = world.getBoundingClientRect();
-        const flowers = ["🌸","🌼","🌷","🌻","🦋","🐝"];
-        const f = document.createElement("span");
-        f.className = "particle";
-        f.textContent = flowers[Math.floor(Math.random() * flowers.length)];
-        f.style.left = (e.clientX - rect.left) + "px";
-        f.style.top = (e.clientY - rect.top) + "px";
-        particlesEl.appendChild(f);
-        setTimeout(() => f.remove(), 2200);
-      }
-    });
+      render();
+    }, 5000);
 
     render();
   </script>

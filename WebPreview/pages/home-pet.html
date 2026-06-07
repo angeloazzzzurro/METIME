@@ -1,851 +1,476 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>METIME - Home Pet</title>
-  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>METIME - Home</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:linear-gradient(160deg,#F5B8CF 0%,#E8C4F0 50%,#D0B8F8 100%);
+      min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
+      overflow-x:hidden;
+    }
+    .phone{
+      width:390px;max-width:100vw;
+      background:linear-gradient(160deg,#F5B8CF 0%,#E8C4F0 50%,#D0B8F8 100%);
+      min-height:100vh;position:relative;overflow:hidden;
+      display:flex;flex-direction:column;
+    }
+    /* ── bg sparkles ── */
+    .spark{position:absolute;pointer-events:none;font-size:14px;opacity:.35;animation:spfloat 5s ease-in-out infinite alternate;}
+    @keyframes spfloat{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(-12px) rotate(20deg)}}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: radial-gradient(ellipse at 50% 0%, #F5B8CF 0%, #E8C4F0 45%, #D0B8F8 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      overflow-x: hidden;
+    /* ── header card ── */
+    .hcard{
+      background:#fff;border-radius:24px;margin:16px 16px 0;padding:18px 18px 14px;
+      box-shadow:0 4px 20px rgba(150,90,210,.14);flex-shrink:0;position:relative;z-index:2;
     }
+    .htitle{font-size:30px;font-weight:800;font-style:italic;color:#7B4FCC;text-align:center;line-height:1.1;}
+    .hmood{font-size:14px;color:#9B7BC8;text-align:center;margin-bottom:12px;}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .stat-pill{
+      background:#FFB8D4;border-radius:18px;padding:6px 10px;
+      display:flex;align-items:center;gap:6px;height:38px;
+    }
+    .stat-pill.green{background:#C8F0C8;}
+    .stat-pill.purple{background:#D4C8F8;}
+    .stat-pill.orange{background:#FFE8B0;}
+    .sp-label{font-size:12px;font-weight:700;color:#5a3a7a;white-space:nowrap;}
+    .stat-pill.green .sp-label{color:#1a5c1a;}
+    .stat-pill.purple .sp-label{color:#4a3090;}
+    .stat-pill.orange .sp-label{color:#7a4a10;}
+    .sp-bar{flex:1;height:10px;background:rgba(255,255,255,.5);border-radius:5px;overflow:hidden;}
+    .sp-fill{height:100%;border-radius:5px;background:#FF6B9D;transition:width .4s ease;}
+    .stat-pill.green .sp-fill{background:#4CAF50;}
+    .stat-pill.purple .sp-fill{background:#7C4DCC;}
+    .stat-pill.orange .sp-fill{background:#FFA726;}
+    .sp-icon{font-size:16px;flex-shrink:0;}
 
-    .phone-frame {
-      width: 390px;
-      max-width: 430px;
-      min-height: 844px;
-      background: radial-gradient(ellipse at 50% 0%, #F5B8CF 0%, #E8C4F0 45%, #D0B8F8 100%);
-      border-radius: 44px;
-      box-shadow: 0 30px 80px rgba(100, 60, 160, 0.35), 0 0 0 1px rgba(255,255,255,0.3);
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
+    /* ── scene ── */
+    .scene{flex:1;position:relative;overflow:hidden;min-height:320px;}
+    #garden{width:100%;display:block;}
 
-    /* Background decorations */
-    .bg-deco {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
+    /* ── speech bubble ── */
+    #speech{
+      position:absolute;top:10px;left:50%;transform:translateX(-50%);
+      background:#fff;border-radius:14px;padding:6px 14px;
+      font-size:13px;font-weight:700;color:#4a3580;white-space:nowrap;
+      box-shadow:0 4px 12px rgba(100,60,180,.15);
+      opacity:0;pointer-events:none;z-index:20;transition:opacity .2s;
     }
-    .bg-star {
-      position: absolute;
-      opacity: 0.4;
-      animation: bg-float 4s ease-in-out infinite alternate;
-    }
-    @keyframes bg-float {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-10px) rotate(15deg); }
-    }
-
-    /* Scrollable content */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 16px 90px;
-      position: relative;
-      z-index: 1;
-    }
-    .content::-webkit-scrollbar { display: none; }
-
-    /* ── HEADER CARD ── */
-    .header-card {
-      background: #fff;
-      border-radius: 24px;
-      padding: 20px;
-      margin-bottom: 0;
-      box-shadow: 0 4px 20px rgba(150, 100, 200, 0.15);
-    }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 4px;
-    }
-    .header-title {
-      font-size: 32px;
-      font-weight: 700;
-      font-style: italic;
-      color: #7B4FCC;
-    }
-    .header-mood {
-      font-size: 14px;
-      color: #9B7BC8;
-      text-align: center;
-      margin-bottom: 16px;
+    #speech::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
+      border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff;}
+    #speech.show{animation:sbshow 2.2s ease-out forwards;}
+    @keyframes sbshow{
+      0%{opacity:0;transform:translateX(-50%) translateY(6px) scale(.7)}
+      15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+      75%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+      100%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.85)}
     }
 
-    /* Stat pills grid 2x2 */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .stat-pill {
-      height: 36px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      padding: 0 8px 0 10px;
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-pill-inner {
-      position: absolute;
-      inset: 0;
-      border-radius: 18px;
-    }
-    .stat-pill-bar {
-      position: absolute;
-      top: 0; left: 0; bottom: 0;
-      border-radius: 18px;
-      transition: width 0.4s ease;
-    }
-    .stat-pill-content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
-    .stat-pill-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: #444;
-      white-space: nowrap;
-    }
-    .stat-pill-icon {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      flex-shrink: 0;
-    }
+    /* ── particle ── */
+    .ptc{position:absolute;font-size:16px;pointer-events:none;animation:ptrise 1.8s ease-out forwards;}
+    @keyframes ptrise{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(.4) rotate(30deg)}}
 
-    /* Pill colour variants */
-    .pill-pink   { background: #FFB8D4; }
-    .pill-pink   .stat-pill-bar { background: #FF6B9D; }
-    .pill-green  { background: #C8F0C8; }
-    .pill-green  .stat-pill-bar { background: #4CAF50; }
-    .pill-purple { background: #D4C8F8; }
-    .pill-purple .stat-pill-bar { background: #7C4DCC; }
-    .pill-yellow { background: #FFE8B0; }
-    .pill-yellow .stat-pill-bar { background: #FFA726; }
-
-    /* ── ISO SCENE ── */
-    .scene-wrap {
-      position: relative;
-      height: 380px;
-      margin: 16px 0;
-      overflow: hidden;
+    /* ── action card ── */
+    .acard{
+      background:#fff;border-radius:28px 28px 0 0;padding:18px 16px 28px;
+      box-shadow:0 -4px 20px rgba(150,90,210,.12);flex-shrink:0;position:relative;z-index:2;
     }
-
-    /* isometric tile grid */
-    .iso-tiles {
-      width: 260px;
-      height: 260px;
-      display: grid;
-      grid-template-columns: repeat(4, 65px);
-      grid-template-rows: repeat(4, 65px);
-      gap: 3px;
-      transform: rotateX(55deg) rotateZ(45deg);
-      position: absolute;
-      top: 70px;
-      left: 50%;
-      margin-left: -130px;
-      transform-origin: center center;
+    .abtn-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .abtn{
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+      border:0;background:none;cursor:pointer;padding:4px 0;
     }
-    .tile {
-      background: #B8E09A;
-      border-radius: 6px;
+    .abtn-circle{
+      width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:26px;transition:transform .15s;
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
     }
-    .tile:nth-child(even) { background: #C8EAA8; }
-
-    /* Objects in scene — positioned relative to .scene-wrap */
-    .scene-obj {
-      position: absolute;
-      pointer-events: none;
-    }
-
-    /* Big tree */
-    .tree-trunk {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 15px;
-      height: 30px;
-      background: #8B5E3C;
-      border-radius: 3px;
-    }
-    .tree-crown {
-      position: absolute;
-      bottom: 26px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70px;
-      height: 70px;
-      background: #5DBD5B;
-      border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(50,120,50,0.3);
-    }
-    .tree-wrap {
-      left: 8%;
-      top: 22%;
-      width: 80px;
-      height: 100px;
-    }
-    @keyframes tree-sway {
-      0%, 100% { transform: rotate(-2deg); }
-      50% { transform: rotate(2deg); }
-    }
-    .tree-crown { animation: tree-sway 3s ease-in-out infinite; }
-
-    /* Bush */
-    .bush-wrap {
-      right: 14%;
-      top: 38%;
-      width: 70px;
-      height: 50px;
-    }
-    .bush-c {
-      position: absolute;
-      background: #4A9E4A;
-      border-radius: 50%;
-    }
-    .bush-c1 { width: 38px; height: 38px; bottom: 0; left: 0; }
-    .bush-c2 { width: 30px; height: 30px; bottom: 4px; left: 20px; }
-    .bush-c3 { width: 34px; height: 34px; bottom: 0; left: 32px; }
-
-    /* Pet blob */
-    .pet-blob {
-      position: absolute;
-      left: 43%;
-      top: 42%;
-      transform: translateX(-50%);
-      width: 110px;
-      height: 105px;
-      background: radial-gradient(circle at 35% 30%, #E8D4FF, #A87FDE);
-      border: 2.5px solid #8B6CC8;
-      border-radius: 55% 55% 50% 50%;
-      cursor: pointer;
-      user-select: none;
-      z-index: 10;
-      animation: pet-float 2.5s ease-in-out infinite;
-    }
-    @keyframes pet-float {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-6px); }
-    }
-    .pet-blob.squish { animation: pet-squish 0.4s ease forwards; }
-    @keyframes pet-squish {
-      0%   { transform: translateX(-50%) scale(1, 1); }
-      30%  { transform: translateX(-50%) scale(1.14, 0.88); }
-      60%  { transform: translateX(-50%) scale(0.92, 1.1); }
-      100% { transform: translateX(-50%) scale(1, 1); }
-    }
-
-    .pet-eyes {
-      position: absolute;
-      top: 36px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 22px;
-    }
-    .pet-eye {
-      width: 14px;
-      height: 14px;
-      background: #1a1030;
-      border-radius: 50%;
-      position: relative;
-      transition: height 0.1s;
-    }
-    .pet-eye::after {
-      content: '';
-      position: absolute;
-      width: 4px; height: 4px;
-      background: rgba(255,255,255,0.9);
-      border-radius: 50%;
-      top: 2px; left: 2px;
-    }
-    .pet-blob.blink .pet-eye {
-      height: 2px;
-      border-radius: 4px;
-    }
-    .pet-blob.blink .pet-eye::after { opacity: 0; }
-
-    .pet-cheek {
-      position: absolute;
-      width: 20px;
-      height: 13px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,140,170,0.5), rgba(255,140,170,0));
-      top: 52px;
-    }
-    .pet-cheek-l { left: 14px; }
-    .pet-cheek-r { right: 14px; }
-
-    .pet-smile {
-      position: absolute;
-      top: 62px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 22px;
-      height: 11px;
-      border-bottom: 3px solid #7a5fad;
-      border-radius: 0 0 14px 14px;
-    }
-
-    .pet-shadow {
-      position: absolute;
-      left: 43%;
-      top: calc(42% + 108px);
-      transform: translateX(-50%);
-      width: 80px;
-      height: 14px;
-      background: radial-gradient(ellipse, rgba(100,60,160,0.2) 0%, transparent 70%);
-      border-radius: 50%;
-      z-index: 9;
-      animation: shadow-pulse 2.5s ease-in-out infinite;
-    }
-    @keyframes shadow-pulse {
-      0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.5; }
-      50% { transform: translateX(-50%) scaleX(0.8); opacity: 0.25; }
-    }
-
-    /* Speech bubble */
-    .speech-bubble {
-      position: absolute;
-      top: -36px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #fff;
-      border-radius: 16px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #4a3580;
-      white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(100, 60, 180, 0.15);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 20;
-    }
-    .speech-bubble::after {
-      content: '';
-      position: absolute;
-      bottom: -7px; left: 50%;
-      transform: translateX(-50%);
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 7px solid #fff;
-    }
-    .speech-bubble.show {
-      animation: bubble-show 2.2s ease-out forwards;
-    }
-    @keyframes bubble-show {
-      0%   { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.7); }
-      15%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-      75%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.85); }
-    }
-
-    /* Flowers on tiles */
-    .flower {
-      position: absolute;
-      font-size: 28px;
-      z-index: 5;
-      animation: flower-pulse 2s ease-in-out infinite alternate;
-    }
-    @keyframes flower-pulse {
-      0% { transform: scale(0.9); }
-      100% { transform: scale(1.05); }
-    }
-
-    /* Particles */
-    .particles {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 20;
-      overflow: hidden;
-    }
-    .particle {
-      position: absolute;
-      font-size: 16px;
-      animation: p-rise 1.8s ease-out forwards;
-      opacity: 0;
-    }
-    @keyframes p-rise {
-      0%   { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-70px) scale(0.4) rotate(30deg); }
-    }
-
-    /* ── BOTTOM ACTION CARD ── */
-    .action-card {
-      background: #fff;
-      border-radius: 28px 28px 0 0;
-      padding: 20px 16px 32px;
-      box-shadow: 0 -4px 20px rgba(150, 100, 200, 0.1);
-      margin: 0 -16px -90px;
-      position: relative;
-      z-index: 5;
-    }
-    .action-btns {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-    .action-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 7px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-family: inherit;
-      text-decoration: none;
-      padding: 0;
-    }
-    .action-btn-circle {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .action-btn:hover .action-btn-circle { transform: translateY(-3px); }
-    .action-btn:active .action-btn-circle { transform: scale(0.93); }
-    .action-btn-label {
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .btn-meditate .action-btn-circle {
-      background: #9B6FE8;
-      box-shadow: 0 4px 12px rgba(155,111,232,0.3);
-    }
-    .btn-meditate .action-btn-label { color: #9B6FE8; }
-
-    .btn-food .action-btn-circle {
-      background: #E87060;
-      box-shadow: 0 4px 12px rgba(232,112,96,0.3);
-    }
-    .btn-food .action-btn-label { color: #E87060; }
-
-    .btn-play .action-btn-circle {
-      background: #5B9EE8;
-      box-shadow: 0 4px 12px rgba(91,158,232,0.3);
-    }
-    .btn-play .action-btn-label { color: #5B9EE8; }
-
-    .btn-journal .action-btn-circle {
-      background: #E8A840;
-      box-shadow: 0 4px 12px rgba(232,168,64,0.3);
-    }
-    .btn-journal .action-btn-label { color: #E8A840; }
-
-    .action-btn.cooldown { pointer-events: none; filter: grayscale(0.4) brightness(0.9); }
-
-    /* Toast */
-    .toast-container {
-      position: fixed;
-      top: 20px; right: 16px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
-    }
-    .toast {
-      background: #fff;
-      border-radius: 16px;
-      padding: 10px 16px;
-      box-shadow: 0 6px 20px rgba(100, 60, 180, 0.2);
-      font-size: 13px;
-      font-weight: 700;
-      color: #4a3580;
-      animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2.2s forwards;
-      display: flex; align-items: center; gap: 8px;
-    }
-    @keyframes toast-in { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
-
-    /* Bottom tab bar */
-    .tab-bar {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(200, 180, 240, 0.3);
-      border-radius: 0 0 44px 44px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 8px 18px;
-      z-index: 20;
-    }
-    .tab-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      text-decoration: none;
-      cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 16px;
-      transition: background 0.2s;
-      border: none;
-      background: none;
-      font-family: inherit;
-    }
-    .tab-item.active { background: rgba(150, 100, 220, 0.12); }
-    .tab-icon { font-size: 22px; }
-    .tab-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: #9b8bbf;
-    }
-    .tab-item.active .tab-label { color: #7a4fbf; }
+    .abtn:active .abtn-circle{transform:scale(.9);}
+    .abtn-circle.m{background:#9B6FE8;}
+    .abtn-circle.f{background:#E87060;}
+    .abtn-circle.g{background:#5B9EE8;}
+    .abtn-circle.d{background:#E8A840;}
+    .abtn-label{font-size:12px;font-weight:600;}
+    .abtn-label.m{color:#9B6FE8;}
+    .abtn-label.f{color:#E87060;}
+    .abtn-label.g{color:#5B9EE8;}
+    .abtn-label.d{color:#E8A840;}
   </style>
 </head>
 <body>
-  <div class="toast-container" id="toastContainer"></div>
+<div class="phone" id="phone">
+  <!-- bg sparkles -->
+  <span class="spark" style="top:8%;left:8%;animation-delay:0s">✦</span>
+  <span class="spark" style="top:15%;right:12%;animation-delay:.8s">⋆</span>
+  <span class="spark" style="top:30%;left:5%;animation-delay:1.6s">✧</span>
+  <span class="spark" style="top:40%;right:7%;animation-delay:.4s">♡</span>
+  <span class="spark" style="top:55%;left:10%;animation-delay:2s">⋆</span>
+  <span class="spark" style="top:62%;right:10%;animation-delay:1.2s">✦</span>
+  <span class="spark" style="top:72%;left:6%;animation-delay:.6s">✧</span>
+  <span class="spark" style="top:20%;left:50%;animation-delay:1.8s">♡</span>
 
-  <div class="phone-frame">
-    <!-- Background decorations -->
-    <div class="bg-deco">
-      <span class="bg-star" style="font-size:12px;top:7%;left:7%;animation-delay:0s">✨</span>
-      <span class="bg-star" style="font-size:14px;top:13%;right:10%;animation-delay:0.5s">💫</span>
-      <span class="bg-star" style="font-size:13px;top:28%;left:4%;animation-delay:1s">⭐</span>
-      <span class="bg-star" style="font-size:11px;top:22%;right:5%;animation-delay:1.5s">✨</span>
-      <span class="bg-star" style="font-size:12px;top:52%;left:6%;animation-delay:0.7s">💕</span>
-      <span class="bg-star" style="font-size:16px;top:46%;right:4%;animation-delay:1.2s">✨</span>
-      <span class="bg-star" style="font-size:11px;top:68%;left:8%;animation-delay:0.3s">🌸</span>
-      <span class="bg-star" style="font-size:13px;top:75%;right:7%;animation-delay:0.9s">💜</span>
+  <!-- header card -->
+  <div class="hcard">
+    <div class="htitle">MeTime</div>
+    <div class="hmood" id="moodLabel">Mood: calm 🌸</div>
+    <div class="stats">
+      <div class="stat-pill">
+        <span class="sp-label">Felicità</span>
+        <div class="sp-bar"><div class="sp-fill" id="barH" style="width:72%"></div></div>
+        <span class="sp-icon">❤️</span>
+      </div>
+      <div class="stat-pill green">
+        <span class="sp-label">Fame</span>
+        <div class="sp-bar"><div class="sp-fill" id="barF" style="width:58%"></div></div>
+        <span class="sp-icon">🌿</span>
+      </div>
+      <div class="stat-pill purple">
+        <span class="sp-label">Calma</span>
+        <div class="sp-bar"><div class="sp-fill" id="barC" style="width:65%"></div></div>
+        <span class="sp-icon">🌙</span>
+      </div>
+      <div class="stat-pill orange">
+        <span class="sp-label">Energia</span>
+        <div class="sp-bar"><div class="sp-fill" id="barE" style="width:48%"></div></div>
+        <span class="sp-icon">⚡</span>
+      </div>
     </div>
-
-    <div class="content">
-
-      <!-- Header card -->
-      <div class="header-card">
-        <div class="header-top">
-          <span class="header-title">MeTime</span>
-        </div>
-        <div class="header-mood" id="moodSub">Mood: calm 🌸</div>
-
-        <!-- Stats grid 2×2 -->
-        <div class="stats-grid">
-          <!-- Felicità -->
-          <div class="stat-pill pill-pink">
-            <div class="stat-pill-bar" id="happinessBar" style="width:72%"></div>
-            <div class="stat-pill-content">
-              <span class="stat-pill-label">💗 Felicità</span>
-              <span class="stat-pill-icon">❤️</span>
-            </div>
-          </div>
-          <!-- Fame -->
-          <div class="stat-pill pill-green">
-            <div class="stat-pill-bar" id="hungerBar" style="width:65%"></div>
-            <div class="stat-pill-content">
-              <span class="stat-pill-label">🍀 Fame</span>
-              <span class="stat-pill-icon">🌿</span>
-            </div>
-          </div>
-          <!-- Calma -->
-          <div class="stat-pill pill-purple">
-            <div class="stat-pill-bar" id="calmBar" style="width:80%"></div>
-            <div class="stat-pill-content">
-              <span class="stat-pill-label">🌙 Calma</span>
-              <span class="stat-pill-icon">🌙</span>
-            </div>
-          </div>
-          <!-- Energia -->
-          <div class="stat-pill pill-yellow">
-            <div class="stat-pill-bar" id="energyBar" style="width:58%"></div>
-            <div class="stat-pill-content">
-              <span class="stat-pill-label">⚡ Energia</span>
-              <span class="stat-pill-icon">⚡</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Isometric scene -->
-      <div class="scene-wrap" id="petScene">
-        <div class="particles" id="particles"></div>
-
-        <!-- ISO tile grid -->
-        <div class="iso-tiles">
-          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-          <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-        </div>
-
-        <!-- Big tree — top-left of diamond -->
-        <div class="scene-obj tree-wrap">
-          <div class="tree-trunk"></div>
-          <div class="tree-crown"></div>
-        </div>
-
-        <!-- Bush — right of diamond -->
-        <div class="scene-obj bush-wrap">
-          <div class="bush-c bush-c1"></div>
-          <div class="bush-c bush-c2"></div>
-          <div class="bush-c bush-c3"></div>
-        </div>
-
-        <!-- Pet shadow -->
-        <div class="pet-shadow"></div>
-
-        <!-- Pet blob — centre of diamond -->
-        <div class="pet-blob" id="petBlob">
-          <div class="speech-bubble" id="speechBubble">Ciao! 💜</div>
-          <div class="pet-eyes">
-            <div class="pet-eye"></div>
-            <div class="pet-eye"></div>
-          </div>
-          <div class="pet-cheek pet-cheek-l"></div>
-          <div class="pet-cheek pet-cheek-r"></div>
-          <div class="pet-smile"></div>
-        </div>
-
-        <!-- Flowers -->
-        <span class="flower" style="top:32%;left:28%;animation-delay:0s">🌸</span>
-        <span class="flower" style="top:38%;left:62%;animation-delay:0.3s">🌼</span>
-        <span class="flower" style="top:60%;left:24%;animation-delay:0.6s">🌷</span>
-        <span class="flower" style="top:65%;left:70%;animation-delay:0.9s">🌸</span>
-        <span class="flower" style="top:72%;left:45%;animation-delay:0.15s">🌼</span>
-      </div>
-
-      <!-- Bottom action card -->
-      <div class="action-card">
-        <div class="action-btns">
-          <button class="action-btn btn-meditate" data-action="meditate">
-            <div class="action-btn-circle">✨</div>
-            <span class="action-btn-label">Medita</span>
-          </button>
-          <button class="action-btn btn-food" data-action="feed">
-            <div class="action-btn-circle">🥕</div>
-            <span class="action-btn-label">Cibo</span>
-          </button>
-          <button class="action-btn btn-play" data-action="play">
-            <div class="action-btn-circle">🎮</div>
-            <span class="action-btn-label">Gioca</span>
-          </button>
-          <a class="action-btn btn-journal" href="journal.html">
-            <div class="action-btn-circle">📖</div>
-            <span class="action-btn-label">Diario</span>
-          </a>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Tab bar -->
-    <nav class="tab-bar">
-      <a class="tab-item active" href="home-pet.html">
-        <span class="tab-icon">🐾</span>
-        <span class="tab-label">Pet</span>
-      </a>
-      <a class="tab-item" href="hub.html">
-        <span class="tab-icon">🏠</span>
-        <span class="tab-label">Casa</span>
-      </a>
-      <a class="tab-item" href="care-ritual.html">
-        <span class="tab-icon">✨</span>
-        <span class="tab-label">Cura</span>
-      </a>
-      <a class="tab-item" href="journal.html">
-        <span class="tab-icon">📖</span>
-        <span class="tab-label">Diario</span>
-      </a>
-    </nav>
   </div>
 
-  <script>
-    const state = {
-      hunger: 65, happiness: 72, calm: 80, energy: 58,
-      mood: 'calm', petClicks: 0, idleTime: 0
-    };
-    const clamp = v => Math.max(0, Math.min(100, v));
+  <!-- isometric scene -->
+  <div class="scene" id="scene">
+    <div id="speech"></div>
+    <svg id="garden" viewBox="0 0 390 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="petGrad" cx="35%" cy="28%" r="65%">
+          <stop offset="0%" stop-color="#EDD8FF"/>
+          <stop offset="100%" stop-color="#A87FDE"/>
+        </radialGradient>
+        <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(100,60,160,0.22)"/>
+          <stop offset="100%" stop-color="rgba(100,60,160,0)"/>
+        </radialGradient>
+        <filter id="petGlow">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur"/>
+        </filter>
+      </defs>
+      <!-- generated by JS below -->
+    </svg>
+  </div>
 
-    const petBlob       = document.getElementById('petBlob');
-    const speechBubble  = document.getElementById('speechBubble');
-    const particlesEl   = document.getElementById('particles');
-    const toastContainer = document.getElementById('toastContainer');
-    const moodSub       = document.getElementById('moodSub');
+  <!-- action card -->
+  <div class="acard">
+    <div class="abtn-row">
+      <button class="abtn" data-action="meditate">
+        <div class="abtn-circle m">✨</div>
+        <span class="abtn-label m">Medita</span>
+      </button>
+      <button class="abtn" data-action="feed">
+        <div class="abtn-circle f">🥕</div>
+        <span class="abtn-label f">Cibo</span>
+      </button>
+      <button class="abtn" data-action="play">
+        <div class="abtn-circle g">🎮</div>
+        <span class="abtn-label g">Gioca</span>
+      </button>
+      <button class="abtn" data-action="diary">
+        <div class="abtn-circle d">📖</div>
+        <span class="abtn-label d">Diario</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-    const moodPhrases = {
-      calm:    ['Che bella giornata! 🌸', 'Sto bene! 🍀', 'Mmm... fame? 🥕', 'Coccole! 🥰'],
-      happy:   ['Sono felicissima! 💕', 'Yay~! ✨', 'Adoro questo posto! 🌈', 'Giochiamo! 🎉'],
-      tired:   ['Zzz... 😴', 'Ho bisogno di riposare...', 'Ho fame... 😫'],
-      anxious: ['Mi sento strana... 😰', 'Tutto ok? 💙', 'Aiutami!']
-    };
+<script>
+// ── Isometric grid ──────────────────────────────────────────────
+const svg = document.getElementById('garden');
+const NS = 'http://www.w3.org/2000/svg';
+const TW = 64, TH = 32;   // tile width / height
+const CX = 195, SY = 55;  // center X, start Y
+const G  = 5;              // grid size
 
-    const actionParticles = {
-      meditate: ['✨','💜','🌙','🔮'],
-      feed:     ['🥕','🍎','🌿','💚'],
-      play:     ['🎮','⭐','🎉','💫']
-    };
+function el(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  return e;
+}
 
-    function showToast(msg) {
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.textContent = msg;
-      toastContainer.appendChild(t);
-      setTimeout(() => t.remove(), 2600);
-    }
+function iso(col, row) {
+  return {
+    x: CX + (col - row) * TW / 2,
+    y: SY + (col + row) * TH / 2
+  };
+}
 
-    function showSpeech(text) {
-      speechBubble.textContent = text;
-      speechBubble.classList.remove('show');
-      void speechBubble.offsetWidth;
-      speechBubble.classList.add('show');
-    }
+function tilePts(col, row) {
+  const {x, y} = iso(col, row);
+  const hw = TW/2, hh = TH/2;
+  return `${x},${y} ${x+hw},${y+hh} ${x},${y+TH} ${x-hw},${y+hh}`;
+}
 
-    function spawnParticles(type) {
-      const emojis = actionParticles[type] || ['✨'];
-      const sceneRect = particlesEl.getBoundingClientRect();
-      const blobRect  = petBlob.getBoundingClientRect();
-      for (let i = 0; i < 6; i++) {
-        const p = document.createElement('span');
-        p.className = 'particle';
-        p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        p.style.left = (blobRect.left - sceneRect.left + blobRect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
-        p.style.top  = (blobRect.top  - sceneRect.top  + blobRect.height / 3 + (Math.random() - 0.5) * 30) + 'px';
-        p.style.animationDelay = (i * 0.07) + 's';
-        particlesEl.appendChild(p);
-        setTimeout(() => p.remove(), 2000);
-      }
-    }
+// paint order: back-to-front by diagonal sum
+function drawOrder() {
+  const items = [];
+  for (let c = 0; c < G; c++)
+    for (let r = 0; r < G; r++)
+      items.push([c, r]);
+  items.sort((a, b) => (a[0]+a[1]) - (b[0]+b[1]) || a[0] - b[0]);
+  return items;
+}
 
-    function updateMood() {
-      const avg = (state.hunger + state.happiness + state.calm + state.energy) / 4;
-      if (state.energy < 25 || state.hunger < 25) state.mood = 'tired';
-      else if (state.calm < 30) state.mood = 'anxious';
-      else if (avg > 72) state.mood = 'happy';
-      else state.mood = 'calm';
-    }
+// ── Draw tiles ──────────────────────────────────────────────────
+const order = drawOrder();
+const tileLayer = el('g', {id:'tiles'});
 
-    function render() {
-      updateMood();
-      const moodLabels = {
-        calm:    'Mood: calm 🌸',
-        happy:   'Mood: felice 🥰',
-        tired:   'Mood: stanco 😴',
-        anxious: 'Mood: ansioso 😰'
-      };
-      moodSub.textContent = moodLabels[state.mood] || 'Mood: calm 🌸';
+for (const [c, r] of order) {
+  const even = (c + r) % 2 === 0;
+  const poly = el('polygon', {
+    points: tilePts(c, r),
+    fill: even ? '#C4ECA6' : '#B0E090',
+    stroke: '#8DC860',
+    'stroke-width': '1',
+    'stroke-linejoin': 'round'
+  });
+  tileLayer.appendChild(poly);
+}
+svg.appendChild(tileLayer);
 
-      document.getElementById('happinessBar').style.width = state.happiness + '%';
-      document.getElementById('hungerBar').style.width    = state.hunger + '%';
-      document.getElementById('calmBar').style.width      = state.calm + '%';
-      document.getElementById('energyBar').style.width    = state.energy + '%';
-    }
+// ── Draw tree (at grid 0,1) ─────────────────────────────────────
+{
+  const pos = iso(0, 1);
+  const bx = pos.x, by = pos.y + TH + 4; // base of trunk at bottom of tile
 
-    // Pet click
-    petBlob.addEventListener('click', () => {
-      state.petClicks++;
-      state.happiness = clamp(state.happiness + 2);
-      state.calm = clamp(state.calm + 1);
-      state.idleTime = 0;
+  const tg = el('g', {id:'tree'});
+  // trunk
+  tg.appendChild(el('rect', {x:bx-5, y:by-28, width:10, height:28, fill:'#8B6040', rx:'3'}));
+  // crown — 3 overlapping circles for volume
+  tg.appendChild(el('circle', {cx:bx-9, cy:by-46, r:'22', fill:'#3D9E3D'}));
+  tg.appendChild(el('circle', {cx:bx+9, cy:by-44, r:'19', fill:'#4DB44D'}));
+  tg.appendChild(el('circle', {cx:bx,   cy:by-56, r:'25', fill:'#5DBD5B'}));
+  // highlight
+  tg.appendChild(el('circle', {cx:bx-6, cy:by-62, r:'8', fill:'#7DD87D', opacity:'.45'}));
+  svg.appendChild(tg);
+}
 
-      petBlob.classList.remove('squish');
-      void petBlob.offsetWidth;
-      petBlob.classList.add('squish');
+// ── Draw bush (at grid 4,2) ─────────────────────────────────────
+{
+  const pos = iso(4, 2);
+  const bx = pos.x + 6, by = pos.y + TH;
 
-      const phrases = moodPhrases[state.mood] || moodPhrases.calm;
-      showSpeech(phrases[Math.floor(Math.random() * phrases.length)]);
-      spawnParticles('play');
-      render();
+  const bg2 = el('g', {id:'bush'});
+  bg2.appendChild(el('circle', {cx:bx-12, cy:by-18, r:'16', fill:'#38883A'}));
+  bg2.appendChild(el('circle', {cx:bx+10, cy:by-16, r:'14', fill:'#44A044'}));
+  bg2.appendChild(el('circle', {cx:bx,    cy:by-24, r:'18', fill:'#4CAF50'}));
+  bg2.appendChild(el('circle', {cx:bx-4,  cy:by-30, r:'6',  fill:'#68CC6A', opacity:'.5'}));
+  svg.appendChild(bg2);
+}
 
-      if (state.petClicks % 5 === 0) {
-        showToast('💖 Mimi ti adora! (' + state.petClicks + ' coccole)');
-      }
-    });
+// ── Draw flowers ────────────────────────────────────────────────
+const flowers = [
+  {c:0, r:3, emoji:'🌸'},
+  {c:1, r:4, emoji:'🌼'},
+  {c:3, r:0, emoji:'🌺'},
+  {c:4, r:3, emoji:'🌷'},
+  {c:2, r:4, emoji:'🌼'},
+];
+const flLayer = el('g', {id:'flowers'});
+for (const {c, r, emoji} of flowers) {
+  const {x, y} = iso(c, r);
+  const ft = el('text', {
+    x: x, y: y + TH / 2 + 6,
+    'font-size': '22',
+    'text-anchor': 'middle',
+    'dominant-baseline': 'middle',
+    style: 'animation: flower-pulse 2s ease-in-out infinite alternate;'
+  });
+  ft.textContent = emoji;
+  flLayer.appendChild(ft);
+}
+svg.appendChild(flLayer);
 
-    // Blink every 3-4 seconds
-    setInterval(() => {
-      petBlob.classList.add('blink');
-      setTimeout(() => petBlob.classList.remove('blink'), 180);
-    }, 3000 + Math.random() * 1500);
+// ── Draw pet (at grid 2,2) ──────────────────────────────────────
+{
+  const pos = iso(2, 2);
+  const px = pos.x, py = pos.y + TH / 2;  // center of tile
 
-    // Action buttons
-    document.querySelectorAll('[data-action]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const action = btn.dataset.action;
-        state.idleTime = 0;
+  const pg = el('g', {id:'petGroup', style:'cursor:pointer'});
 
-        if (action === 'feed') {
-          state.hunger     = clamp(state.hunger + 18);
-          state.happiness  = clamp(state.happiness + 5);
-          state.energy     = clamp(state.energy + 3);
-          showToast('🥕 Mimi ha mangiato!');
-          showSpeech('Gnam gnam! 🥕');
-        } else if (action === 'play') {
-          state.happiness  = clamp(state.happiness + 16);
-          state.energy     = clamp(state.energy - 8);
-          state.calm       = clamp(state.calm - 3);
-          showToast('🎮 Giocato con Mimi!');
-          showSpeech('Evviva!! 🎉');
-        } else if (action === 'meditate') {
-          state.calm       = clamp(state.calm + 18);
-          state.happiness  = clamp(state.happiness + 7);
-          state.energy     = clamp(state.energy + 2);
-          showToast('✨ Meditazione fatta!');
-          showSpeech('Ommm... ✨');
-        }
+  // shadow
+  pg.appendChild(el('ellipse', {cx:px, cy:py+30, rx:'32', ry:'9', fill:'url(#shadowGrad)'}));
 
-        spawnParticles(action);
-        petBlob.classList.remove('squish');
-        void petBlob.offsetWidth;
-        petBlob.classList.add('squish');
+  // body
+  const body = el('ellipse', {cx:px, cy:py+2, rx:'36', ry:'34',
+    fill:'url(#petGrad)', stroke:'#9070C8', 'stroke-width':'2',
+    id:'petBody'});
+  pg.appendChild(body);
 
-        btn.classList.add('cooldown');
-        setTimeout(() => btn.classList.remove('cooldown'), 1200);
-        render();
-      });
-    });
+  // cheeks
+  pg.appendChild(el('ellipse', {cx:px-18, cy:py+10, rx:'10', ry:'6',
+    fill:'rgba(255,150,180,0.42)'}));
+  pg.appendChild(el('ellipse', {cx:px+18, cy:py+10, rx:'10', ry:'6',
+    fill:'rgba(255,150,180,0.42)'}));
 
-    // Stat decay
-    setInterval(() => {
-      state.idleTime++;
-      state.hunger    = clamp(state.hunger - 0.3);
-      state.energy    = clamp(state.energy - 0.2);
-      state.happiness = clamp(state.happiness - 0.15);
-      if (state.idleTime > 8) {
-        const p = ['Ehi, ci sei? 🥺', 'Gioca con me!', 'Mi annoio...', 'Vieni qui! 👋'];
-        showSpeech(p[Math.floor(Math.random() * p.length)]);
-        state.idleTime = 0;
-      }
-      render();
-    }, 5000);
+  // eyes
+  const eyeL = el('circle', {cx:px-11, cy:py-2, r:'6', fill:'#2D1A50', id:'eyeL'});
+  const eyeR = el('circle', {cx:px+11, cy:py-2, r:'6', fill:'#2D1A50', id:'eyeR'});
+  pg.appendChild(eyeL);
+  pg.appendChild(eyeR);
+  // eye shines
+  pg.appendChild(el('circle', {cx:px-9,  cy:py-4, r:'2', fill:'rgba(255,255,255,.9)'}));
+  pg.appendChild(el('circle', {cx:px+13, cy:py-4, r:'2', fill:'rgba(255,255,255,.9)'}));
 
+  // smile
+  const smile = el('path', {
+    d:`M ${px-9} ${py+12} Q ${px} ${py+19} ${px+9} ${py+12}`,
+    fill:'none', stroke:'#7A5FAD', 'stroke-width':'2.5',
+    'stroke-linecap':'round', id:'petSmile'
+  });
+  pg.appendChild(smile);
+
+  svg.appendChild(pg);
+
+  // pet floating animation
+  let fy = 0, fdir = 1, fAF;
+  function floatPet() {
+    fy += fdir * 0.12;
+    if (fy > 6) fdir = -1;
+    if (fy < 0) fdir = 1;
+    pg.setAttribute('transform', `translate(0, ${-fy})`);
+    fAF = requestAnimationFrame(floatPet);
+  }
+  floatPet();
+
+  // blink
+  setInterval(() => {
+    eyeL.setAttribute('ry', '2'); eyeR.setAttribute('ry', '2');
+    eyeL.setAttribute('rx', '6'); eyeR.setAttribute('rx', '6');
+    eyeL.tagName === 'circle' && eyeL.setAttribute('r','2');
+    eyeR.tagName === 'circle' && eyeR.setAttribute('r','2');
+    setTimeout(() => {
+      eyeL.setAttribute('r','6'); eyeR.setAttribute('r','6');
+    }, 160);
+  }, 3800 + Math.random()*1200);
+
+  // click pet
+  pg.addEventListener('click', () => {
+    state.happiness = clamp(state.happiness + 3);
+    state.calm      = clamp(state.calm      + 1);
+    spawnParticles(px, py - 40);
+    showSpeech(['Ciao! 👋','Gnam? 🍎','Sono felice ✨','Gioca con me! 🎉'][Math.floor(Math.random()*4)]);
+    squishPet();
     render();
-  </script>
+  });
+}
+
+// squish pet body
+function squishPet() {
+  const b = document.getElementById('petBody');
+  if (!b) return;
+  b.setAttribute('rx','42'); b.setAttribute('ry','28');
+  setTimeout(() => { b.setAttribute('rx','32'); b.setAttribute('ry','38'); }, 120);
+  setTimeout(() => { b.setAttribute('rx','36'); b.setAttribute('ry','34'); }, 280);
+}
+
+// ── Game state ──────────────────────────────────────────────────
+const state = { hunger:58, happiness:72, calm:65, energy:48 };
+const clamp = v => Math.max(0, Math.min(100, v));
+
+function render() {
+  const moods = [
+    [['tired'], state.energy < 25 || state.hunger < 25],
+    [['anxious'], state.calm < 30],
+    [['happy'], (state.happiness + state.calm) / 2 > 70],
+    [['calm'], true]
+  ];
+  const mood = moods.find(([, cond]) => cond)[0][0];
+  const moodEmoji = {calm:'😊',happy:'🥰',tired:'😴',anxious:'😰'}[mood];
+  document.getElementById('moodLabel').textContent = `Mood: ${mood} ${moodEmoji}`;
+
+  document.getElementById('barH').style.width = state.happiness + '%';
+  document.getElementById('barF').style.width = state.hunger    + '%';
+  document.getElementById('barC').style.width = state.calm      + '%';
+  document.getElementById('barE').style.width = state.energy    + '%';
+
+  // update smile on mood change
+  const smile = document.getElementById('petSmile');
+  if (smile) {
+    const {x:px} = iso(2,2);
+    const py = iso(2,2).y + TH/2;
+    if (mood === 'tired')
+      smile.setAttribute('d', `M ${px-8} ${py+16} Q ${px} ${py+13} ${px+8} ${py+16}`);
+    else if (mood === 'anxious')
+      smile.setAttribute('d', `M ${px-7} ${py+15} Q ${px} ${py+10} ${px+7} ${py+15}`);
+    else
+      smile.setAttribute('d', `M ${px-9} ${py+12} Q ${px} ${py+19} ${px+9} ${py+12}`);
+  }
+}
+
+// stat decay
+setInterval(() => {
+  state.hunger    = clamp(state.hunger    - 0.4);
+  state.energy    = clamp(state.energy    - 0.25);
+  state.happiness = clamp(state.happiness - 0.2);
+  render();
+}, 5000);
+
+// ── Speech bubble ──────────────────────────────────────────────
+function showSpeech(text) {
+  const s = document.getElementById('speech');
+  s.textContent = text;
+  s.classList.remove('show');
+  void s.offsetWidth;
+  s.classList.add('show');
+}
+
+// ── Particles ──────────────────────────────────────────────────
+function spawnParticles(x, y) {
+  const scene = document.getElementById('scene');
+  const emojis = ['✨','💜','🌸','⭐','💫'];
+  for (let i = 0; i < 5; i++) {
+    const p = document.createElement('span');
+    p.className = 'ptc';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const rect = scene.getBoundingClientRect();
+    // approximate position relative to scene
+    p.style.left = (x / 390 * rect.width + (Math.random()-0.5)*40) + 'px';
+    p.style.top  = (y / 300 * (rect.height - 40) + (Math.random()-0.5)*20) + 'px';
+    p.style.animationDelay = (i * 0.1) + 's';
+    scene.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+  }
+}
+
+// ── Action buttons ─────────────────────────────────────────────
+const actions = {
+  meditate: {h:+7,  f:-2, c:+18, e:+2,  msg:'Ommm... 🍃'},
+  feed:     {h:+5,  f:+18,c:-1,  e:+3,  msg:'Gnam gnam! 🍎'},
+  play:     {h:+16, f:-4, c:-3,  e:-8,  msg:'Evviva!! 🎉'},
+  diary:    {h:+3,  f:0,  c:+5,  e:-1,  msg:'Scrivo... 📖'}
+};
+
+document.querySelectorAll('[data-action]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const a = actions[btn.dataset.action];
+    if (!a) return;
+    state.happiness = clamp(state.happiness + a.h);
+    state.hunger    = clamp(state.hunger    + a.f);
+    state.calm      = clamp(state.calm      + a.c);
+    state.energy    = clamp(state.energy    + a.e);
+    showSpeech(a.msg);
+    spawnParticles(195, 140);
+    squishPet();
+    render();
+    if (btn.dataset.action === 'diary') location.href = 'journal.html';
+    if (btn.dataset.action === 'meditate') location.href = 'care-ritual.html';
+  });
+});
+
+render();
+</script>
 </body>
 </html>

@@ -1,14 +1,5 @@
 {
   "version": 2,
   "name": "metime-preview",
-  "outputDirectory": "WebPreview",
-  "buildCommand": null,
-  "installCommand": null,
-  "framework": null,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/app", "dest": "/app.html" },
-    { "src": "/gallery", "dest": "/gallery.html" },
-    { "src": "/pages/(.*)", "dest": "/pages/$1" }
-  ]
+  "rootDirectory": "WebPreview"
 }

@@ -1,5 +1,6 @@
 {
   "version": 2,
   "name": "metime-preview",
-  "rootDirectory": "WebPreview"
+  "buildCommand": "mkdir -p .vercel/output/static && cp -r WebPreview/. .vercel/output/static/ && echo '{\"version\":3}' > .vercel/output/config.json",
+  "outputDirectory": ".vercel/output"
 }

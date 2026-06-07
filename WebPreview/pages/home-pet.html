@@ -312,6 +312,7 @@
       transition: transform 0.15s, box-shadow 0.15s;
       position: relative;
       overflow: hidden;
+      text-decoration: none;
     }
     .action-btn:hover { transform: translateY(-2px); }
     .action-btn:active { transform: translateY(1px); }
@@ -491,7 +492,7 @@
             <span class="btn-ico">🎮</span>
             <span class="btn-lbl">Gioca</span>
           </button>
-          <a class="action-btn btn-journal" href="journal.html" style="text-decoration:none">
+          <a class="action-btn btn-journal" href="journal.html">
             <span class="btn-ico">📖</span>
             <span class="btn-lbl">Diario</span>
           </a>
@@ -618,7 +619,7 @@
       render();
 
       if (state.petClicks % 5 === 0) {
-        showToast(`💖 Mimi ti adora! (${state.petClicks} coccole)`);
+        showToast('💖 Mimi ti adora! (' + state.petClicks + ' coccole)');
       }
     });
 

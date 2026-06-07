@@ -6,222 +6,361 @@
   <title>METIME - Care Ritual</title>
   <link rel="stylesheet" href="../assets/kawaii.css" />
   <style>
-    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .panel { padding: 18px; }
-    .breath {
-      width: min(280px, 74vw);
-      aspect-ratio: 1 / 1;
-      margin: 14px auto;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #fff7eb 10%, #f2a044 70%);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 18px 26px rgba(127, 67, 16, 0.24);
-      animation: pulse 6s ease-in-out infinite;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(160deg, #FFF8F0 0%, #FDEAC0 50%, #FFD89B 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .phone-frame {
+      width: 375px;
+      min-height: 812px;
+      background: linear-gradient(160deg, #FFF8F0 0%, #FDEAC0 55%, #FFD89B 100%);
+      border-radius: 44px;
+      box-shadow: 0 30px 80px rgba(200, 130, 50, 0.3), 0 0 0 1px rgba(255,255,255,0.4);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nav */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      padding: 20px 20px 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .nav-back {
+      font-size: 18px;
+      font-weight: 700;
+      color: #7a5a2a;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.5);
+    }
+    .nav-title {
+      flex: 1;
       text-align: center;
-    }
-    .breath strong { display: block; font-size: 44px; line-height: 1; }
-    .steps { display: grid; gap: 10px; margin-top: 10px; }
-    .step { border-radius: 12px; background: #ffffffbf; border: 1px solid #fff; padding: 11px; }
-    .step b { color: #5e4636; }
-    .cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .start { background: linear-gradient(145deg, #e4fff5, #c8f9e8); }
-    .skip { background: linear-gradient(145deg, #f5ead8, #f0dfc4); }
-    @keyframes pulse {
-      0%,100% { transform: scale(1); }
-      45% { transform: scale(1.08); }
-      65% { transform: scale(0.98); }
+      font-size: 17px;
+      font-weight: 800;
+      color: #4a3010;
+      margin-right: 44px;
     }
 
-    .step-dot {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: grid; place-items: center; font-size: 16px;
-      background: #f0f0f0; border: 2px solid #ddd; transition: all 0.3s;
+    /* Scrollable content */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 32px;
+      position: relative;
+      z-index: 1;
     }
-    .step-dot.active { border-color: #f97316; background: #fff7ed; }
-    .step-dot.done { border-color: #22c55e; background: #f0fdf4; }
-    .step-panel { animation: fadeIn 0.3s ease; }
-    .hidden { display: none !important; }
-    .pulse-dot {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(34,197,94,0.2); border: 2px solid rgba(34,197,94,0.4);
-      animation: pulse 2s ease-in-out infinite;
+    .content::-webkit-scrollbar { display: none; }
+
+    /* Page heading */
+    .page-heading {
+      font-size: 28px;
+      font-weight: 800;
+      color: #3a2010;
+      margin-bottom: 6px;
+    }
+    .page-subtitle {
+      font-size: 13px;
+      color: #8a6a3a;
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 28px;
     }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+    /* Breathing circle */
+    .breath-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .breath-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%, rgba(255,255,255,0.7) 0%, rgba(255,200,100,0.6) 50%, rgba(255,160,50,0.8) 100%);
+      border: 3px solid rgba(255,180,80,0.5);
+      box-shadow: 0 12px 40px rgba(200, 130, 50, 0.3), 0 0 60px rgba(255,200,100,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: breath-pulse 4s ease-in-out infinite;
+      cursor: pointer;
+      user-select: none;
+    }
+    .breath-circle.inhale { animation: breath-expand 4s ease-in-out forwards; }
+    .breath-circle.exhale { animation: breath-shrink 4s ease-in-out forwards; }
+    @keyframes breath-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 12px 40px rgba(200,130,50,0.3), 0 0 60px rgba(255,200,100,0.2); }
+      50% { transform: scale(1.08); box-shadow: 0 18px 55px rgba(200,130,50,0.4), 0 0 80px rgba(255,200,100,0.35); }
+    }
+    @keyframes breath-expand {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.12); }
+    }
+    @keyframes breath-shrink {
+      0% { transform: scale(1.12); }
+      100% { transform: scale(0.95); }
+    }
+    .breath-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: #5a3a10;
+      margin-bottom: 8px;
+    }
+    .breath-timer {
+      font-size: 40px;
+      font-weight: 900;
+      color: #3a2010;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+    }
 
-    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    /* Stats cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.6);
+      border-radius: 18px;
+      padding: 12px 10px;
+      text-align: center;
+      border: 1px solid rgba(255,200,100,0.4);
+    }
+    .stat-card-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: #c47820;
+      line-height: 1.2;
+    }
+    .stat-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9a6a30;
+      margin-top: 4px;
+    }
+
+    /* Conclude button */
+    .conclude-btn {
+      width: 100%;
+      padding: 18px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+      margin-bottom: 16px;
+    }
+    .conclude-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .conclude-btn:active { transform: scale(0.98); }
+    .conclude-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* Start button */
+    .start-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #FF9F4A, #FFB86C);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(200, 130, 50, 0.35);
+    }
+    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(200, 130, 50, 0.45); }
+    .start-btn:active { transform: scale(0.97); }
+    .start-btn.paused { background: linear-gradient(135deg, #aaa, #ccc); }
+
+    /* Toast */
+    .toast-overlay {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border-radius: 20px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #3a2010;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .toast-overlay.show { opacity: 1; }
   </style>
 </head>
 <body>
-  <div class="clouds"></div>
-  <div class="sparkles"></div>
-  <main class="wrap">
-    <nav class="top-nav">
-      <a class="nav-link" href="home-pet.html">Pet</a>
-      <a class="nav-link active" href="care-ritual.html">Rituale</a>
-      <a class="nav-link" href="journal.html">Diario</a>
-      <a class="nav-link" href="garden-plants.html">Giardino</a>
-      <a class="nav-link" href="token-games.html">Giochi</a>
-      <a class="nav-link" href="../index.html">Casa</a>
-      <a class="nav-link" href="hub.html">🍳 Ristorante</a>
-    </nav>
+  <div class="toast-overlay" id="toast"></div>
 
-    <section class="hero">
-      <div class="tag">implementato in Swift</div>
-      <h1>💗 Care Ritual</h1>
-      <p class="subtitle">Rituale di cura in 3 fasi: Grounding → Breathing → Gratitude. Completa per sbloccare ricompense.</p>
-    </section>
+  <div class="phone-frame">
+    <div class="top-nav">
+      <a class="nav-back" href="home-pet.html">&#8592;</a>
+      <div class="nav-title">Care</div>
+    </div>
 
-    <section class="layout">
-      <article class="card panel">
-        <h2 style="margin:0;font-size:26px;">Rituale di Cura</h2>
-        <p style="margin:6px 0 0;color:var(--muted);">3 fasi per calmare pet e player.</p>
+    <div class="content">
+      <div class="page-heading">Rituale di Cura</div>
+      <div class="page-subtitle">Rituale di Cura &mdash; 4 minuti di respiro guidato per calmare il tuo pet</div>
 
-        <!-- Step progress -->
-        <div style="display:flex;align-items:center;gap:8px;margin:14px 0;">
-          <div class="step-dot active" id="dot0">🌿</div>
-          <div style="flex:1;height:2px;background:#ddd;" class="step-line" id="line0"></div>
-          <div class="step-dot" id="dot1">🌬️</div>
-          <div style="flex:1;height:2px;background:#ddd;" class="step-line" id="line1"></div>
-          <div class="step-dot" id="dot2">❤️</div>
+      <!-- Breathing circle -->
+      <div class="breath-area">
+        <div class="breath-circle" id="breathCircle">
+          <div class="breath-label" id="phaseLabel">Inspira</div>
+          <div class="breath-timer" id="timerDisplay">04:00</div>
         </div>
+      </div>
 
-        <!-- Step content -->
-        <div id="stepContent">
-          <div class="step-panel" id="step0">
-            <h3>🌿 Grounding</h3>
-            <p>Siediti comodo e rilassa le spalle. Senti i piedi a terra.</p>
-            <div style="display:flex;gap:16px;justify-content:center;margin:12px 0;">
-              <div class="pulse-dot"></div>
-              <div class="pulse-dot" style="animation-delay:0.5s"></div>
-              <div class="pulse-dot" style="animation-delay:1s"></div>
-            </div>
-            <button class="btn start" onclick="nextStep()">Ho rilassato le spalle →</button>
-          </div>
-          <div class="step-panel hidden" id="step1">
-            <h3>🌬️ Breathing</h3>
-            <p>Inspira 4 sec · Espira 6 sec</p>
-            <div class="breath">
-              <div>
-                <span id="phaseText">Inspira</span>
-                <strong id="timer">00:00</strong>
-              </div>
-            </div>
-            <div class="cta">
-              <button class="btn start" id="startBtn">▶ Avvia Respiro</button>
-              <button class="btn skip" id="nextBtn" style="display:none">Prosegui →</button>
-            </div>
-          </div>
-          <div class="step-panel hidden" id="step2">
-            <h3>❤️ Gratitudine</h3>
-            <p>Scrivi una cosa positiva della tua giornata.</p>
-            <textarea id="gratText" placeholder="Scrivi qui..."
-              style="width:100%;min-height:80px;border-radius:12px;border:1px solid #ddd;padding:12px;font-size:14px;resize:vertical;"></textarea>
-            <button class="btn start" onclick="finish()" style="margin-top:10px;background:linear-gradient(145deg,#ffb3c6,#ff8fab);">
-              Completa Rituale ✨
-            </button>
-          </div>
+      <!-- Start / Pause button -->
+      <button class="start-btn" id="startBtn">&#9654; Avvia Sessione</button>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-val">6 respiri/min</div>
+          <div class="stat-card-label">Frequenza</div>
         </div>
-      </article>
+        <div class="stat-card">
+          <div class="stat-card-val">Calmo +18%</div>
+          <div class="stat-card-label">Mood previsto</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val">+2 Semi Sereni</div>
+          <div class="stat-card-label">Ricompensa</div>
+        </div>
+      </div>
 
-      <aside class="side">
-        <section class="card mini">
-          <h3>Flow</h3>
-          <div class="steps">
-            <div class="step"><b>1. Grounding</b><br/>Siediti e rilassa le spalle.</div>
-            <div class="step"><b>2. Breathing</b><br/>Inspira 4 sec, espira 6 sec. Min 30s.</div>
-            <div class="step"><b>3. Gratitude</b><br/>Scrivi una cosa positiva.</div>
-          </div>
-        </section>
-        <section class="card mini">
-          <h3>Ricompense</h3>
-          <div style="display:grid;gap:4px;font-size:13px;">
-            <div style="display:flex;justify-content:space-between;"><span>🫧 Calma</span><b style="color:#ec4899">+40%</b></div>
-            <div style="display:flex;justify-content:space-between;"><span>☀️ Felicità</span><b style="color:#ec4899">+25%</b></div>
-            <div style="display:flex;justify-content:space-between;"><span>🍃 Fame</span><b style="color:#ec4899">+10%</b></div>
-            <div style="display:flex;justify-content:space-between;"><span>⚡️ Energia</span><b style="color:#ec4899">+15%</b></div>
-            <div style="display:flex;justify-content:space-between;"><span>🌱 Semi Sereni</span><b style="color:#ec4899">+2</b></div>
-          </div>
-        </section>
-        <section class="card mini">
-          <h3>Session log</h3>
-          <div class="timeline" id="sessionLog">
-            <div class="entry"><strong>Pronto</strong>In attesa di avvio.</div>
-          </div>
-        </section>
-      </aside>
-    </section>
-  </main>
+      <!-- Conclude button -->
+      <button class="conclude-btn" id="concludeBtn" disabled>Concludi Sessione</button>
+    </div>
+  </div>
 
   <script>
-    let currentStep = 0;
-    let seconds = 0, timerInterval = null, breathing = false;
-    const timerNode = document.getElementById("timer");
-    const phaseText = document.getElementById("phaseText");
-    const log = document.getElementById("sessionLog");
-    const phases = ["Inspira", "Tieni", "Espira", "Pausa"];
-    const durations = [4, 2, 6, 2];
-    let phaseIdx = 0, phaseCountdown = durations[0];
+    const TOTAL = 4 * 60; // 4 minutes in seconds
+    const MIN_SECONDS = 30; // minimum before can conclude
+    const phases = ['Inspira', 'Tieni', 'Espira', 'Pausa'];
+    const phaseDurations = [4, 2, 6, 2]; // box breathing
+
+    let remaining = TOTAL;
+    let elapsed = 0;
+    let running = false;
+    let interval = null;
+    let phaseIdx = 0;
+    let phaseRemaining = phaseDurations[0];
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const phaseLabel = document.getElementById('phaseLabel');
+    const startBtn = document.getElementById('startBtn');
+    const concludeBtn = document.getElementById('concludeBtn');
+    const breathCircle = document.getElementById('breathCircle');
+    const toast = document.getElementById('toast');
 
     function fmt(s) {
-      return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
     }
 
-    function addLog(title, text) {
-      const item = document.createElement("div");
-      item.className = "entry";
-      item.innerHTML = "<strong>" + title + "</strong>" + text;
-      log.prepend(item);
-      while (log.children.length > 5) log.removeChild(log.lastElementChild);
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
-    function nextStep() {
-      addLog("Step " + (currentStep + 1), "Completato ✓");
-      document.getElementById("dot" + currentStep).classList.add("done");
-      if (currentStep < 2) document.getElementById("line" + currentStep).style.background = "#22c55e";
-      document.getElementById("step" + currentStep).classList.add("hidden");
-      currentStep++;
-      if (currentStep <= 2) {
-        document.getElementById("step" + currentStep).classList.remove("hidden");
-        document.getElementById("dot" + currentStep).classList.add("active");
+    function updatePhaseAnimation() {
+      breathCircle.classList.remove('inhale', 'exhale');
+      void breathCircle.offsetWidth;
+      if (phases[phaseIdx] === 'Inspira') {
+        breathCircle.classList.add('inhale');
+      } else if (phases[phaseIdx] === 'Espira' || phases[phaseIdx] === 'Pausa') {
+        breathCircle.classList.add('exhale');
       }
     }
 
     function tick() {
-      seconds++;
-      timerNode.textContent = fmt(seconds);
-      phaseCountdown--;
-      if (phaseCountdown <= 0) {
-        phaseIdx = (phaseIdx + 1) % 4;
-        phaseText.textContent = phases[phaseIdx];
-        phaseCountdown = durations[phaseIdx];
+      elapsed++;
+      remaining--;
+      phaseRemaining--;
+
+      if (phaseRemaining <= 0) {
+        phaseIdx = (phaseIdx + 1) % phases.length;
+        phaseRemaining = phaseDurations[phaseIdx];
+        phaseLabel.textContent = phases[phaseIdx];
+        updatePhaseAnimation();
       }
-      if (seconds >= 30) document.getElementById("nextBtn").style.display = "";
+
+      timerDisplay.textContent = fmt(remaining);
+
+      if (elapsed >= MIN_SECONDS) {
+        concludeBtn.disabled = false;
+      }
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        running = false;
+        startBtn.textContent = 'Sessione completata!';
+        startBtn.classList.add('paused');
+        concludeBtn.disabled = false;
+        showToast('Sessione completata! 🌟 +2 Semi Sereni');
+      }
     }
 
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (breathing) {
-        clearInterval(timerInterval); breathing = false;
-        document.getElementById("startBtn").textContent = "▶ Avvia Respiro";
-        return;
+    startBtn.addEventListener('click', () => {
+      if (remaining <= 0) return;
+      if (running) {
+        clearInterval(interval);
+        running = false;
+        startBtn.textContent = '▶ Riprendi';
+        startBtn.classList.add('paused');
+        breathCircle.style.animation = 'none';
+      } else {
+        running = true;
+        startBtn.textContent = '⏸ Pausa';
+        startBtn.classList.remove('paused');
+        breathCircle.style.animation = '';
+        updatePhaseAnimation();
+        interval = setInterval(tick, 1000);
       }
-      breathing = true;
-      addLog("Breathing", "Respiro avviato");
-      document.getElementById("startBtn").textContent = "⏸ Pausa";
-      timerInterval = setInterval(tick, 1000);
     });
 
-    document.getElementById("nextBtn").addEventListener("click", () => {
-      clearInterval(timerInterval); breathing = false;
-      nextStep();
+    concludeBtn.addEventListener('click', () => {
+      if (concludeBtn.disabled) return;
+      clearInterval(interval);
+      running = false;
+      showToast('Rituale completato! Calma +40% 💗');
+      setTimeout(() => {
+        window.location.href = 'home-pet.html';
+      }, 2000);
     });
-
-    function finish() {
-      addLog("Completato", "Rituale terminato. Ricompensa sbloccata! 💗");
-      document.getElementById("dot2").classList.add("done");
-      alert("Rituale completato!\\n\\nCalma +40%, Felicità +25%, +2 Semi Sereni");
-    }
   </script>
 </body>
 </html>

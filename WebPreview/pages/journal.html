@@ -6,95 +6,352 @@
   <title>METIME - Journal</title>
   <link rel="stylesheet" href="../assets/kawaii.css" />
   <style>
-    .journal-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 16px; }
-    .panel { padding: 18px; }
-    .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
-    .metric { border-radius: 14px; border: 1px solid #fff; background: #ffffffbf; padding: 12px; }
-    .metric small { color: var(--muted); text-transform: uppercase; font-size: 11px; font-weight: 700; }
-    .metric strong { display: block; margin-top: 3px; font-size: 22px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(160deg, #E8EEFF 0%, #D8E8FF 50%, #C8D8F8 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .phone-frame {
+      width: 375px;
+      min-height: 812px;
+      background: linear-gradient(180deg, #F8FAFF 0%, #F0F4FF 100%);
+      border-radius: 44px;
+      box-shadow: 0 30px 80px rgba(80, 100, 180, 0.25), 0 0 0 1px rgba(255,255,255,0.5);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nav */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      padding: 20px 20px 12px;
+    }
+    .nav-back {
+      font-size: 18px;
+      font-weight: 700;
+      color: #4a5a9a;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(150,170,255,0.15);
+    }
+    .nav-title {
+      flex: 1;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 800;
+      color: #1a2060;
+      margin-right: 44px;
+    }
+
+    /* Scrollable content */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 100px;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    /* Heading */
+    .page-heading {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a2060;
+      margin-bottom: 16px;
+    }
+
+    /* Stats cards row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      border-radius: 20px;
+      padding: 16px;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(80,100,200,0.1);
+    }
+    .stat-card.teal {
+      background: linear-gradient(135deg, #D0F8F4, #A8EEE8);
+    }
+    .stat-card-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6a7ab0;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-card-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a2060;
+    }
+    .stat-card.teal .stat-card-val { color: #0a6060; }
+    .stat-card.teal .stat-card-label { color: #2a8080; }
+
+    /* Section heading */
+    .section-heading {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1a2060;
+      margin-bottom: 12px;
+    }
+
+    /* Entry list */
+    .entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .entry-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 10px rgba(80,100,200,0.08);
+      border-left: 4px solid transparent;
+    }
+    .entry-card.mood-sereno { border-left-color: #60D0C0; }
+    .entry-card.mood-presente { border-left-color: #A0B8FF; }
+    .entry-card.mood-calmo { border-left-color: #C0A8FF; }
+    .entry-card.mood-gioioso { border-left-color: #FFB8A0; }
+    .entry-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a2060;
+      margin-bottom: 4px;
+    }
+    .entry-card-sub {
+      font-size: 12px;
+      color: #8090c0;
+      font-weight: 600;
+    }
+    .entry-card-date {
+      font-size: 11px;
+      color: #b0b8d8;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* New note section */
+    .new-note-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 4px 16px rgba(80,100,200,0.1);
+      margin-bottom: 16px;
+    }
+    .new-note-label {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a2060;
+      margin-bottom: 10px;
+    }
     textarea {
       width: 100%;
-      min-height: 128px;
-      border: 1px solid #fff;
+      min-height: 96px;
+      border: 1.5px solid #e0e8ff;
       border-radius: 14px;
-      background: #ffffffcf;
+      background: #F8FAFF;
       padding: 12px;
-      font: inherit;
-      color: #5e4636;
-      resize: vertical;
+      font-family: inherit;
+      font-size: 14px;
+      color: #1a2060;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
     }
-    .save { margin-top: 10px; background: linear-gradient(145deg, #ffe5f3, #ffd0e9); }
-    .entries { margin-top: 12px; display: grid; gap: 10px; }
-    .entry-card { border-radius: 14px; border: 1px solid #fff; background: #ffffffbf; padding: 12px; }
-    .entry-card b { color: #5e4636; }
-    @media (max-width: 920px) { .journal-layout { grid-template-columns: 1fr; } }
+    textarea:focus { border-color: #8090ff; }
+    .save-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px;
+      background: linear-gradient(135deg, #8090FF, #5060D8);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 6px 16px rgba(100,120,240,0.3);
+    }
+    .save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(100,120,240,0.4); }
+    .save-btn:active { transform: scale(0.97); }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast {
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #2a3080;
+      box-shadow: 0 6px 20px rgba(80,100,200,0.2);
+      animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2s forwards;
+      white-space: nowrap;
+    }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(-10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
+
+    /* Bottom tab bar */
+    .tab-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(180,200,255,0.3);
+      border-radius: 0 0 44px 44px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 8px 18px;
+      z-index: 10;
+    }
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-decoration: none;
+      padding: 4px 12px;
+      border-radius: 16px;
+    }
+    .tab-item.active { background: rgba(100,120,240,0.1); }
+    .tab-icon { font-size: 22px; }
+    .tab-label { font-size: 10px; font-weight: 700; color: #8090c0; }
+    .tab-item.active .tab-label { color: #4050c0; }
   </style>
 </head>
 <body>
-  <div class="clouds"></div>
-  <div class="sparkles"></div>
-  <main class="wrap">
-    <nav class="top-nav">
-      <a class="nav-link" href="home-pet.html">Pet</a>
-      <a class="nav-link" href="care-ritual.html">Rituale</a>
-      <a class="nav-link active" href="journal.html">Diario</a>
-      <a class="nav-link" href="garden-plants.html">Giardino</a>
-      <a class="nav-link" href="token-games.html">Giochi</a>
-      <a class="nav-link" href="../index.html">Casa</a>
-      <a class="nav-link" href="hub.html">🍳 Ristorante</a>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="phone-frame">
+    <div class="top-nav">
+      <a class="nav-back" href="home-pet.html">&#8592;</a>
+      <div class="nav-title">Journal</div>
+    </div>
+
+    <div class="content">
+      <div class="page-heading">Journal &amp; Insights</div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-label">Streak</div>
+          <div class="stat-card-val">9 giorni 🔥</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-card-label">Mood Medio</div>
+          <div class="stat-card-val">Sereno</div>
+        </div>
+      </div>
+
+      <!-- New note -->
+      <div class="new-note-card">
+        <div class="new-note-label">&#128221; Nuova nota</div>
+        <textarea id="noteInput" placeholder="Come ti senti oggi? Scrivi una breve riflessione..."></textarea>
+        <button class="save-btn" id="saveBtn">Salva riflessione</button>
+      </div>
+
+      <!-- Recent entries -->
+      <div class="section-heading">Ultime riflessioni</div>
+      <div class="entries-list" id="entriesList">
+        <div class="entry-card mood-presente">
+          <div class="entry-card-title">Oggi ho dato acqua al pet prima di lavorare</div>
+          <div class="entry-card-sub">Molto presente</div>
+          <div class="entry-card-date">Oggi</div>
+        </div>
+        <div class="entry-card mood-calmo">
+          <div class="entry-card-title">Meditazione di 4 minuti completata</div>
+          <div class="entry-card-sub">Calmo e rilassato</div>
+          <div class="entry-card-date">Ieri</div>
+        </div>
+        <div class="entry-card mood-sereno">
+          <div class="entry-card-title">Passeggiata breve nel parco</div>
+          <div class="entry-card-sub">Sereno</div>
+          <div class="entry-card-date">2 giorni fa</div>
+        </div>
+        <div class="entry-card mood-gioioso">
+          <div class="entry-card-title">Ho giocato con il mio pet per 10 minuti</div>
+          <div class="entry-card-sub">Gioioso e presente</div>
+          <div class="entry-card-date">3 giorni fa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <nav class="tab-bar">
+      <a class="tab-item" href="home-pet.html">
+        <span class="tab-icon">&#128062;</span>
+        <span class="tab-label">Pet</span>
+      </a>
+      <a class="tab-item" href="hub.html">
+        <span class="tab-icon">&#127968;</span>
+        <span class="tab-label">Casa</span>
+      </a>
+      <a class="tab-item" href="care-ritual.html">
+        <span class="tab-icon">&#10024;</span>
+        <span class="tab-label">Cura</span>
+      </a>
+      <a class="tab-item active" href="journal.html">
+        <span class="tab-icon">&#128214;</span>
+        <span class="tab-label">Diario</span>
+      </a>
     </nav>
-
-    <section class="hero">
-      <div class="tag">mockup pagina separata</div>
-      <h1>Journal e Insights</h1>
-      <p class="subtitle">Pagina dedicata a note quotidiane, streak, trend umore e riflessioni.</p>
-    </section>
-
-    <section class="journal-layout">
-      <article class="card panel">
-        <h2 style="margin:0;font-size:30px;">Insight Snapshot</h2>
-        <div class="metric-grid">
-          <div class="metric"><small>Streak</small><strong>9 giorni</strong></div>
-          <div class="metric"><small>Mood medio</small><strong>Sereno</strong></div>
-          <div class="metric"><small>Sessioni cura</small><strong>14</strong></div>
-          <div class="metric"><small>Piante vive</small><strong>5/6</strong></div>
-        </div>
-        <div class="timeline" style="margin-top:12px;">
-          <div class="entry"><strong>Trend</strong>Calm in crescita negli ultimi 5 giorni.</div>
-          <div class="entry"><strong>Consiglio</strong>Continua i rituali serali da 4 minuti.</div>
-        </div>
-      </article>
-
-      <aside class="side">
-        <section class="card panel">
-          <h3 style="margin:0 0 8px;font-size:24px;">Nuova nota</h3>
-          <textarea id="noteInput" placeholder="Scrivi una riflessione breve su come ti senti oggi..."></textarea>
-          <button class="btn save" id="saveBtn">Salva nota</button>
-        </section>
-        <section class="card panel">
-          <h3 style="margin:0;font-size:24px;">Ultime riflessioni</h3>
-          <div class="entries" id="entries">
-            <div class="entry-card"><b>Oggi</b><br/>Passeggiata breve e pet piu calmo.</div>
-            <div class="entry-card"><b>Ieri</b><br/>Meditazione completata prima di dormire.</div>
-          </div>
-        </section>
-      </aside>
-    </section>
-  </main>
+  </div>
 
   <script>
-    const saveBtn = document.getElementById("saveBtn");
-    const noteInput = document.getElementById("noteInput");
-    const entries = document.getElementById("entries");
+    const toastContainer = document.getElementById('toastContainer');
+    const noteInput = document.getElementById('noteInput');
+    const saveBtn = document.getElementById('saveBtn');
+    const entriesList = document.getElementById('entriesList');
 
-    saveBtn.addEventListener("click", () => {
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      toastContainer.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
+
+    const moods = ['mood-sereno', 'mood-presente', 'mood-calmo', 'mood-gioioso'];
+    const moodLabels = ['Sereno', 'Molto presente', 'Calmo e rilassato', 'Gioioso'];
+
+    saveBtn.addEventListener('click', () => {
       const text = noteInput.value.trim();
-      if (!text) return;
-      const card = document.createElement("div");
-      card.className = "entry-card";
-      card.innerHTML = `<b>Nuova nota</b><br/>${text}`;
-      entries.prepend(card);
-      noteInput.value = "";
+      if (!text) { showToast('Scrivi qualcosa prima di salvare!'); return; }
+      const moodIdx = Math.floor(Math.random() * moods.length);
+      const card = document.createElement('div');
+      card.className = 'entry-card ' + moods[moodIdx];
+      card.innerHTML = '<div class="entry-card-title">' + text + '</div>'
+        + '<div class="entry-card-sub">' + moodLabels[moodIdx] + '</div>'
+        + '<div class="entry-card-date">Adesso</div>';
+      entriesList.insertBefore(card, entriesList.firstChild);
+      noteInput.value = '';
+      showToast('Riflessione salvata! 💙');
     });
   </script>
 </body>

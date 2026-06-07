@@ -1,227 +1,436 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>METIME — Negozio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../assets/game.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>METIME - Store</title>
+  <link rel="stylesheet" href="../assets/kawaii.css" />
   <style>
-    .shop-grid{gap:8px}
-    .pagination{display:flex;justify-content:center;gap:6px;margin-top:14px}
-    .dot{width:8px;height:8px;border-radius:50%;background:var(--border-lt);opacity:.4;cursor:pointer;transition:opacity .2s,background .2s,transform .15s var(--spring)}
-    .dot.active{opacity:1;background:var(--orange);transform:scale(1.25)}
-    .coins-hud{text-align:right;font-size:15px;font-weight:900;color:var(--ink);margin-bottom:8px;font-variant-numeric:tabular-nums;transition:transform .2s var(--spring)}
-    .coins-hud.bump{animation:coinBump .45s var(--spring)}
-    @keyframes coinBump{0%{transform:scale(1)}35%{transform:scale(1.2) translateY(-2px)}100%{transform:scale(1)}}
-    .item-card.bought .thumb::after{content:'✅';position:absolute;inset:0;display:grid;place-items:center;font-size:28px;background:rgba(255,255,255,.65);border-radius:inherit;backdrop-filter:blur(2px)}
-    .item-card .thumb{position:relative}
-    .item-card .owned-badge{
-      position:absolute;top:4px;right:4px;
-      background:var(--sage);color:#fff;font-size:8px;font-weight:900;
-      padding:2px 6px;border-radius:999px;
-      box-shadow:0 1px 3px rgba(0,0,0,.15);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(160deg, #EEE8FF 0%, #DDD0FF 50%, #C8B8F8 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
     }
-    .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,rgba(253,243,227,.98),rgba(245,234,216,.98));border:3px solid var(--border);border-radius:var(--radius-lg);padding:18px 30px;text-align:center;box-shadow:0 12px 48px rgba(61,43,31,.35),var(--inner-glow);z-index:200;opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s;backdrop-filter:blur(12px);font-size:13px;font-weight:800;color:var(--ink)}
-    .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-    .casa-banner{
-      display:flex;align-items:center;gap:8px;padding:10px 14px;
-      border-radius:var(--radius);margin-top:10px;
-      background:linear-gradient(135deg,rgba(143,168,130,.12),rgba(143,168,130,.06));
-      border:2px solid rgba(143,168,130,.25);
-      color:var(--ink);font-size:12px;font-weight:800;text-decoration:none;
-      transition:transform .15s var(--spring),background .15s;
+
+    .phone-frame {
+      width: 375px;
+      min-height: 812px;
+      background: linear-gradient(160deg, #F4EEFF 0%, #EAE0FF 50%, #DDD0FF 100%);
+      border-radius: 44px;
+      box-shadow: 0 30px 80px rgba(100, 60, 180, 0.3), 0 0 0 1px rgba(255,255,255,0.4);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
     }
-    .casa-banner:hover{transform:translateY(-2px);background:rgba(143,168,130,.18)}
-    .casa-banner .cb-arrow{margin-left:auto;font-size:14px}
+
+    /* Header */
+    .store-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 12px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px);
+    }
+    .header-gem-link {
+      font-size: 13px;
+      font-weight: 700;
+      color: #7a50d0;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(180,140,255,0.2);
+    }
+    .header-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #2d1f4e;
+    }
+    .header-close {
+      font-size: 13px;
+      font-weight: 700;
+      color: #7a50d0;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(180,140,255,0.2);
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    /* Balance bar */
+    .balance-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.7);
+      margin: 0 16px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(150,100,220,0.1);
+    }
+    .balance-item {
+      font-size: 15px;
+      font-weight: 800;
+      color: #2d1f4e;
+    }
+    .balance-sep {
+      width: 1px;
+      height: 18px;
+      background: rgba(150,100,220,0.2);
+    }
+
+    /* Scrollable content */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 24px;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    /* Category tabs */
+    .cat-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cat-tabs::-webkit-scrollbar { display: none; }
+    .cat-tab {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.5);
+      color: #666;
+    }
+    .cat-tab.active {
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(150,100,220,0.2);
+      color: #2d1f4e;
+    }
+
+    /* Product grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Product card */
+    .product-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 4px 16px rgba(150,100,220,0.12);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .product-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .badge-bonus {
+      background: linear-gradient(135deg, #FF9F4A, #FFB86C);
+      color: #fff;
+    }
+    .badge-rare {
+      background: linear-gradient(135deg, #9B6FE0, #C49AF8);
+      color: #fff;
+    }
+    .product-emoji {
+      font-size: 52px;
+      margin-bottom: 10px;
+      margin-top: 4px;
+      display: block;
+    }
+    .product-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #2d1f4e;
+      margin-bottom: 4px;
+    }
+    .product-desc {
+      font-size: 11px;
+      color: #9b8bbf;
+      font-weight: 500;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 8px;
+    }
+    .product-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: #7a50d0;
+    }
+    .buy-btn {
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #9B6FE0, #C49AF8);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 12px rgba(150,100,220,0.3);
+    }
+    .buy-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(150,100,220,0.4); }
+    .buy-btn:active { transform: scale(0.96); }
+    .buy-btn.bought {
+      background: linear-gradient(135deg, #aaa, #ccc);
+      box-shadow: none;
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast {
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #4a3580;
+      box-shadow: 0 6px 20px rgba(100,60,180,0.2);
+      animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2s forwards;
+      white-space: nowrap;
+    }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(-10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
+
+    /* Bottom tab bar */
+    .tab-bar {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(200,180,240,0.3);
+      border-radius: 0 0 44px 44px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 8px 18px;
+    }
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-decoration: none;
+      padding: 4px 12px;
+      border-radius: 16px;
+    }
+    .tab-item.active { background: rgba(150,100,220,0.12); }
+    .tab-icon { font-size: 22px; }
+    .tab-label { font-size: 10px; font-weight: 700; color: #9b8bbf; }
+    .tab-item.active .tab-label { color: #7a4fbf; }
   </style>
 </head>
 <body>
-<div class="toast" id="toast"></div>
-<main class="phone">
-  <div class="screen">
+  <div class="toast-container" id="toastContainer"></div>
 
-    <div class="page-hdr">
-      <h1 class="page-title">Negozio</h1>
-      <button class="close-btn" onclick="history.back()">✕</button>
+  <div class="phone-frame">
+    <!-- Header -->
+    <div class="store-header">
+      <a class="header-gem-link" href="hub.html">&#128142; Acquista Gemme</a>
+      <div class="header-title">&#127873; Store</div>
+      <button class="header-close" onclick="history.back()">Chiudi</button>
     </div>
 
-    <div class="coins-hud">🪙 <span id="coins">5000</span></div>
-
-    <div class="tabs" id="shopTabs">
-      <div class="tab active" data-cat="0">🏠 Casa</div>
-      <div class="tab" data-cat="1">🌾 Fattoria</div>
-      <div class="tab" data-cat="2">🍳 Cucina</div>
-      <div class="tab" data-cat="3">💎 Premium</div>
+    <!-- Balance -->
+    <div class="balance-bar">
+      <div class="balance-item">&#129683; <span id="coinsDisplay">100</span></div>
+      <div class="balance-sep"></div>
+      <div class="balance-item">&#128142; <span id="gemsDisplay">5</span></div>
     </div>
 
-    <div class="panel panel--wood panel--fancy">
-      <div class="grid-3 shop-grid" id="shopGrid"></div>
-      <div class="pagination" id="pagination"></div>
+    <div class="content">
+      <!-- Category tabs -->
+      <div class="cat-tabs" id="catTabs">
+        <button class="cat-tab active" data-cat="food">&#128308; Cibo</button>
+        <button class="cat-tab" data-cat="essentials">&#128153; Essenziali</button>
+        <button class="cat-tab" data-cat="deco">&#128154; Decorazioni</button>
+        <button class="cat-tab" data-cat="special">&#11088; Speciali</button>
+      </div>
+
+      <!-- Product grid -->
+      <div class="product-grid" id="productGrid"></div>
     </div>
 
-    <a class="casa-banner" href="hub.html" id="casaBanner" style="display:none">
-      🏠 Vai alla tua Casa per posizionare i mobili!
-      <span class="cb-arrow">→</span>
-    </a>
+    <!-- Tab bar -->
+    <nav class="tab-bar">
+      <a class="tab-item" href="home-pet.html">
+        <span class="tab-icon">&#128062;</span>
+        <span class="tab-label">Pet</span>
+      </a>
+      <a class="tab-item" href="hub.html">
+        <span class="tab-icon">&#127968;</span>
+        <span class="tab-label">Casa</span>
+      </a>
+      <a class="tab-item active" href="shop.html">
+        <span class="tab-icon">&#128722;</span>
+        <span class="tab-label">Store</span>
+      </a>
+      <a class="tab-item" href="journal.html">
+        <span class="tab-icon">&#128214;</span>
+        <span class="tab-label">Diario</span>
+      </a>
+    </nav>
   </div>
 
-  <nav class="tab-bar">
-    <a class="tab-link" href="../gallery.html"><span class="tab-icon">🎮</span>Galleria</a>
-    <a class="tab-link" href="hub.html"><span class="tab-icon">🏠</span>Casa</a>
-    <a class="tab-link active" href="shop.html"><span class="tab-icon">🛒</span>Negozio</a>
-    <a class="tab-link" href="map.html"><span class="tab-icon">🗺️</span>Mappa</a>
-    <a class="tab-link" href="../index.html"><span class="tab-icon">🐰</span>Pet</a>
-  </nav>
-</main>
+  <script>
+    (function() {
+      const catalog = {
+        food: [
+          { id: 'carrot',  emoji: '🥕', name: 'Carota',       desc: 'Nutriente e croccante',        price: 20,  coins: true,  bonus: '+20% Fame' },
+          { id: 'cookie',  emoji: '🍪', name: 'Biscotto',     desc: 'Dolce sorpresa kawaii',         price: 30,  coins: true },
+          { id: 'cake',    emoji: '🎂', name: 'Torta',        desc: 'Per le occasioni speciali',     price: 80,  coins: true,  rare: true },
+          { id: 'tea',     emoji: '🍵', name: 'The Calmante', desc: 'Rilassa e calma il pet',        price: 45,  coins: true,  bonus: '+30% Calma' },
+          { id: 'apple',   emoji: '🍎', name: 'Mela',         desc: 'Fresca e vitaminica',           price: 15,  coins: true },
+          { id: 'salad',   emoji: '🥗', name: 'Insalata',     desc: 'Leggera e sana',                price: 25,  coins: true }
+        ],
+        essentials: [
+          { id: 'brush',   emoji: '🪮', name: 'Spazzola',     desc: 'Per un pelo lucente',           price: 50,  coins: true },
+          { id: 'bed',     emoji: '🛏️', name: 'Lettino',      desc: 'Sonni tranquilli garantiti',   price: 200, coins: true,  bonus: '+40% Energia' },
+          { id: 'toy',     emoji: '🧸', name: 'Peluche',      desc: 'Compagno di giochi',            price: 60,  coins: true },
+          { id: 'lamp',    emoji: '🪔', name: 'Lampada',      desc: 'Luce soffusa per la sera',      price: 80,  coins: true }
+        ],
+        deco: [
+          { id: 'plant',   emoji: '🪴', name: 'Pianta',       desc: 'Porta verde e serenita',        price: 40,  coins: true },
+          { id: 'flower',  emoji: '🌸', name: 'Fiori',        desc: 'Colori primaverili',            price: 35,  coins: true },
+          { id: 'rainbow', emoji: '🌈', name: 'Arcobaleno',   desc: 'Sticker speciale da muro',      price: 3,   coins: false, gems: true },
+          { id: 'stars',   emoji: '✨', name: 'Stelle',       desc: 'Decora il soffitto',            price: 2,   coins: false, gems: true }
+        ],
+        special: [
+          { id: 'magic',   emoji: '🔮', name: 'Cristallo',    desc: 'Amplifica i poteri del pet',    price: 5,   coins: false, gems: true, rare: true },
+          { id: 'crown',   emoji: '👑', name: 'Corona',       desc: 'Estetica VIP',                  price: 8,   coins: false, gems: true, rare: true },
+          { id: 'wings',   emoji: '🦋', name: 'Ali',          desc: 'Il pet vola di felicita',       price: 10,  coins: false, gems: true },
+          { id: 'halo',    emoji: '😇', name: 'Aureola',      desc: 'Effetto angelico kawaii',       price: 6,   coins: false, gems: true }
+        ]
+      };
 
-<script>
-(function(){
-  /* ── Furniture ids (must match hub.html FURN keys) ── */
-  const HOUSE_ITEMS=[
-    {id:'chair',emoji:'🪑',name:'Sedia',price:150},
-    {id:'sofa',emoji:'🛋️',name:'Divano',price:600},
-    {id:'plant',emoji:'🪴',name:'Pianta',price:80},
-    {id:'painting',emoji:'🖼️',name:'Quadro',price:200},
-    {id:'candle',emoji:'🕯️',name:'Candela',price:60},
-    {id:'plushie',emoji:'🧸',name:'Peluche',price:350},
-    {id:'bed',emoji:'🛏️',name:'Letto',price:500},
-    {id:'lamp',emoji:'🪔',name:'Lampada',price:120},
-    {id:'tv',emoji:'📺',name:'TV',price:800},
-    {id:'bookshelf',emoji:'📚',name:'Libreria',price:280},
-    {id:'clock',emoji:'🕰️',name:'Orologio',price:180},
-    {id:'xtable',emoji:'🪵',name:'Tavolino',price:200},
-    {id:'mirror',emoji:'🪞',name:'Specchio',price:250},
-    {id:'rug',emoji:'🟤',name:'Tappeto',price:100},
-    {id:'stove',emoji:'🍳',name:'Fornello',price:400},
-    {id:'fridge',emoji:'🧊',name:'Frigo',price:700}
-  ];
+      function load(k, fb) { try { return JSON.parse(localStorage.getItem(k)); } catch(e) {} return fb; }
+      let coins = load('metime_shop_coins', 100);
+      let gems  = load('metime_shop_gems',  5);
+      let purchased = new Set(load('metime_shop_purchased', []));
+      let currentCat = 'food';
 
-  const catalog=[
-    {cat:0, house:true, items:HOUSE_ITEMS},
-    {cat:1, items:[
-      {emoji:'🌽',name:'Mais',price:80},{emoji:'🥕',name:'Carote',price:60},{emoji:'🍅',name:'Pomodori',price:90},
-      {emoji:'🌶️',name:'Peperoncini',price:120},{emoji:'🧅',name:'Cipolle',price:50},{emoji:'🥬',name:'Lattuga',price:45},
-      {emoji:'🍆',name:'Melanzane',price:75},{emoji:'🥑',name:'Avocado',price:200,lock:30},{emoji:'🫐',name:'Mirtilli',price:180,lock:35}
-    ]},
-    {cat:2, items:[
-      {emoji:'🍳',name:'Padella',price:300},{emoji:'🔪',name:'Coltello',price:250},{emoji:'🥄',name:'Mestolo',price:100},
-      {emoji:'🫕',name:'Pentola',price:400},{emoji:'⏲️',name:'Timer Pro',price:500,lock:25}
-    ]},
-    {cat:3, items:[
-      {emoji:'👑',name:'Corona VIP',price:2000},{emoji:'✨',name:'Aura Magica',price:1500},{emoji:'🌈',name:'Arcobaleno',price:3000},
-      {emoji:'💎',name:'Diamante',price:5000,lock:40}
-    ]}
-  ];
+      const toastContainer = document.getElementById('toastContainer');
 
-  function load(k,fb){try{return JSON.parse(localStorage.getItem(k))}catch(e){}return fb}
-  let coins=load('metime_coins',5000);
-  let homeInv=load('metime_inv',[]);       // furniture in house inventory
-  let bought=new Set(load('metime_bought',[])); // one-time buys (non-house)
-  let currentCat=0,currentPage=0;
-  const PER_PAGE=9;
-
-  const $=s=>document.querySelector(s);
-  function saveCoins(){localStorage.setItem('metime_coins',JSON.stringify(coins))}
-  function saveInv(){localStorage.setItem('metime_inv',JSON.stringify(homeInv))}
-  function saveBought(){localStorage.setItem('metime_bought',JSON.stringify([...bought]))}
-  function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-
-  /* Count how many of an id are in homeInv + placed + wall */
-  function ownedCount(id){
-    let n=homeInv.filter(x=>x===id).length;
-    const fl=load('metime_floor',{});Object.values(fl).forEach(v=>{if(v===id)n++});
-    const wl=load('metime_wall',[]);wl.forEach(v=>{if(v===id)n++});
-    return n;
-  }
-
-  function bumpCoins(){
-    const hud=document.querySelector('.coins-hud');
-    hud.classList.remove('bump');void hud.offsetWidth;hud.classList.add('bump');
-  }
-
-  function render(){
-    const cat=catalog[currentCat];
-    const items=cat.items;
-    const isHouse=!!cat.house;
-    const pages=Math.ceil(items.length/PER_PAGE);
-    currentPage=Math.min(currentPage,pages-1);
-    const start=currentPage*PER_PAGE;
-    const pageItems=items.slice(start,start+PER_PAGE);
-
-    $('#shopGrid').innerHTML=pageItems.map((it,i)=>{
-      const idx=start+i;
-      const key=currentCat+'-'+idx;
-      const locked=it.lock&&it.lock>24;
-
-      if(isHouse){
-        // House items — repeatable buy, show owned count
-        const owned=ownedCount(it.id);
-        return '<div class="item-card'+(locked?' locked':'')+'" data-key="'+key+'" data-idx="'+idx+'">'
-          +'<div class="thumb"'+(locked?' data-lock="Sblocca a Lv.'+it.lock+'"':'')+'>'+it.emoji
-          +(owned>0?'<span class="owned-badge">×'+owned+'</span>':'')
-          +'</div>'
-          +'<button class="price-btn" '+(locked?'disabled style="opacity:.5"':'')+'>'
-          +(locked?'🔒 Lv.'+it.lock:'🪙 '+it.price)
-          +'</button></div>';
-      }else{
-        // One-time buyable
-        const isBought=bought.has(key);
-        return '<div class="item-card'+(locked?' locked':'')+(isBought?' bought':'')+'" data-key="'+key+'" data-idx="'+idx+'">'
-          +'<div class="thumb"'+(locked?' data-lock="Sblocca a Lv.'+it.lock+'"':'')+'>'+it.emoji+'</div>'
-          +'<button class="price-btn" '+(locked||isBought?'disabled style="opacity:.5"':'')+'>'
-          +(locked?'🔒 Lv.'+it.lock:isBought?'✅ Comprato':'🪙 '+it.price)
-          +'</button></div>';
+      function saveAll() {
+        localStorage.setItem('metime_shop_coins', JSON.stringify(coins));
+        localStorage.setItem('metime_shop_gems', JSON.stringify(gems));
+        localStorage.setItem('metime_shop_purchased', JSON.stringify([...purchased]));
       }
-    }).join('');
 
-    $('#pagination').innerHTML=Array.from({length:pages},(_,i)=>
-      '<div class="dot'+(i===currentPage?' active':'')+'" data-page="'+i+'"></div>'
-    ).join('');
+      function showToast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        toastContainer.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+      }
 
-    $('#coins').textContent=coins.toLocaleString('it-IT');
+      function updateBalance() {
+        document.getElementById('coinsDisplay').textContent = coins;
+        document.getElementById('gemsDisplay').textContent = gems;
+      }
 
-    // Show casa banner when viewing house tab
-    $('#casaBanner').style.display=isHouse?'flex':'none';
+      function renderGrid() {
+        const items = catalog[currentCat] || [];
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = items.map(item => {
+          const isBought = purchased.has(item.id);
+          const badgeHtml = item.rare
+            ? '<span class="product-badge badge-rare">Raro</span>'
+            : item.bonus
+              ? '<span class="product-badge badge-bonus">' + item.bonus + '</span>'
+              : '';
+          const priceLabel = item.gems
+            ? '&#128142; ' + item.price
+            : '&#129683; ' + item.price;
+          return '<div class="product-card">'
+            + badgeHtml
+            + '<span class="product-emoji">' + item.emoji + '</span>'
+            + '<div class="product-name">' + item.name + '</div>'
+            + '<div class="product-desc">' + item.desc + '</div>'
+            + '<div class="product-footer">'
+            + '<span class="product-price">' + priceLabel + '</span>'
+            + '<button class="buy-btn' + (isBought ? ' bought' : '') + '" data-id="' + item.id + '">'
+            + (isBought ? '&#10003; Usato' : 'Acquista &#128722;')
+            + '</button>'
+            + '</div>'
+            + '</div>';
+        }).join('');
 
-    // Buy handlers
-    document.querySelectorAll('.item-card:not(.locked):not(.bought)').forEach(card=>{
-      card.addEventListener('click',()=>{
-        const idx=+card.dataset.idx;
-        const cat2=catalog[currentCat];
-        const it=cat2.items[idx];
-        if(coins<it.price){toast('🪙 Monete insufficienti!');return}
-        coins-=it.price;
-        bumpCoins();
-        if(cat2.house){
-          // Add to house inventory
-          homeInv.push(it.id);
-          saveInv();saveCoins();
-          toast('🏠 '+it.name+' acquistato! Vai alla Casa per posizionarlo');
-        }else{
-          bought.add(card.dataset.key);
-          saveBought();saveCoins();
-          toast('🛒 '+it.name+' acquistato!');
-        }
-        render();
+        document.querySelectorAll('.buy-btn:not(.bought)').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const item = items.find(it => it.id === id);
+            if (!item) return;
+            if (item.gems) {
+              if (gems < item.price) { showToast('💎 Gemme insufficienti!'); return; }
+              gems -= item.price;
+            } else {
+              if (coins < item.price) { showToast('🪙 Monete insufficienti!'); return; }
+              coins -= item.price;
+            }
+            purchased.add(id);
+            saveAll();
+            updateBalance();
+            showToast(item.emoji + ' ' + item.name + ' acquistato!');
+            renderGrid();
+          });
+        });
+      }
+
+      document.querySelectorAll('.cat-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentCat = tab.dataset.cat;
+          renderGrid();
+        });
       });
-    });
 
-    document.querySelectorAll('.dot').forEach(d=>d.addEventListener('click',()=>{
-      currentPage=+d.dataset.page;render();
-    }));
-  }
-
-  document.querySelectorAll('#shopTabs .tab').forEach(tab=>{
-    tab.addEventListener('click',()=>{
-      document.querySelectorAll('#shopTabs .tab').forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
-      currentCat=+tab.dataset.cat;currentPage=0;render();
-    });
-  });
-
-  render();
-})();
-</script>
+      updateBalance();
+      renderGrid();
+    })();
+  </script>
 </body>
 </html>

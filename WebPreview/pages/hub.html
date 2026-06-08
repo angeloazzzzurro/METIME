@@ -49,12 +49,12 @@
     .btn-decora{background:#C8A0F8;color:#50108A;}
 
     /* tab bar */
-    .tabs{background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+    .tab-bar{background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
       display:flex;border-top:1px solid rgba(200,180,240,.3);padding:8px 0 28px;flex-shrink:0;}
-    .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-      font-size:12px;font-weight:500;color:#9A88B0;cursor:pointer;padding:6px 0;}
-    .tab.active{color:#6A3EA0;}
-    .tab-icon{font-size:22px;}
+    .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+      font-size:11px;font-weight:600;color:#9A88B0;text-decoration:none;padding:6px 0;}
+    .tab-item.active{color:#6A3EA0;}
+    .tab-item .tab-icon{font-size:22px;}
 
     /* pet float */
     @keyframes petfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -259,23 +259,30 @@
   <!-- action buttons -->
   <div class="act-row">
     <div class="act-inner">
-      <button class="act-btn btn-store"  onclick="goTo('shop.html')">🛍 Store</button>
       <button class="act-btn btn-zaino"  onclick="showMsg('Il tuo zaino è vuoto! 🎒')">🎒 Zaino</button>
       <button class="act-btn btn-decora" onclick="showMsg('Modalità decora attivata! ✨')">✨ Decora</button>
     </div>
   </div>
 
   <!-- tab bar -->
-  <div class="tabs">
-    <div class="tab" onclick="goTo('home-pet.html')">
+  <nav class="tab-bar">
+    <a class="tab-item" href="home-pet.html">
       <span class="tab-icon">🌿</span>
       <span>Giardino</span>
-    </div>
-    <div class="tab active">
+    </a>
+    <a class="tab-item active" href="hub.html">
       <span class="tab-icon">🏠</span>
       <span>Casa</span>
-    </div>
-  </div>
+    </a>
+    <a class="tab-item" href="journal.html">
+      <span class="tab-icon">📖</span>
+      <span>Diario</span>
+    </a>
+    <a class="tab-item" href="shop.html">
+      <span class="tab-icon">🛍</span>
+      <span>Shop</span>
+    </a>
+  </nav>
 </div>
 
 <script>

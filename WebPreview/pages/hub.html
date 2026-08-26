@@ -3,28 +3,21 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>METIME - La tua Casa</title>
+  <title>METIME - Casa</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      background:#e8dccf;
+      background:#c8b8a8;
       min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
     }
     .phone{
-      width:390px;max-width:100vw;
-      background:linear-gradient(160deg,#fdf3e3 0%,#f5ead8 100%);
-      min-height:100vh;position:relative;overflow:hidden;
-      display:flex;flex-direction:column;
+      width:390px;max-width:100vw;min-height:100vh;
+      background:#fdf3e3;
+      overflow:hidden;display:flex;flex-direction:column;
     }
-    /* sparkles */
-    .spark{position:absolute;pointer-events:none;
-      animation:spfloat 5s ease-in-out infinite alternate;}
-    @keyframes spfloat{
-      0%{transform:translateY(0) rotate(0deg) scale(1)}
-      100%{transform:translateY(-12px) rotate(15deg) scale(1.1)}
-    }
-    /* ── Top selection bar ── */
+
+    /* ── compactSelectionBar ── */
     .top-bar{
       background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
       border-bottom:1px solid #c9a96e;
@@ -36,37 +29,100 @@
       margin-left:auto;display:flex;align-items:center;gap:5px;
       background:linear-gradient(135deg,#d4a76a,#a67c52);
       color:#fff;border:none;border-radius:999px;
-      padding:8px 14px;font-size:11px;font-weight:900;font-family:inherit;
+      padding:9px 14px;font-size:11px;font-weight:900;font-family:inherit;
       cursor:pointer;text-decoration:none;
     }
     .sections-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
     .sections-scroll::-webkit-scrollbar{display:none;}
     .sec-btn{
-      display:flex;align-items:center;gap:4px;
-      padding:7px 11px;border-radius:20px;border:none;
-      font-size:12px;font-weight:700;font-family:inherit;
+      --t:#5e4636;
+      display:flex;align-items:center;gap:5px;
+      padding:10px 12px;border-radius:999px;
+      font-size:12px;font-weight:900;font-family:inherit;
       cursor:pointer;white-space:nowrap;
-      background:rgba(201,169,110,0.18);color:#5e4636;
-      text-decoration:none;transition:background .15s;
+      background:rgba(253,243,227,0.94);color:var(--t);
+      border:1.5px solid color-mix(in srgb,var(--t) 14%,transparent);
+      text-decoration:none;transition:all .15s;flex-shrink:0;
     }
-    .sec-btn.active{background:#c9a96e;color:#fff;}
-    .sec-btn-icon{font-size:14px;}
-    /* room */
-    .room{flex:1;display:flex;align-items:center;justify-content:center;
-      overflow:hidden;padding:0;}
-    #house{width:390px;height:auto;display:block;}
-    /* action row */
-    .act-row{padding:8px 18px 10px;flex-shrink:0;}
-    .act-inner{background:#fff;border-radius:32px;display:flex;gap:10px;
-      padding:10px 10px;box-shadow:0 4px 20px rgba(100,50,180,.13);}
-    .act-btn{flex:1;border:none;border-radius:24px;padding:13px 4px;
-      font-size:14px;font-weight:800;cursor:pointer;
+    .sec-btn.active{
+      background:linear-gradient(135deg,var(--t),color-mix(in srgb,var(--t) 78%,#000));
+      color:#fff;border-color:rgba(255,255,255,.18);
+    }
+    .si{font-size:13px;}
+
+    /* ── careFocusPanel ── */
+    .care-panel{
+      background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
+      border-bottom:1px solid #c9a96e;
+      padding:12px 14px 14px;flex-shrink:0;
+    }
+    .care-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+    .care-title-col{flex:1;min-width:0;}
+    .care-title{font-size:18px;font-weight:900;color:#3d2b1f;margin-bottom:3px;letter-spacing:-.2px;}
+    .care-sub{font-size:11px;font-weight:700;color:#5e4636;line-height:1.4;}
+    .care-badges{display:flex;gap:6px;flex-shrink:0;}
+    .cbadge{
+      display:flex;align-items:center;gap:5px;
+      padding:7px 10px;border-radius:999px;
+      background:rgba(253,243,227,0.92);
+      font-size:11px;font-weight:900;
+    }
+    .needs-row{display:flex;gap:8px;margin-bottom:12px;}
+    .nbar{flex:1;display:flex;flex-direction:column;gap:4px;}
+    .nbar-lbl{display:flex;align-items:center;gap:3px;font-size:9px;font-weight:700;}
+    .nbar-track{height:6px;border-radius:999px;overflow:hidden;}
+    .nbar-fill{height:100%;border-radius:999px;}
+    .acts-scroll{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+    .acts-scroll::-webkit-scrollbar{display:none;}
+    .abt{
+      display:flex;flex-direction:column;align-items:center;gap:5px;
+      width:70px;flex-shrink:0;border:0;background:none;cursor:pointer;padding:2px 0;
+    }
+    .abt:active .acircle{transform:scale(.88);}
+    .acircle{
+      width:36px;height:36px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:17px;
+      transition:transform .15s;
+    }
+    .albl{font-size:10px;font-weight:900;line-height:1;}
+
+    /* ── Casa content ── */
+    .casa-content{
+      flex:1;overflow-y:auto;
+      background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
+      display:flex;flex-direction:column;
+      padding:10px 12px 24px;gap:10px;
+    }
+    .casa-content::-webkit-scrollbar{display:none;}
+
+    /* Room wrap */
+    .room-wrap{
+      border-radius:28px;overflow:hidden;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.22);
+      flex-shrink:0;
+    }
+    #house{width:100%;display:block;}
+
+    /* Casa action buttons */
+    .casa-acts{
+      display:flex;gap:10px;
+      background:rgba(255,255,255,.6);
+      border-radius:24px;padding:10px;
+      border:1px solid rgba(255,255,255,.7);
+      box-shadow:0 3px 12px rgba(61,43,31,.07);
+    }
+    .ca-btn{
+      flex:1;border:none;border-radius:18px;padding:13px 4px;
+      font-size:13px;font-weight:900;cursor:pointer;font-family:inherit;
       display:flex;align-items:center;justify-content:center;
-      gap:6px;transition:transform .13s;}
-    .act-btn:active{transform:scale(.91);}
-    .btn-store {background:#F0A0BC;color:#7A1040;}
-    .btn-zaino {background:#80C4F8;color:#0A3880;}
-    .btn-decora{background:#C8A0F8;color:#48088A;}
+      gap:6px;transition:transform .13s;
+    }
+    .ca-btn:active{transform:scale(.91);}
+    .ca-store{background:linear-gradient(135deg,#C98053,rgba(201,128,83,.8));color:#fff;}
+    .ca-zaino{background:linear-gradient(135deg,#5E84C9,rgba(94,132,201,.8));color:#fff;}
+    .ca-decora{background:linear-gradient(135deg,#A77BC7,rgba(167,123,199,.8));color:#fff;}
+
     /* pet float */
     @keyframes petfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
     #pet-g{animation:petfloat 2.8s ease-in-out infinite;}
@@ -75,322 +131,243 @@
 <body>
 <div class="phone">
 
-  <!-- background sparkles / stars / hearts -->
-  <span class="spark" style="top:7%;left:6%;font-size:16px;color:#FFE88A;opacity:.55;animation-delay:0s">✦</span>
-  <span class="spark" style="top:13%;right:9%;font-size:12px;color:#FFE88A;opacity:.45;animation-delay:.9s">★</span>
-  <span class="spark" style="top:26%;left:4%;font-size:10px;color:#FFDDE8;opacity:.4;animation-delay:1.7s">♡</span>
-  <span class="spark" style="top:67%;left:5%;font-size:14px;color:#FFE88A;opacity:.5;animation-delay:1.3s">✦</span>
-  <span class="spark" style="top:71%;right:7%;font-size:18px;color:#FFDDE8;opacity:.4;animation-delay:.3s">♡</span>
-  <span class="spark" style="top:55%;left:92%;font-size:11px;color:#FFE88A;opacity:.45;animation-delay:1.6s">★</span>
-  <span class="spark" style="top:20%;left:88%;font-size:13px;color:#FFDDE8;opacity:.4;animation-delay:2.1s">♡</span>
-  <span class="spark" style="top:60%;left:3%;font-size:9px;color:#FFE88A;opacity:.5;animation-delay:.7s">✦</span>
-  <span class="spark" style="top:40%;right:5%;font-size:12px;color:#FFDDE8;opacity:.35;animation-delay:1.1s">◦</span>
-  <span class="spark" style="top:80%;left:50%;font-size:11px;color:#FFE88A;opacity:.4;animation-delay:.4s">★</span>
-
-  <!-- Top bar -->
+  <!-- compactSelectionBar -->
   <div class="top-bar">
     <div class="top-row">
       <div class="app-logo">💛 METIME</div>
       <a class="journey-btn" href="journal.html">📖 Journey</a>
     </div>
     <div class="sections-scroll">
-      <a class="sec-btn active" href="hub.html"><span class="sec-btn-icon">🏠</span> Casa</a>
-      <a class="sec-btn" href="home-pet.html"><span class="sec-btn-icon">🌿</span> Giardino</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎮</span> Giochi</a>
-      <a class="sec-btn" href="journal.html"><span class="sec-btn-icon">📖</span> Diario</a>
-      <a class="sec-btn" href="shop.html"><span class="sec-btn-icon">🛍</span> Store</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎒</span> Zaino</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎨</span> Decora</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">☕</span> Me Time</a>
-      <a class="sec-btn" href="care-ritual.html"><span class="sec-btn-icon">✨</span> Rituale</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">🗺️</span> Mappa</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">🍽️</span> Ristorante</a>
-      <a class="sec-btn" href="#"><span class="sec-btn-icon">🌾</span> Fattoria</a>
+      <a class="sec-btn active" href="hub.html"          style="--t:#E38A74"><span class="si">🏠</span> Casa</a>
+      <a class="sec-btn" href="home-pet.html"            style="--t:#53A86A"><span class="si">🌲</span> Giardino</a>
+      <a class="sec-btn" href="#"                        style="--t:#E98A56"><span class="si">🎮</span> Giochi</a>
+      <a class="sec-btn" href="journal.html"             style="--t:#5A8BCF"><span class="si">📖</span> Diario</a>
+      <a class="sec-btn" href="shop.html"                style="--t:#C98053"><span class="si">🛒</span> Store</a>
+      <a class="sec-btn" href="#"                        style="--t:#5E84C9"><span class="si">🎒</span> Zaino</a>
+      <a class="sec-btn" href="#"                        style="--t:#A77BC7"><span class="si">🪑</span> Decora</a>
+      <a class="sec-btn" href="#"                        style="--t:#D36F8E"><span class="si">☕</span> Me Time</a>
+      <a class="sec-btn" href="care-ritual.html"         style="--t:#e8a0a0"><span class="si">💗</span> Rituale</a>
+      <a class="sec-btn" href="#"                        style="--t:#8fa882"><span class="si">🗺️</span> Mappa</a>
+      <a class="sec-btn" href="#"                        style="--t:#d4884a"><span class="si">🍴</span> Cucina</a>
+      <a class="sec-btn" href="#"                        style="--t:#5a9a2e"><span class="si">🌿</span> Fattoria</a>
     </div>
   </div>
 
-  <!-- isometric room -->
-  <div class="room">
-    <svg id="house" viewBox="0 0 390 378" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-
-        <!-- wall clip paths -->
-        <!-- Left wall:  (195,18) (40,98) (40,248) (195,168) -->
-        <!-- Right wall: (195,18) (350,98) (350,248) (195,168) -->
-        <clipPath id="lwClip">
-          <polygon points="195,18 40,98 40,248 195,168"/>
-        </clipPath>
-        <clipPath id="rwClip">
-          <polygon points="195,18 350,98 350,248 195,168"/>
-        </clipPath>
-
-        <!-- pet gradient -->
-        <radialGradient id="petGrad" cx="38%" cy="32%" r="65%">
-          <stop offset="0%" stop-color="#CAA8F8"/>
-          <stop offset="100%" stop-color="#7040BC"/>
-        </radialGradient>
-
-        <!-- lamp warm glow -->
-        <radialGradient id="lgGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(255,200,215,.55)"/>
-          <stop offset="100%" stop-color="rgba(255,200,215,0)"/>
-        </radialGradient>
-
-        <!-- wall depth gradient (left wall: dark on right toward back corner) -->
-        <linearGradient id="lwDark" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="rgba(255,240,230,.08)"/>
-          <stop offset="100%" stop-color="rgba(80,30,10,.13)"/>
-        </linearGradient>
-        <!-- wall depth gradient (right wall: dark on left toward back corner) -->
-        <linearGradient id="rwDark" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="rgba(50,10,60,.13)"/>
-          <stop offset="100%" stop-color="rgba(255,240,255,.06)"/>
-        </linearGradient>
-
-        <!-- floor warm gradient front-to-back -->
-        <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(255,255,200,.05)"/>
-          <stop offset="100%" stop-color="rgba(180,150,50,.06)"/>
-        </linearGradient>
-
-        <!-- room drop shadow filter -->
-        <filter id="roomShadow" x="-8%" y="-5%" width="116%" height="115%">
-          <feDropShadow dx="0" dy="8" stdDeviation="12"
-                        flood-color="rgba(90,50,170,.22)"/>
-        </filter>
-
-      </defs>
-
-      <!-- ── hex room shadow ── -->
-      <polygon points="195,22 350,102 350,252 195,322 40,252 40,102"
-               fill="rgba(90,50,170,.14)" filter="url(#roomShadow)"/>
-
-      <!-- ══════════════════════════════════
-           LEFT WALL  — salmon  wide stripes
-           points: 195,18  40,98  40,248  195,168
-           x range: 40 → 195  (155 px / 5 stripes ≈ 31 px each)
-           ══════════════════════════════════ -->
-      <g clip-path="url(#lwClip)">
-        <!-- stripe A lighter   stripe B darker salmon -->
-        <rect x="40"  y="14" width="31" height="240" fill="#FDDCC8"/>
-        <rect x="71"  y="14" width="31" height="240" fill="#F0A070"/>
-        <rect x="102" y="14" width="31" height="240" fill="#FDDCC8"/>
-        <rect x="133" y="14" width="31" height="240" fill="#F0A070"/>
-        <rect x="164" y="14" width="31" height="240" fill="#FDDCC8"/>
-      </g>
-      <!-- depth darkening toward back corner -->
-      <polygon points="195,18 40,98 40,248 195,168" fill="url(#lwDark)"/>
-      <!-- border -->
-      <polygon points="195,18 40,98 40,248 195,168"
-               fill="none" stroke="#D48858" stroke-width="1.8"/>
-
-      <!-- ══════════════════════════════════
-           RIGHT WALL — lavender wide stripes
-           points: 195,18  350,98  350,248  195,168
-           x range: 195 → 350 (155 px / 5 stripes)
-           ══════════════════════════════════ -->
-      <g clip-path="url(#rwClip)">
-        <rect x="195" y="14" width="31" height="240" fill="#EAD8FF"/>
-        <rect x="226" y="14" width="31" height="240" fill="#C0A0E8"/>
-        <rect x="257" y="14" width="31" height="240" fill="#EAD8FF"/>
-        <rect x="288" y="14" width="31" height="240" fill="#C0A0E8"/>
-        <rect x="319" y="14" width="31" height="240" fill="#EAD8FF"/>
-      </g>
-      <!-- depth -->
-      <polygon points="195,18 350,98 350,248 195,168" fill="url(#rwDark)"/>
-
-      <!-- ── ARCHED WINDOW on right wall ── -->
-      <g clip-path="url(#rwClip)">
-        <!-- outer frame -->
-        <path d="M246,112 Q268,76 290,112 L290,158 L246,158 Z" fill="#B89860"/>
-        <!-- glass background -->
-        <path d="M249,112 Q268,79 287,112 L287,155 L249,155 Z" fill="#90C8E0"/>
-        <!-- pane grid -->
-        <rect x="249" y="120" width="17" height="21" rx="2" fill="#A8D8EE"/>
-        <rect x="269" y="120" width="16" height="21" rx="2" fill="#A8D8EE"/>
-        <rect x="249" y="143" width="17" height="10" rx="2" fill="#A8D8EE"/>
-        <rect x="269" y="143" width="16" height="10" rx="2" fill="#A8D8EE"/>
-        <!-- cross bars -->
-        <rect x="246" y="138" width="44" height="3" fill="#B89860"/>
-        <rect x="265" y="110" width="3" height="48" fill="#B89860"/>
-        <!-- arch outer line -->
-        <path d="M246,112 Q268,76 290,112"
-              fill="none" stroke="#D4A870" stroke-width="2"/>
-        <!-- glass glare -->
-        <rect x="250" y="113" width="6" height="10" rx="1"
-              fill="rgba(255,255,255,.35)"/>
-        <!-- window sill -->
-        <rect x="243" y="157" width="50" height="5" rx="2" fill="#C8A868"/>
-      </g>
-
-      <!-- right wall border -->
-      <polygon points="195,18 350,98 350,248 195,168"
-               fill="none" stroke="#A880CC" stroke-width="1.8"/>
-
-      <!-- back corner line + top ridge -->
-      <line x1="195" y1="18" x2="195" y2="168"
-            stroke="#C49058" stroke-width="2.2"/>
-      <polyline points="40,98 195,18 350,98"
-                fill="none" stroke="#C49058" stroke-width="2.2"/>
-
-      <!-- ══════════════════════════════════
-           FLOOR — 3×3 isometric tiles
-           CX=195, oy=168, TW/2=52, TH/2=26
-           fx = 195+(col-row)*52
-           fy = 168+(col+row)*26
-           tile pts: fx,fy  fx+52,fy+26  fx,fy+52  fx-52,fy+26
-           ══════════════════════════════════ -->
-
-      <!-- Color A: #EEE0A0   Color B: #F8EDBC -->
-
-      <!-- row 0 -->
-      <polygon points="195,168 247,194 195,220 143,194"
-               fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
-      <polygon points="247,194 299,220 247,246 195,220"
-               fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
-      <polygon points="299,220 351,246 299,272 247,246"
-               fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
-      <!-- row 1 -->
-      <polygon points="143,194 195,220 143,246 91,220"
-               fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
-      <polygon points="195,220 247,246 195,272 143,246"
-               fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
-      <polygon points="247,246 299,272 247,298 195,272"
-               fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
-      <!-- row 2 -->
-      <polygon points="91,220 143,246 91,272 39,246"
-               fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
-      <polygon points="143,246 195,272 143,298 91,272"
-               fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
-      <polygon points="195,272 247,298 195,324 143,298"
-               fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
-
-      <!-- floor warm overlay -->
-      <polygon points="195,168 351,246 195,324 39,246" fill="url(#floorGrad)"/>
-      <!-- floor border -->
-      <polygon points="195,168 351,246 195,324 39,246"
-               fill="none" stroke="#C8A848" stroke-width="1.4"/>
-
-      <!-- ══════════════════════════════════
-           OBJECTS  (painter order: back→front)
-           ══════════════════════════════════ -->
-
-      <!-- ── LAMP  (right side of room) ── -->
-      <g id="lamp">
-        <!-- area glow -->
-        <ellipse cx="308" cy="222" rx="34" ry="18" fill="url(#lgGrad)"/>
-        <!-- base shadow -->
-        <ellipse cx="308" cy="250" rx="15" ry="5" fill="rgba(60,30,120,.14)"/>
-        <!-- base disc -->
-        <ellipse cx="308" cy="248" rx="13" ry="4.5" fill="#EAA8B8"/>
-        <!-- pole -->
-        <rect x="305" y="214" width="5" height="35" rx="2" fill="#F4C8D0"/>
-        <!-- dome shade — pink rounded -->
-        <ellipse cx="308" cy="213" rx="24" ry="9" fill="#F4A0B8"/>
-        <path d="M284,213 Q296,232 308,235 Q320,232 332,213" fill="#F4A0B8"/>
-        <!-- shade inner lighter highlight -->
-        <ellipse cx="304" cy="210" rx="10" ry="4.5" fill="rgba(255,235,245,.68)"/>
-      </g>
-
-      <!-- ── PLANT  (left side of room, mint pot + aloe) ── -->
-      <g id="plant">
-        <!-- pot shadow -->
-        <ellipse cx="72" cy="255" rx="18" ry="6" fill="rgba(30,60,40,.13)"/>
-        <!-- pot body -->
-        <rect x="60" y="240" width="24" height="16" rx="5" fill="#72CCBA"/>
-        <!-- pot rim top -->
-        <ellipse cx="72" cy="240" rx="12" ry="4" fill="#94DED0"/>
-        <!-- pot rim bottom -->
-        <ellipse cx="72" cy="256" rx="12" ry="4.5" fill="#5ABAAA"/>
-        <!-- soil -->
-        <ellipse cx="72" cy="240" rx="9" ry="3" fill="#4A2A14"/>
-        <!-- aloe leaves  (3) -->
-        <path d="M72,240 Q63,227 64,213 Q65,201 69,198 Q73,201 74,213 Q75,227 72,240"
-              fill="#58B872" opacity=".95"/>
-        <path d="M72,238 Q59,228 55,215 Q52,203 57,200 Q63,200 67,213 Q70,224 72,238"
-              fill="#48A862" opacity=".9"/>
-        <path d="M72,238 Q85,228 89,215 Q92,203 87,200 Q81,200 77,213 Q74,224 72,238"
-              fill="#60C07A" opacity=".9"/>
-        <!-- leaf highlight lines -->
-        <path d="M70,239 Q66,226 67,216"
-              fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.8"
-              stroke-linecap="round"/>
-      </g>
-
-      <!-- ── CUSHION / COOKIE  (center floor) ── -->
-      <g id="cushion">
-        <!-- shadow -->
-        <ellipse cx="222" cy="298" rx="42" ry="13" fill="rgba(50,30,100,.11)"/>
-        <!-- outer cookie rim (darker) -->
-        <circle cx="222" cy="287" r="37" fill="#D4B060"/>
-        <!-- inner surface -->
-        <circle cx="222" cy="287" r="31" fill="#F5E4A0"/>
-        <!-- inner texture ring -->
-        <circle cx="222" cy="287" r="26" fill="none"
-                stroke="rgba(180,140,50,.25)" stroke-width="1.2"/>
-        <!-- heart decoration -->
-        <circle cx="216" cy="283" r="6" fill="rgba(190,120,70,.42)"/>
-        <circle cx="228" cy="283" r="6" fill="rgba(190,120,70,.42)"/>
-        <polygon points="210,285 222,297 234,285"
-                 fill="rgba(190,120,70,.42)"/>
-      </g>
-
-      <!-- ── PET — purple cat blob (center floor) ── -->
-      <g id="pet-g">
-        <!-- ground shadow -->
-        <ellipse cx="186" cy="264" rx="32" ry="10"
-                 fill="rgba(80,40,170,.15)"/>
-        <!-- left ear -->
-        <polygon points="160,220 163,203 177,218" fill="#6838B0"/>
-        <!-- right ear -->
-        <polygon points="195,218 209,203 212,220" fill="#6838B0"/>
-        <!-- ear pink inner -->
-        <polygon points="162,219 165,207 175,217"
-                 fill="rgba(255,165,200,.48)"/>
-        <polygon points="197,217 207,207 210,219"
-                 fill="rgba(255,165,200,.48)"/>
-        <!-- body blob -->
-        <ellipse cx="186" cy="242" rx="34" ry="32" fill="url(#petGrad)"/>
-        <!-- left paw -->
-        <ellipse cx="155" cy="257" rx="11" ry="8" fill="#7840C0"/>
-        <!-- right paw -->
-        <ellipse cx="217" cy="257" rx="11" ry="8" fill="#7840C0"/>
-        <!-- eyes -->
-        <circle cx="176" cy="236" r="6.5" fill="#140820"/>
-        <circle cx="196" cy="236" r="6.5" fill="#140820"/>
-        <!-- eye shine -->
-        <circle cx="178" cy="233" r="2.5" fill="white"/>
-        <circle cx="198" cy="233" r="2.5" fill="white"/>
-        <!-- cheeks -->
-        <ellipse cx="164" cy="246" rx="8.5" ry="5.5"
-                 fill="rgba(255,125,160,.48)"/>
-        <ellipse cx="208" cy="246" rx="8.5" ry="5.5"
-                 fill="rgba(255,125,160,.48)"/>
-        <!-- nose -->
-        <circle cx="186" cy="246" r="2.8" fill="#4018A0"/>
-        <!-- mouth -->
-        <path d="M180,252 Q186,258 192,252"
-              fill="none" stroke="#4018A0" stroke-width="2"
-              stroke-linecap="round"/>
-      </g>
-
-    </svg>
-  </div>
-
-  <!-- action buttons -->
-  <div class="act-row">
-    <div class="act-inner">
-      <button class="act-btn btn-store"  onclick="goTo('shop.html')">🛍 Store</button>
-      <button class="act-btn btn-zaino"  onclick="showMsg('Il tuo zaino è vuoto! 🎒')">🎒 Zaino</button>
-      <button class="act-btn btn-decora" onclick="showMsg('Modalità decora attivata! ✨')">✨ Decora</button>
+  <!-- careFocusPanel -->
+  <div class="care-panel">
+    <div class="care-header">
+      <div class="care-title-col">
+        <div class="care-title">Cura del pet</div>
+        <div class="care-sub">Sta bene. Mantieni il ritmo con cura leggera.</div>
+      </div>
+      <div class="care-badges">
+        <div class="cbadge" style="color:#5A8BCF">😊 Calmo</div>
+        <div class="cbadge" style="color:#F59E0B">✨ Lv 3</div>
+      </div>
+    </div>
+    <div class="needs-row">
+      <div class="nbar">
+        <div class="nbar-lbl" style="color:#F97316">🍴 <span>Fame</span></div>
+        <div class="nbar-track" style="background:rgba(249,115,22,.15)">
+          <div class="nbar-fill" style="width:58%;background:linear-gradient(to right,#F97316,rgba(249,115,22,.75))"></div>
+        </div>
+      </div>
+      <div class="nbar">
+        <div class="nbar-lbl" style="color:#EC4899">😊 <span>Umore</span></div>
+        <div class="nbar-track" style="background:rgba(236,72,153,.15)">
+          <div class="nbar-fill" style="width:72%;background:linear-gradient(to right,#EC4899,rgba(236,72,153,.75))"></div>
+        </div>
+      </div>
+      <div class="nbar">
+        <div class="nbar-lbl" style="color:#34D399">⚡ <span>Energia</span></div>
+        <div class="nbar-track" style="background:rgba(52,211,153,.15)">
+          <div class="nbar-fill" style="width:48%;background:linear-gradient(to right,#34D399,rgba(52,211,153,.75))"></div>
+        </div>
+      </div>
+      <div class="nbar">
+        <div class="nbar-lbl" style="color:#60A5FA">🌬️ <span>Calma</span></div>
+        <div class="nbar-track" style="background:rgba(96,165,250,.15)">
+          <div class="nbar-fill" style="width:65%;background:linear-gradient(to right,#60A5FA,rgba(96,165,250,.75))"></div>
+        </div>
+      </div>
+    </div>
+    <div class="acts-scroll">
+      <button class="abt" onclick="location.href='home-pet.html'">
+        <div class="acircle" style="background:linear-gradient(135deg,#F97316,rgba(249,115,22,.82))">🥕</div>
+        <span class="albl" style="color:#F97316">Nutri</span>
+      </button>
+      <button class="abt" onclick="location.href='home-pet.html'">
+        <div class="acircle" style="background:linear-gradient(135deg,#EC4899,rgba(236,72,153,.82))">🎮</div>
+        <span class="albl" style="color:#EC4899">Gioca</span>
+      </button>
+      <button class="abt" onclick="location.href='home-pet.html'">
+        <div class="acircle" style="background:linear-gradient(135deg,#60A5FA,rgba(96,165,250,.82))">✨</div>
+        <span class="albl" style="color:#60A5FA">Calma</span>
+      </button>
+      <button class="abt" onclick="location.href='journal.html'">
+        <div class="acircle" style="background:linear-gradient(135deg,#5A8BCF,rgba(90,139,207,.82))">📖</div>
+        <span class="albl" style="color:#5A8BCF">Diario</span>
+      </button>
+      <button class="abt" onclick="location.href='care-ritual.html'">
+        <div class="acircle" style="background:linear-gradient(135deg,#D36F8E,rgba(211,111,142,.82))">☕</div>
+        <span class="albl" style="color:#D36F8E">Me Time</span>
+      </button>
     </div>
   </div>
 
+  <!-- Casa section content -->
+  <div class="casa-content">
+    <!-- Isometric room -->
+    <div class="room-wrap">
+      <svg id="house" viewBox="0 0 390 378" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="lwClip"><polygon points="195,18 40,98 40,248 195,168"/></clipPath>
+          <clipPath id="rwClip"><polygon points="195,18 350,98 350,248 195,168"/></clipPath>
+          <radialGradient id="petGrad" cx="38%" cy="32%" r="65%">
+            <stop offset="0%" stop-color="#CAA8F8"/>
+            <stop offset="100%" stop-color="#7040BC"/>
+          </radialGradient>
+          <radialGradient id="lgGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(255,200,215,.55)"/>
+            <stop offset="100%" stop-color="rgba(255,200,215,0)"/>
+          </radialGradient>
+          <linearGradient id="lwDark" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(255,240,230,.08)"/>
+            <stop offset="100%" stop-color="rgba(80,30,10,.13)"/>
+          </linearGradient>
+          <linearGradient id="rwDark" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(50,10,60,.13)"/>
+            <stop offset="100%" stop-color="rgba(255,240,255,.06)"/>
+          </linearGradient>
+          <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(255,255,200,.05)"/>
+            <stop offset="100%" stop-color="rgba(180,150,50,.06)"/>
+          </linearGradient>
+          <filter id="roomShadow" x="-8%" y="-5%" width="116%" height="115%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="rgba(90,50,170,.22)"/>
+          </filter>
+        </defs>
+
+        <polygon points="195,22 350,102 350,252 195,322 40,252 40,102"
+                 fill="rgba(90,50,170,.14)" filter="url(#roomShadow)"/>
+
+        <!-- Left wall: salmon stripes -->
+        <g clip-path="url(#lwClip)">
+          <rect x="40"  y="14" width="31" height="240" fill="#FDDCC8"/>
+          <rect x="71"  y="14" width="31" height="240" fill="#F0A070"/>
+          <rect x="102" y="14" width="31" height="240" fill="#FDDCC8"/>
+          <rect x="133" y="14" width="31" height="240" fill="#F0A070"/>
+          <rect x="164" y="14" width="31" height="240" fill="#FDDCC8"/>
+        </g>
+        <polygon points="195,18 40,98 40,248 195,168" fill="url(#lwDark)"/>
+        <polygon points="195,18 40,98 40,248 195,168" fill="none" stroke="#D48858" stroke-width="1.8"/>
+
+        <!-- Right wall: lavender stripes -->
+        <g clip-path="url(#rwClip)">
+          <rect x="195" y="14" width="31" height="240" fill="#EAD8FF"/>
+          <rect x="226" y="14" width="31" height="240" fill="#C0A0E8"/>
+          <rect x="257" y="14" width="31" height="240" fill="#EAD8FF"/>
+          <rect x="288" y="14" width="31" height="240" fill="#C0A0E8"/>
+          <rect x="319" y="14" width="31" height="240" fill="#EAD8FF"/>
+        </g>
+        <polygon points="195,18 350,98 350,248 195,168" fill="url(#rwDark)"/>
+
+        <!-- Arched window -->
+        <g clip-path="url(#rwClip)">
+          <path d="M246,112 Q268,76 290,112 L290,158 L246,158 Z" fill="#B89860"/>
+          <path d="M249,112 Q268,79 287,112 L287,155 L249,155 Z" fill="#90C8E0"/>
+          <rect x="249" y="120" width="17" height="21" rx="2" fill="#A8D8EE"/>
+          <rect x="269" y="120" width="16" height="21" rx="2" fill="#A8D8EE"/>
+          <rect x="249" y="143" width="17" height="10" rx="2" fill="#A8D8EE"/>
+          <rect x="269" y="143" width="16" height="10" rx="2" fill="#A8D8EE"/>
+          <rect x="246" y="138" width="44" height="3" fill="#B89860"/>
+          <rect x="265" y="110" width="3" height="48" fill="#B89860"/>
+          <path d="M246,112 Q268,76 290,112" fill="none" stroke="#D4A870" stroke-width="2"/>
+          <rect x="250" y="113" width="6" height="10" rx="1" fill="rgba(255,255,255,.35)"/>
+          <rect x="243" y="157" width="50" height="5" rx="2" fill="#C8A868"/>
+        </g>
+
+        <polygon points="195,18 350,98 350,248 195,168" fill="none" stroke="#A880CC" stroke-width="1.8"/>
+        <line x1="195" y1="18" x2="195" y2="168" stroke="#C49058" stroke-width="2.2"/>
+        <polyline points="40,98 195,18 350,98" fill="none" stroke="#C49058" stroke-width="2.2"/>
+
+        <!-- Floor tiles -->
+        <polygon points="195,168 247,194 195,220 143,194" fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="247,194 299,220 247,246 195,220" fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="299,220 351,246 299,272 247,246" fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="143,194 195,220 143,246 91,220"  fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="195,220 247,246 195,272 143,246" fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="247,246 299,272 247,298 195,272" fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="91,220 143,246 91,272 39,246"   fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="143,246 195,272 143,298 91,272"  fill="#F8EDBC" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="195,272 247,298 195,324 143,298" fill="#EEE0A0" stroke="#D4C278" stroke-width=".9"/>
+        <polygon points="195,168 351,246 195,324 39,246" fill="url(#floorGrad)"/>
+        <polygon points="195,168 351,246 195,324 39,246" fill="none" stroke="#C8A848" stroke-width="1.4"/>
+
+        <!-- Lamp -->
+        <g id="lamp">
+          <ellipse cx="308" cy="222" rx="34" ry="18" fill="url(#lgGrad)"/>
+          <ellipse cx="308" cy="250" rx="15" ry="5" fill="rgba(60,30,120,.14)"/>
+          <ellipse cx="308" cy="248" rx="13" ry="4.5" fill="#EAA8B8"/>
+          <rect x="305" y="214" width="5" height="35" rx="2" fill="#F4C8D0"/>
+          <ellipse cx="308" cy="213" rx="24" ry="9" fill="#F4A0B8"/>
+          <path d="M284,213 Q296,232 308,235 Q320,232 332,213" fill="#F4A0B8"/>
+          <ellipse cx="304" cy="210" rx="10" ry="4.5" fill="rgba(255,235,245,.68)"/>
+        </g>
+
+        <!-- Plant -->
+        <g id="plant">
+          <ellipse cx="72" cy="255" rx="18" ry="6" fill="rgba(30,60,40,.13)"/>
+          <rect x="60" y="240" width="24" height="16" rx="5" fill="#72CCBA"/>
+          <ellipse cx="72" cy="240" rx="12" ry="4" fill="#94DED0"/>
+          <ellipse cx="72" cy="256" rx="12" ry="4.5" fill="#5ABAAA"/>
+          <ellipse cx="72" cy="240" rx="9" ry="3" fill="#4A2A14"/>
+          <path d="M72,240 Q63,227 64,213 Q65,201 69,198 Q73,201 74,213 Q75,227 72,240" fill="#58B872" opacity=".95"/>
+          <path d="M72,238 Q59,228 55,215 Q52,203 57,200 Q63,200 67,213 Q70,224 72,238" fill="#48A862" opacity=".9"/>
+          <path d="M72,238 Q85,228 89,215 Q92,203 87,200 Q81,200 77,213 Q74,224 72,238" fill="#60C07A" opacity=".9"/>
+          <path d="M70,239 Q66,226 67,216" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.8" stroke-linecap="round"/>
+        </g>
+
+        <!-- Cushion -->
+        <g id="cushion">
+          <ellipse cx="222" cy="298" rx="42" ry="13" fill="rgba(50,30,100,.11)"/>
+          <circle cx="222" cy="287" r="37" fill="#D4B060"/>
+          <circle cx="222" cy="287" r="31" fill="#F5E4A0"/>
+          <circle cx="222" cy="287" r="26" fill="none" stroke="rgba(180,140,50,.25)" stroke-width="1.2"/>
+          <circle cx="216" cy="283" r="6" fill="rgba(190,120,70,.42)"/>
+          <circle cx="228" cy="283" r="6" fill="rgba(190,120,70,.42)"/>
+          <polygon points="210,285 222,297 234,285" fill="rgba(190,120,70,.42)"/>
+        </g>
+
+        <!-- Pet -->
+        <g id="pet-g">
+          <ellipse cx="186" cy="264" rx="32" ry="10" fill="rgba(80,40,170,.15)"/>
+          <polygon points="160,220 163,203 177,218" fill="#6838B0"/>
+          <polygon points="195,218 209,203 212,220" fill="#6838B0"/>
+          <polygon points="162,219 165,207 175,217" fill="rgba(255,165,200,.48)"/>
+          <polygon points="197,217 207,207 210,219" fill="rgba(255,165,200,.48)"/>
+          <ellipse cx="186" cy="242" rx="34" ry="32" fill="url(#petGrad)"/>
+          <ellipse cx="155" cy="257" rx="11" ry="8" fill="#7840C0"/>
+          <ellipse cx="217" cy="257" rx="11" ry="8" fill="#7840C0"/>
+          <circle cx="176" cy="236" r="6.5" fill="#140820"/>
+          <circle cx="196" cy="236" r="6.5" fill="#140820"/>
+          <circle cx="178" cy="233" r="2.5" fill="white"/>
+          <circle cx="198" cy="233" r="2.5" fill="white"/>
+          <ellipse cx="164" cy="246" rx="8.5" ry="5.5" fill="rgba(255,125,160,.48)"/>
+          <ellipse cx="208" cy="246" rx="8.5" ry="5.5" fill="rgba(255,125,160,.48)"/>
+          <circle cx="186" cy="246" r="2.8" fill="#4018A0"/>
+          <path d="M180,252 Q186,258 192,252" fill="none" stroke="#4018A0" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Casa action buttons -->
+    <div class="casa-acts">
+      <button class="ca-btn ca-store" onclick="location.href='shop.html'">🛒 Store</button>
+      <button class="ca-btn ca-zaino" onclick="alert('Il tuo zaino è vuoto! 🎒')">🎒 Zaino</button>
+      <button class="ca-btn ca-decora" onclick="alert('Modalità decora! ✨')">🪑 Decora</button>
+    </div>
+  </div>
 </div>
-
-<script>
-function goTo(p){ window.location.href = p; }
-function showMsg(m){ alert(m); }
-</script>
 </body>
 </html>

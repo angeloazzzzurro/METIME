@@ -3,236 +3,255 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>METIME - Care Ritual</title>
-  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <title>METIME - Rituale</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(160deg, #FFF8F0 0%, #FDEAC0 50%, #FFD89B 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:#c8b8a8;min-height:100vh;
+      display:flex;align-items:flex-start;justify-content:center;
+    }
+    .phone{
+      width:390px;max-width:100vw;min-height:100vh;
+      background:linear-gradient(160deg,#FFF8F0 0%,#FDEAC0 50%,#FFD89B 100%);
+      overflow:hidden;display:flex;flex-direction:column;
     }
 
-    .phone-frame {
-      width: 375px;
-      min-height: 812px;
-      background: linear-gradient(160deg, #FFF8F0 0%, #FDEAC0 55%, #FFD89B 100%);
-      border-radius: 44px;
-      box-shadow: 0 30px 80px rgba(200, 130, 50, 0.3), 0 0 0 1px rgba(255,255,255,0.4);
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
+    /* ── compactSelectionBar ── */
+    .top-bar{
+      background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
+      border-bottom:1px solid #c9a96e;
+      padding:52px 14px 10px;flex-shrink:0;
     }
+    .top-row{display:flex;align-items:center;margin-bottom:10px;}
+    .app-logo{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;color:#3d2b1f;}
+    .journey-btn{
+      margin-left:auto;display:flex;align-items:center;gap:5px;
+      background:linear-gradient(135deg,#d4a76a,#a67c52);
+      color:#fff;border:none;border-radius:999px;
+      padding:9px 14px;font-size:11px;font-weight:900;font-family:inherit;
+      cursor:pointer;text-decoration:none;
+    }
+    .sections-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+    .sections-scroll::-webkit-scrollbar{display:none;}
+    .sec-btn{
+      --t:#5e4636;
+      display:flex;align-items:center;gap:5px;
+      padding:10px 12px;border-radius:999px;
+      font-size:12px;font-weight:900;font-family:inherit;
+      cursor:pointer;white-space:nowrap;
+      background:rgba(253,243,227,0.94);color:var(--t);
+      border:1.5px solid color-mix(in srgb,var(--t) 14%,transparent);
+      text-decoration:none;transition:all .15s;flex-shrink:0;
+    }
+    .sec-btn.active{
+      background:linear-gradient(135deg,var(--t),color-mix(in srgb,var(--t) 78%,#000));
+      color:#fff;border-color:rgba(255,255,255,.18);
+    }
+    .si{font-size:13px;}
 
-    /* Nav */
-    .top-nav {
-      display: flex;
-      align-items: center;
-      padding: 20px 20px 12px;
-      position: relative;
-      z-index: 1;
+    /* ── careFocusPanel ── */
+    .care-panel{
+      background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
+      border-bottom:1px solid #c9a96e;
+      padding:12px 14px 14px;flex-shrink:0;
     }
-    .nav-back {
-      font-size: 18px;
-      font-weight: 700;
-      color: #7a5a2a;
-      text-decoration: none;
-      padding: 6px 10px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.5);
+    .care-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+    .care-title-col{flex:1;min-width:0;}
+    .care-title{font-size:18px;font-weight:900;color:#3d2b1f;margin-bottom:3px;letter-spacing:-.2px;}
+    .care-sub{font-size:11px;font-weight:700;color:#5e4636;line-height:1.4;}
+    .care-badges{display:flex;gap:6px;flex-shrink:0;}
+    .cbadge{
+      display:flex;align-items:center;gap:5px;
+      padding:7px 10px;border-radius:999px;
+      background:rgba(253,243,227,0.92);
+      font-size:11px;font-weight:900;
     }
-    .nav-title {
-      flex: 1;
-      text-align: center;
-      font-size: 17px;
-      font-weight: 800;
-      color: #4a3010;
-      margin-right: 44px;
+    .needs-row{display:flex;gap:8px;margin-bottom:12px;}
+    .nbar{flex:1;display:flex;flex-direction:column;gap:4px;}
+    .nbar-lbl{display:flex;align-items:center;gap:3px;font-size:9px;font-weight:700;}
+    .nbar-track{height:6px;border-radius:999px;overflow:hidden;}
+    .nbar-fill{height:100%;border-radius:999px;}
+    .acts-scroll{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+    .acts-scroll::-webkit-scrollbar{display:none;}
+    .abt{
+      display:flex;flex-direction:column;align-items:center;gap:5px;
+      width:70px;flex-shrink:0;border:0;background:none;cursor:pointer;padding:2px 0;
     }
+    .abt:active .acircle{transform:scale(.88);}
+    .acircle{
+      width:36px;height:36px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:17px;
+      transition:transform .15s;
+    }
+    .albl{font-size:10px;font-weight:900;line-height:1;}
 
-    /* Scrollable content */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 16px 32px;
-      position: relative;
-      z-index: 1;
+    /* ── Ritual content ── */
+    .ritual-content{
+      flex:1;overflow-y:auto;padding:20px 16px 32px;
     }
-    .content::-webkit-scrollbar { display: none; }
+    .ritual-content::-webkit-scrollbar{display:none;}
 
-    /* Page heading */
-    .page-heading {
-      font-size: 28px;
-      font-weight: 800;
-      color: #3a2010;
-      margin-bottom: 6px;
-    }
-    .page-subtitle {
-      font-size: 13px;
-      color: #8a6a3a;
-      font-weight: 500;
-      line-height: 1.5;
-      margin-bottom: 28px;
-    }
+    .page-heading{font-size:28px;font-weight:800;color:#3a2010;margin-bottom:6px;}
+    .page-subtitle{font-size:13px;color:#8a6a3a;font-weight:500;line-height:1.5;margin-bottom:24px;}
 
     /* Breathing circle */
-    .breath-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 28px;
+    .breath-area{display:flex;flex-direction:column;align-items:center;margin-bottom:24px;}
+    .breath-circle{
+      width:200px;height:200px;border-radius:50%;
+      background:radial-gradient(circle at 38% 32%,rgba(255,255,255,0.7) 0%,rgba(255,200,100,0.6) 50%,rgba(255,160,50,0.8) 100%);
+      border:3px solid rgba(255,180,80,0.5);
+      box-shadow:0 12px 40px rgba(200,130,50,0.3),0 0 60px rgba(255,200,100,0.2);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      animation:breath-pulse 4s ease-in-out infinite;
+      cursor:pointer;user-select:none;
     }
-    .breath-circle {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 32%, rgba(255,255,255,0.7) 0%, rgba(255,200,100,0.6) 50%, rgba(255,160,50,0.8) 100%);
-      border: 3px solid rgba(255,180,80,0.5);
-      box-shadow: 0 12px 40px rgba(200, 130, 50, 0.3), 0 0 60px rgba(255,200,100,0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      animation: breath-pulse 4s ease-in-out infinite;
-      cursor: pointer;
-      user-select: none;
+    .breath-circle.inhale{animation:breath-expand 4s ease-in-out forwards;}
+    .breath-circle.exhale{animation:breath-shrink 4s ease-in-out forwards;}
+    @keyframes breath-pulse{
+      0%,100%{transform:scale(1);box-shadow:0 12px 40px rgba(200,130,50,0.3),0 0 60px rgba(255,200,100,0.2);}
+      50%{transform:scale(1.08);box-shadow:0 18px 55px rgba(200,130,50,0.4),0 0 80px rgba(255,200,100,0.35);}
     }
-    .breath-circle.inhale { animation: breath-expand 4s ease-in-out forwards; }
-    .breath-circle.exhale { animation: breath-shrink 4s ease-in-out forwards; }
-    @keyframes breath-pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 12px 40px rgba(200,130,50,0.3), 0 0 60px rgba(255,200,100,0.2); }
-      50% { transform: scale(1.08); box-shadow: 0 18px 55px rgba(200,130,50,0.4), 0 0 80px rgba(255,200,100,0.35); }
-    }
-    @keyframes breath-expand {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.12); }
-    }
-    @keyframes breath-shrink {
-      0% { transform: scale(1.12); }
-      100% { transform: scale(0.95); }
-    }
-    .breath-label {
-      font-size: 18px;
-      font-weight: 700;
-      color: #5a3a10;
-      margin-bottom: 8px;
-    }
-    .breath-timer {
-      font-size: 40px;
-      font-weight: 900;
-      color: #3a2010;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -1px;
-    }
+    @keyframes breath-expand{0%{transform:scale(1);}100%{transform:scale(1.12);}}
+    @keyframes breath-shrink{0%{transform:scale(1.12);}100%{transform:scale(0.95);}}
+    .breath-label{font-size:18px;font-weight:700;color:#5a3a10;margin-bottom:8px;}
+    .breath-timer{font-size:40px;font-weight:900;color:#3a2010;font-variant-numeric:tabular-nums;letter-spacing:-1px;}
 
     /* Stats cards */
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 24px;
+    .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+    .stat-card{
+      background:rgba(255,255,255,0.6);border-radius:18px;padding:12px 10px;text-align:center;
+      border:1px solid rgba(255,200,100,0.4);
     }
-    .stat-card {
-      background: rgba(255,255,255,0.6);
-      border-radius: 18px;
-      padding: 12px 10px;
-      text-align: center;
-      border: 1px solid rgba(255,200,100,0.4);
-    }
-    .stat-card-val {
-      font-size: 13px;
-      font-weight: 800;
-      color: #c47820;
-      line-height: 1.2;
-    }
-    .stat-card-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: #9a6a30;
-      margin-top: 4px;
-    }
-
-    /* Conclude button */
-    .conclude-btn {
-      width: 100%;
-      padding: 18px;
-      background: #000;
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      font-size: 16px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      transition: transform 0.15s, opacity 0.15s;
-      margin-bottom: 16px;
-    }
-    .conclude-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .conclude-btn:active { transform: scale(0.98); }
-    .conclude-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .stat-card-val{font-size:13px;font-weight:800;color:#c47820;line-height:1.2;}
+    .stat-card-label{font-size:10px;font-weight:600;color:#9a6a30;margin-top:4px;}
 
     /* Start button */
-    .start-btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #FF9F4A, #FFB86C);
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      font-size: 15px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-      margin-bottom: 20px;
-      box-shadow: 0 6px 20px rgba(200, 130, 50, 0.35);
+    .start-btn{
+      display:block;width:100%;padding:16px;
+      background:linear-gradient(135deg,#FF9F4A,#FFB86C);color:#fff;
+      border:none;border-radius:999px;font-size:15px;font-weight:800;font-family:inherit;
+      cursor:pointer;transition:transform .15s,box-shadow .15s;
+      margin-bottom:16px;box-shadow:0 6px 20px rgba(200,130,50,0.35);
     }
-    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(200, 130, 50, 0.45); }
-    .start-btn:active { transform: scale(0.97); }
-    .start-btn.paused { background: linear-gradient(135deg, #aaa, #ccc); }
+    .start-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(200,130,50,0.45);}
+    .start-btn:active{transform:scale(0.97);}
+    .start-btn.paused{background:linear-gradient(135deg,#aaa,#ccc);}
+
+    /* Conclude button */
+    .conclude-btn{
+      width:100%;padding:18px;background:#000;color:#fff;
+      border:none;border-radius:999px;font-size:16px;font-weight:800;font-family:inherit;
+      cursor:pointer;transition:transform .15s,opacity .15s;margin-bottom:16px;
+    }
+    .conclude-btn:hover{opacity:.88;transform:translateY(-1px);}
+    .conclude-btn:active{transform:scale(.98);}
+    .conclude-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 
     /* Toast */
-    .toast-overlay {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #fff;
-      border-radius: 20px;
-      padding: 14px 24px;
-      font-size: 15px;
-      font-weight: 700;
-      color: #3a2010;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-      z-index: 100;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s;
+    .toast-overlay{
+      position:fixed;top:20px;left:50%;transform:translateX(-50%);
+      background:#fff;border-radius:20px;padding:14px 24px;
+      font-size:15px;font-weight:700;color:#3a2010;
+      box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:100;
+      pointer-events:none;opacity:0;transition:opacity .3s;
     }
-    .toast-overlay.show { opacity: 1; }
+    .toast-overlay.show{opacity:1;}
   </style>
 </head>
 <body>
   <div class="toast-overlay" id="toast"></div>
+  <div class="phone">
 
-  <div class="phone-frame">
-    <div class="top-nav">
-      <a class="nav-back" href="home-pet.html">&#8592;</a>
-      <div class="nav-title">Rituale di Cura</div>
+    <!-- compactSelectionBar -->
+    <div class="top-bar">
+      <div class="top-row">
+        <div class="app-logo">💛 METIME</div>
+        <a class="journey-btn" href="journal.html">📖 Journey</a>
+      </div>
+      <div class="sections-scroll">
+        <a class="sec-btn" href="hub.html"          style="--t:#E38A74"><span class="si">🏠</span> Casa</a>
+        <a class="sec-btn" href="home-pet.html"      style="--t:#53A86A"><span class="si">🌲</span> Giardino</a>
+        <a class="sec-btn" href="#"                  style="--t:#E98A56"><span class="si">🎮</span> Giochi</a>
+        <a class="sec-btn" href="journal.html"       style="--t:#5A8BCF"><span class="si">📖</span> Diario</a>
+        <a class="sec-btn" href="shop.html"          style="--t:#C98053"><span class="si">🛒</span> Store</a>
+        <a class="sec-btn" href="#"                  style="--t:#5E84C9"><span class="si">🎒</span> Zaino</a>
+        <a class="sec-btn" href="#"                  style="--t:#A77BC7"><span class="si">🪑</span> Decora</a>
+        <a class="sec-btn" href="#"                  style="--t:#D36F8E"><span class="si">☕</span> Me Time</a>
+        <a class="sec-btn active" href="care-ritual.html" style="--t:#e8a0a0"><span class="si">💗</span> Rituale</a>
+        <a class="sec-btn" href="#"                  style="--t:#8fa882"><span class="si">🗺️</span> Mappa</a>
+        <a class="sec-btn" href="#"                  style="--t:#d4884a"><span class="si">🍴</span> Cucina</a>
+        <a class="sec-btn" href="#"                  style="--t:#5a9a2e"><span class="si">🌿</span> Fattoria</a>
+      </div>
     </div>
 
-    <div class="content">
-      <div class="page-heading">Rituale di Cura</div>
-      <div class="page-subtitle">Rituale di Cura &mdash; 4 minuti di respiro guidato per calmare il tuo pet</div>
+    <!-- careFocusPanel -->
+    <div class="care-panel">
+      <div class="care-header">
+        <div class="care-title-col">
+          <div class="care-title">Cura del pet</div>
+          <div class="care-sub">Sta bene. Mantieni il ritmo con cura leggera.</div>
+        </div>
+        <div class="care-badges">
+          <div class="cbadge" style="color:#5A8BCF">😊 Calmo</div>
+          <div class="cbadge" style="color:#F59E0B">✨ Lv 3</div>
+        </div>
+      </div>
+      <div class="needs-row">
+        <div class="nbar">
+          <div class="nbar-lbl" style="color:#F97316">🍴 <span>Fame</span></div>
+          <div class="nbar-track" style="background:rgba(249,115,22,.15)">
+            <div class="nbar-fill" style="width:58%;background:linear-gradient(to right,#F97316,rgba(249,115,22,.75))"></div>
+          </div>
+        </div>
+        <div class="nbar">
+          <div class="nbar-lbl" style="color:#EC4899">😊 <span>Umore</span></div>
+          <div class="nbar-track" style="background:rgba(236,72,153,.15)">
+            <div class="nbar-fill" style="width:72%;background:linear-gradient(to right,#EC4899,rgba(236,72,153,.75))"></div>
+          </div>
+        </div>
+        <div class="nbar">
+          <div class="nbar-lbl" style="color:#34D399">⚡ <span>Energia</span></div>
+          <div class="nbar-track" style="background:rgba(52,211,153,.15)">
+            <div class="nbar-fill" style="width:48%;background:linear-gradient(to right,#34D399,rgba(52,211,153,.75))"></div>
+          </div>
+        </div>
+        <div class="nbar">
+          <div class="nbar-lbl" style="color:#60A5FA">🌬️ <span>Calma</span></div>
+          <div class="nbar-track" style="background:rgba(96,165,250,.15)">
+            <div class="nbar-fill" style="width:65%;background:linear-gradient(to right,#60A5FA,rgba(96,165,250,.75))"></div>
+          </div>
+        </div>
+      </div>
+      <div class="acts-scroll">
+        <button class="abt" onclick="location.href='home-pet.html'">
+          <div class="acircle" style="background:linear-gradient(135deg,#F97316,rgba(249,115,22,.82))">🥕</div>
+          <span class="albl" style="color:#F97316">Nutri</span>
+        </button>
+        <button class="abt" onclick="location.href='home-pet.html'">
+          <div class="acircle" style="background:linear-gradient(135deg,#EC4899,rgba(236,72,153,.82))">🎮</div>
+          <span class="albl" style="color:#EC4899">Gioca</span>
+        </button>
+        <button class="abt" onclick="location.href='home-pet.html'">
+          <div class="acircle" style="background:linear-gradient(135deg,#60A5FA,rgba(96,165,250,.82))">✨</div>
+          <span class="albl" style="color:#60A5FA">Calma</span>
+        </button>
+        <button class="abt" onclick="location.href='journal.html'">
+          <div class="acircle" style="background:linear-gradient(135deg,#5A8BCF,rgba(90,139,207,.82))">📖</div>
+          <span class="albl" style="color:#5A8BCF">Diario</span>
+        </button>
+        <button class="abt" onclick="location.href='care-ritual.html'">
+          <div class="acircle" style="background:linear-gradient(135deg,#D36F8E,rgba(211,111,142,.82))">☕</div>
+          <span class="albl" style="color:#D36F8E">Me Time</span>
+        </button>
+      </div>
+    </div>
 
-      <!-- Breathing circle -->
+    <!-- Ritual content -->
+    <div class="ritual-content">
+      <div class="page-heading">Rituale di Cura</div>
+      <div class="page-subtitle">4 minuti di respiro guidato per calmare il tuo pet</div>
+
       <div class="breath-area">
         <div class="breath-circle" id="breathCircle">
           <div class="breath-label" id="phaseLabel">Inspira</div>
@@ -240,10 +259,8 @@
         </div>
       </div>
 
-      <!-- Start / Pause button -->
-      <button class="start-btn" id="startBtn">&#9654; Avvia Sessione</button>
+      <button class="start-btn" id="startBtn">▶ Avvia Sessione</button>
 
-      <!-- Stats -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-card-val">6 respiri/min</div>
@@ -259,23 +276,18 @@
         </div>
       </div>
 
-      <!-- Conclude button -->
       <button class="conclude-btn" id="concludeBtn" disabled>Concludi Sessione</button>
     </div>
   </div>
 
   <script>
-    const TOTAL = 4 * 60; // 4 minutes in seconds
-    const MIN_SECONDS = 30; // minimum before can conclude
+    const TOTAL = 4 * 60;
+    const MIN_SECONDS = 30;
     const phases = ['Inspira', 'Tieni', 'Espira', 'Pausa'];
-    const phaseDurations = [4, 2, 6, 2]; // box breathing
+    const phaseDurations = [4, 2, 6, 2];
 
-    let remaining = TOTAL;
-    let elapsed = 0;
-    let running = false;
-    let interval = null;
-    let phaseIdx = 0;
-    let phaseRemaining = phaseDurations[0];
+    let remaining = TOTAL, elapsed = 0, running = false;
+    let interval = null, phaseIdx = 0, phaseRemaining = phaseDurations[0];
 
     const timerDisplay = document.getElementById('timerDisplay');
     const phaseLabel = document.getElementById('phaseLabel');
@@ -285,81 +297,52 @@
     const toast = document.getElementById('toast');
 
     function fmt(s) {
-      const m = Math.floor(s / 60);
-      const sec = s % 60;
-      return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+      return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
     }
-
     function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add('show');
+      toast.textContent = msg; toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2200);
     }
-
     function updatePhaseAnimation() {
-      breathCircle.classList.remove('inhale', 'exhale');
+      breathCircle.classList.remove('inhale','exhale');
       void breathCircle.offsetWidth;
-      if (phases[phaseIdx] === 'Inspira') {
-        breathCircle.classList.add('inhale');
-      } else if (phases[phaseIdx] === 'Espira' || phases[phaseIdx] === 'Pausa') {
-        breathCircle.classList.add('exhale');
-      }
+      if (phases[phaseIdx]==='Inspira') breathCircle.classList.add('inhale');
+      else if (phases[phaseIdx]==='Espira'||phases[phaseIdx]==='Pausa') breathCircle.classList.add('exhale');
     }
-
     function tick() {
-      elapsed++;
-      remaining--;
-      phaseRemaining--;
-
-      if (phaseRemaining <= 0) {
-        phaseIdx = (phaseIdx + 1) % phases.length;
-        phaseRemaining = phaseDurations[phaseIdx];
-        phaseLabel.textContent = phases[phaseIdx];
+      elapsed++; remaining--; phaseRemaining--;
+      if (phaseRemaining<=0) {
+        phaseIdx=(phaseIdx+1)%phases.length;
+        phaseRemaining=phaseDurations[phaseIdx];
+        phaseLabel.textContent=phases[phaseIdx];
         updatePhaseAnimation();
       }
-
-      timerDisplay.textContent = fmt(remaining);
-
-      if (elapsed >= MIN_SECONDS) {
-        concludeBtn.disabled = false;
-      }
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        running = false;
-        startBtn.textContent = 'Sessione completata!';
-        startBtn.classList.add('paused');
-        concludeBtn.disabled = false;
+      timerDisplay.textContent=fmt(remaining);
+      if (elapsed>=MIN_SECONDS) concludeBtn.disabled=false;
+      if (remaining<=0) {
+        clearInterval(interval); running=false;
+        startBtn.textContent='Sessione completata!'; startBtn.classList.add('paused');
+        concludeBtn.disabled=false;
         showToast('Sessione completata! 🌟 +2 Semi Sereni');
       }
     }
-
-    startBtn.addEventListener('click', () => {
-      if (remaining <= 0) return;
+    startBtn.addEventListener('click',()=>{
+      if (remaining<=0) return;
       if (running) {
-        clearInterval(interval);
-        running = false;
-        startBtn.textContent = '▶ Riprendi';
-        startBtn.classList.add('paused');
-        breathCircle.style.animation = 'none';
+        clearInterval(interval); running=false;
+        startBtn.textContent='▶ Riprendi'; startBtn.classList.add('paused');
+        breathCircle.style.animation='none';
       } else {
-        running = true;
-        startBtn.textContent = '⏸ Pausa';
-        startBtn.classList.remove('paused');
-        breathCircle.style.animation = '';
-        updatePhaseAnimation();
-        interval = setInterval(tick, 1000);
+        running=true; startBtn.textContent='⏸ Pausa'; startBtn.classList.remove('paused');
+        breathCircle.style.animation=''; updatePhaseAnimation();
+        interval=setInterval(tick,1000);
       }
     });
-
-    concludeBtn.addEventListener('click', () => {
+    concludeBtn.addEventListener('click',()=>{
       if (concludeBtn.disabled) return;
-      clearInterval(interval);
-      running = false;
+      clearInterval(interval); running=false;
       showToast('Rituale completato! Calma +40% 💗');
-      setTimeout(() => {
-        window.location.href = 'home-pet.html';
-      }, 2000);
+      setTimeout(()=>{ window.location.href='home-pet.html'; },2000);
     });
   </script>
 </body>

@@ -1,358 +1,218 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>METIME - Journal</title>
-  <link rel="stylesheet" href="../assets/kawaii.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>METIME - Diario</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(160deg, #E8EEFF 0%, #D8E8FF 50%, #C8D8F8 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:#e8dccf;min-height:100vh;
+      display:flex;align-items:flex-start;justify-content:center;
+    }
+    .phone{
+      width:390px;max-width:100vw;
+      background:linear-gradient(160deg,#fdf3e3 0%,#f5ead8 100%);
+      min-height:100vh;overflow:hidden;
+      display:flex;flex-direction:column;
     }
 
-    .phone-frame {
-      width: 375px;
-      min-height: 812px;
-      background: linear-gradient(180deg, #F8FAFF 0%, #F0F4FF 100%);
-      border-radius: 44px;
-      box-shadow: 0 30px 80px rgba(80, 100, 180, 0.25), 0 0 0 1px rgba(255,255,255,0.5);
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
+    /* ── Top bar ── */
+    .top-bar{
+      background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
+      border-bottom:1px solid #c9a96e;
+      padding:52px 14px 10px;flex-shrink:0;
     }
+    .top-row{display:flex;align-items:center;margin-bottom:10px;}
+    .app-logo{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:900;color:#3d2b1f;}
+    .journey-btn{
+      margin-left:auto;display:flex;align-items:center;gap:5px;
+      background:linear-gradient(135deg,#d4a76a,#a67c52);
+      color:#fff;border:none;border-radius:999px;
+      padding:8px 14px;font-size:11px;font-weight:900;font-family:inherit;
+      cursor:pointer;text-decoration:none;
+    }
+    .sections-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+    .sections-scroll::-webkit-scrollbar{display:none;}
+    .sec-btn{
+      display:flex;align-items:center;gap:4px;
+      padding:7px 11px;border-radius:20px;border:none;
+      font-size:12px;font-weight:700;font-family:inherit;
+      cursor:pointer;white-space:nowrap;
+      background:rgba(201,169,110,0.18);color:#5e4636;
+      text-decoration:none;transition:background .15s;
+    }
+    .sec-btn.active{background:#c9a96e;color:#fff;}
+    .sec-btn-icon{font-size:14px;}
 
-    /* Nav */
-    .top-nav {
-      display: flex;
-      align-items: center;
-      padding: 20px 20px 12px;
-    }
-    .nav-back {
-      font-size: 18px;
-      font-weight: 700;
-      color: #4a5a9a;
-      text-decoration: none;
-      padding: 6px 10px;
-      border-radius: 12px;
-      background: rgba(150,170,255,0.15);
-    }
-    .nav-title {
-      flex: 1;
-      text-align: center;
-      font-size: 17px;
-      font-weight: 800;
-      color: #1a2060;
-      margin-right: 44px;
-    }
+    /* ── Content ── */
+    .content{flex:1;overflow-y:auto;padding:16px 16px 32px;}
+    .content::-webkit-scrollbar{display:none;}
 
-    /* Scrollable content */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 16px 100px;
-    }
-    .content::-webkit-scrollbar { display: none; }
+    .page-heading{font-size:26px;font-weight:900;color:#3d2b1f;margin-bottom:16px;}
 
-    /* Heading */
-    .page-heading {
-      font-size: 28px;
-      font-weight: 800;
-      color: #1a2060;
-      margin-bottom: 16px;
-    }
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+    .stat-card{border-radius:18px;padding:14px;background:#fff;box-shadow:0 2px 10px rgba(61,43,31,.08);}
+    .stat-card.teal{background:linear-gradient(135deg,#D0F8F4,#A8EEE8);}
+    .stat-card-label{font-size:10px;font-weight:700;color:#9a7a5a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+    .stat-card.teal .stat-card-label{color:#2a8080;}
+    .stat-card-val{font-size:18px;font-weight:900;color:#3d2b1f;}
+    .stat-card.teal .stat-card-val{color:#0a6060;}
 
-    /* Stats cards row */
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+    /* New note */
+    .new-note-card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 3px 14px rgba(61,43,31,.08);margin-bottom:16px;}
+    .new-note-label{font-size:14px;font-weight:800;color:#3d2b1f;margin-bottom:10px;}
+    textarea{
+      width:100%;min-height:88px;
+      border:1.5px solid #e8dccf;border-radius:12px;
+      background:#fdf3e3;padding:11px;
+      font-family:inherit;font-size:14px;color:#3d2b1f;
+      resize:none;outline:none;transition:border-color .2s;
     }
-    .stat-card {
-      border-radius: 20px;
-      padding: 16px;
-      background: #fff;
-      box-shadow: 0 2px 12px rgba(80,100,200,0.1);
+    textarea:focus{border-color:#c9a96e;}
+    .save-btn{
+      width:100%;margin-top:10px;padding:13px;
+      background:linear-gradient(135deg,#d4a76a,#a67c52);
+      color:#fff;border:none;border-radius:999px;
+      font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;
+      box-shadow:0 5px 14px rgba(164,120,70,.3);transition:transform .15s;
     }
-    .stat-card.teal {
-      background: linear-gradient(135deg, #D0F8F4, #A8EEE8);
-    }
-    .stat-card-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #6a7ab0;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .stat-card-val {
-      font-size: 20px;
-      font-weight: 800;
-      color: #1a2060;
-    }
-    .stat-card.teal .stat-card-val { color: #0a6060; }
-    .stat-card.teal .stat-card-label { color: #2a8080; }
+    .save-btn:hover{transform:translateY(-2px);}
+    .save-btn:active{transform:scale(.97);}
 
-    /* Section heading */
-    .section-heading {
-      font-size: 18px;
-      font-weight: 800;
-      color: #1a2060;
-      margin-bottom: 12px;
+    /* Entries */
+    .section-heading{font-size:16px;font-weight:800;color:#3d2b1f;margin-bottom:10px;}
+    .entries-list{display:flex;flex-direction:column;gap:10px;}
+    .entry-card{
+      background:#fff;border-radius:14px;padding:13px 15px;
+      box-shadow:0 2px 8px rgba(61,43,31,.07);
+      border-left:4px solid transparent;
     }
-
-    /* Entry list */
-    .entries-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .entry-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 14px 16px;
-      box-shadow: 0 2px 10px rgba(80,100,200,0.08);
-      border-left: 4px solid transparent;
-    }
-    .entry-card.mood-sereno { border-left-color: #60D0C0; }
-    .entry-card.mood-presente { border-left-color: #A0B8FF; }
-    .entry-card.mood-calmo { border-left-color: #C0A8FF; }
-    .entry-card.mood-gioioso { border-left-color: #FFB8A0; }
-    .entry-card-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: #1a2060;
-      margin-bottom: 4px;
-    }
-    .entry-card-sub {
-      font-size: 12px;
-      color: #8090c0;
-      font-weight: 600;
-    }
-    .entry-card-date {
-      font-size: 11px;
-      color: #b0b8d8;
-      font-weight: 500;
-      margin-top: 4px;
-    }
-
-    /* New note section */
-    .new-note-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 16px;
-      box-shadow: 0 4px 16px rgba(80,100,200,0.1);
-      margin-bottom: 16px;
-    }
-    .new-note-label {
-      font-size: 15px;
-      font-weight: 800;
-      color: #1a2060;
-      margin-bottom: 10px;
-    }
-    textarea {
-      width: 100%;
-      min-height: 96px;
-      border: 1.5px solid #e0e8ff;
-      border-radius: 14px;
-      background: #F8FAFF;
-      padding: 12px;
-      font-family: inherit;
-      font-size: 14px;
-      color: #1a2060;
-      resize: none;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    textarea:focus { border-color: #8090ff; }
-    .save-btn {
-      width: 100%;
-      margin-top: 10px;
-      padding: 14px;
-      background: linear-gradient(135deg, #8090FF, #5060D8);
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 6px 16px rgba(100,120,240,0.3);
-    }
-    .save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(100,120,240,0.4); }
-    .save-btn:active { transform: scale(0.97); }
+    .entry-card.mood-sereno{border-left-color:#60D0C0;}
+    .entry-card.mood-presente{border-left-color:#A0B8FF;}
+    .entry-card.mood-calmo{border-left-color:#C0A8FF;}
+    .entry-card.mood-gioioso{border-left-color:#FFB8A0;}
+    .entry-card-title{font-size:13px;font-weight:800;color:#3d2b1f;margin-bottom:3px;}
+    .entry-card-sub{font-size:11px;color:#9a7a5a;font-weight:600;}
+    .entry-card-date{font-size:10px;color:#c9a96e;font-weight:500;margin-top:3px;}
 
     /* Toast */
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      pointer-events: none;
+    .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none;}
+    .toast{
+      background:#fff;border-radius:14px;padding:9px 18px;
+      font-size:13px;font-weight:700;color:#3d2b1f;
+      box-shadow:0 6px 20px rgba(61,43,31,.18);
+      animation:toast-in .3s ease-out, toast-out .3s ease-in 2s forwards;white-space:nowrap;
     }
-    .toast {
-      background: #fff;
-      border-radius: 16px;
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #2a3080;
-      box-shadow: 0 6px 20px rgba(80,100,200,0.2);
-      animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2s forwards;
-      white-space: nowrap;
-    }
-    @keyframes toast-in { from { opacity: 0; transform: translateY(-10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
-
-    /* Bottom tab bar */
-    .tab-bar {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(180,200,255,0.3);
-      border-radius: 0 0 44px 44px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 8px 18px;
-      z-index: 10;
-    }
-    .tab-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      text-decoration: none;
-      padding: 4px 12px;
-      border-radius: 16px;
-    }
-    .tab-item.active { background: rgba(100,120,240,0.1); }
-    .tab-icon { font-size: 22px; }
-    .tab-label { font-size: 10px; font-weight: 700; color: #8090c0; }
-    .tab-item.active .tab-label { color: #4050c0; }
+    @keyframes toast-in{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes toast-out{from{opacity:1}to{opacity:0;transform:translateY(-8px)}}
   </style>
 </head>
 <body>
-  <div class="toast-container" id="toastContainer"></div>
+<div class="toast-container" id="toastContainer"></div>
+<div class="phone">
 
-  <div class="phone-frame">
-    <div class="top-nav">
-      <a class="nav-back" href="home-pet.html">&#8592;</a>
-      <div class="nav-title">Journal</div>
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-row">
+      <div class="app-logo">💛 METIME</div>
+      <span class="journey-btn" style="cursor:default">📖 Journey</span>
     </div>
-
-    <div class="content">
-      <div class="page-heading">Journal &amp; Insights</div>
-
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-card-label">Streak</div>
-          <div class="stat-card-val">9 giorni 🔥</div>
-        </div>
-        <div class="stat-card teal">
-          <div class="stat-card-label">Mood Medio</div>
-          <div class="stat-card-val">Sereno</div>
-        </div>
-      </div>
-
-      <!-- New note -->
-      <div class="new-note-card">
-        <div class="new-note-label">&#128221; Nuova nota</div>
-        <textarea id="noteInput" placeholder="Come ti senti oggi? Scrivi una breve riflessione..."></textarea>
-        <button class="save-btn" id="saveBtn">Salva riflessione</button>
-      </div>
-
-      <!-- Recent entries -->
-      <div class="section-heading">Ultime riflessioni</div>
-      <div class="entries-list" id="entriesList">
-        <div class="entry-card mood-presente">
-          <div class="entry-card-title">Oggi ho dato acqua al pet prima di lavorare</div>
-          <div class="entry-card-sub">Molto presente</div>
-          <div class="entry-card-date">Oggi</div>
-        </div>
-        <div class="entry-card mood-calmo">
-          <div class="entry-card-title">Meditazione di 4 minuti completata</div>
-          <div class="entry-card-sub">Calmo e rilassato</div>
-          <div class="entry-card-date">Ieri</div>
-        </div>
-        <div class="entry-card mood-sereno">
-          <div class="entry-card-title">Passeggiata breve nel parco</div>
-          <div class="entry-card-sub">Sereno</div>
-          <div class="entry-card-date">2 giorni fa</div>
-        </div>
-        <div class="entry-card mood-gioioso">
-          <div class="entry-card-title">Ho giocato con il mio pet per 10 minuti</div>
-          <div class="entry-card-sub">Gioioso e presente</div>
-          <div class="entry-card-date">3 giorni fa</div>
-        </div>
-      </div>
+    <div class="sections-scroll">
+      <a class="sec-btn" href="hub.html"><span class="sec-btn-icon">🏠</span> Casa</a>
+      <a class="sec-btn" href="home-pet.html"><span class="sec-btn-icon">🌿</span> Giardino</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎮</span> Giochi</a>
+      <a class="sec-btn active" href="journal.html"><span class="sec-btn-icon">📖</span> Diario</a>
+      <a class="sec-btn" href="shop.html"><span class="sec-btn-icon">🛍</span> Store</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎒</span> Zaino</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎨</span> Decora</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">☕</span> Me Time</a>
+      <a class="sec-btn" href="care-ritual.html"><span class="sec-btn-icon">✨</span> Rituale</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🗺️</span> Mappa</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🍽️</span> Ristorante</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🌾</span> Fattoria</a>
     </div>
-
-    <!-- Tab bar -->
-    <nav class="tab-bar">
-      <a class="tab-item" href="home-pet.html">
-        <span class="tab-icon">🌿</span>
-        <span class="tab-label">Giardino</span>
-      </a>
-      <a class="tab-item" href="hub.html">
-        <span class="tab-icon">🏠</span>
-        <span class="tab-label">Casa</span>
-      </a>
-      <a class="tab-item active" href="journal.html">
-        <span class="tab-icon">📖</span>
-        <span class="tab-label">Diario</span>
-      </a>
-      <a class="tab-item" href="shop.html">
-        <span class="tab-icon">🛍</span>
-        <span class="tab-label">Shop</span>
-      </a>
-    </nav>
   </div>
 
-  <script>
-    const toastContainer = document.getElementById('toastContainer');
-    const noteInput = document.getElementById('noteInput');
-    const saveBtn = document.getElementById('saveBtn');
-    const entriesList = document.getElementById('entriesList');
+  <!-- Content -->
+  <div class="content">
+    <div class="page-heading">Diario &amp; Insights</div>
 
-    function showToast(msg) {
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.textContent = msg;
-      toastContainer.appendChild(t);
-      setTimeout(() => t.remove(), 2500);
-    }
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-label">Streak</div>
+        <div class="stat-card-val">9 giorni 🔥</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-card-label">Mood Medio</div>
+        <div class="stat-card-val">Sereno</div>
+      </div>
+    </div>
 
-    const moods = ['mood-sereno', 'mood-presente', 'mood-calmo', 'mood-gioioso'];
-    const moodLabels = ['Sereno', 'Molto presente', 'Calmo e rilassato', 'Gioioso'];
+    <div class="new-note-card">
+      <div class="new-note-label">📝 Nuova nota</div>
+      <textarea id="noteInput" placeholder="Come ti senti oggi? Scrivi una breve riflessione..."></textarea>
+      <button class="save-btn" id="saveBtn">Salva riflessione</button>
+    </div>
 
-    saveBtn.addEventListener('click', () => {
-      const text = noteInput.value.trim();
-      if (!text) { showToast('Scrivi qualcosa prima di salvare!'); return; }
-      const moodIdx = Math.floor(Math.random() * moods.length);
-      const card = document.createElement('div');
-      card.className = 'entry-card ' + moods[moodIdx];
-      card.innerHTML = '<div class="entry-card-title">' + text + '</div>'
-        + '<div class="entry-card-sub">' + moodLabels[moodIdx] + '</div>'
-        + '<div class="entry-card-date">Adesso</div>';
-      entriesList.insertBefore(card, entriesList.firstChild);
-      noteInput.value = '';
-      showToast('Riflessione salvata! 💙');
-    });
-  </script>
+    <div class="section-heading">Ultime riflessioni</div>
+    <div class="entries-list" id="entriesList">
+      <div class="entry-card mood-presente">
+        <div class="entry-card-title">Oggi ho dato acqua al pet prima di lavorare</div>
+        <div class="entry-card-sub">Molto presente</div>
+        <div class="entry-card-date">Oggi</div>
+      </div>
+      <div class="entry-card mood-calmo">
+        <div class="entry-card-title">Meditazione di 4 minuti completata</div>
+        <div class="entry-card-sub">Calmo e rilassato</div>
+        <div class="entry-card-date">Ieri</div>
+      </div>
+      <div class="entry-card mood-sereno">
+        <div class="entry-card-title">Passeggiata breve nel parco</div>
+        <div class="entry-card-sub">Sereno</div>
+        <div class="entry-card-date">2 giorni fa</div>
+      </div>
+      <div class="entry-card mood-gioioso">
+        <div class="entry-card-title">Ho giocato con il mio pet per 10 minuti</div>
+        <div class="entry-card-sub">Gioioso e presente</div>
+        <div class="entry-card-date">3 giorni fa</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const toastContainer = document.getElementById('toastContainer');
+const noteInput = document.getElementById('noteInput');
+const saveBtn = document.getElementById('saveBtn');
+const entriesList = document.getElementById('entriesList');
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  toastContainer.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+const moods = ['mood-sereno','mood-presente','mood-calmo','mood-gioioso'];
+const moodLabels = ['Sereno','Molto presente','Calmo e rilassato','Gioioso'];
+
+saveBtn.addEventListener('click', () => {
+  const text = noteInput.value.trim();
+  if (!text) { showToast('Scrivi qualcosa prima di salvare!'); return; }
+  const idx = Math.floor(Math.random() * moods.length);
+  const card = document.createElement('div');
+  card.className = 'entry-card ' + moods[idx];
+  card.innerHTML =
+    '<div class="entry-card-title">' + text + '</div>' +
+    '<div class="entry-card-sub">' + moodLabels[idx] + '</div>' +
+    '<div class="entry-card-date">Adesso</div>';
+  entriesList.insertBefore(card, entriesList.firstChild);
+  noteInput.value = '';
+  showToast('Riflessione salvata! 💛');
+});
+</script>
 </body>
 </html>

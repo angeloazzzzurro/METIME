@@ -3,61 +3,85 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>METIME - Home</title>
+  <title>METIME - Giardino</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      background:linear-gradient(160deg,#F5B8CF 0%,#E8C4F0 50%,#D0B8F8 100%);
+      background:#e8dccf;
       min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
-      overflow-x:hidden;
     }
     .phone{
       width:390px;max-width:100vw;
-      background:linear-gradient(160deg,#F5B8CF 0%,#E8C4F0 50%,#D0B8F8 100%);
+      background:linear-gradient(160deg,#fdf3e3 0%,#f5ead8 100%);
       min-height:100vh;position:relative;overflow:hidden;
       display:flex;flex-direction:column;
     }
-    /* ── bg sparkles ── */
-    .spark{position:absolute;pointer-events:none;font-size:14px;opacity:.35;animation:spfloat 5s ease-in-out infinite alternate;}
-    @keyframes spfloat{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(-12px) rotate(20deg)}}
 
-    /* ── header card ── */
-    .hcard{
-      background:#fff;border-radius:24px;margin:16px 16px 0;padding:18px 18px 14px;
-      box-shadow:0 4px 20px rgba(150,90,210,.14);flex-shrink:0;position:relative;z-index:2;
+    /* ── Top selection bar ── */
+    .top-bar{
+      background:linear-gradient(to bottom,#fdf3e3,#f5ead8);
+      border-bottom:1px solid #c9a96e;
+      padding:52px 14px 10px;
+      flex-shrink:0;
     }
-    .htitle{font-size:30px;font-weight:800;font-style:italic;color:#7B4FCC;text-align:center;line-height:1.1;}
-    .hmood{font-size:14px;color:#9B7BC8;text-align:center;margin-bottom:12px;}
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-    .stat-pill{
-      background:#FFB8D4;border-radius:18px;padding:6px 10px;
-      display:flex;align-items:center;gap:6px;height:38px;
+    .top-row{display:flex;align-items:center;margin-bottom:10px;}
+    .app-logo{
+      display:flex;align-items:center;gap:6px;
+      font-size:15px;font-weight:900;color:#3d2b1f;
     }
-    .stat-pill.green{background:#C8F0C8;}
-    .stat-pill.purple{background:#D4C8F8;}
-    .stat-pill.orange{background:#FFE8B0;}
-    .sp-label{font-size:12px;font-weight:700;color:#5a3a7a;white-space:nowrap;}
-    .stat-pill.green .sp-label{color:#1a5c1a;}
-    .stat-pill.purple .sp-label{color:#4a3090;}
-    .stat-pill.orange .sp-label{color:#7a4a10;}
-    .sp-bar{flex:1;height:10px;background:rgba(255,255,255,.5);border-radius:5px;overflow:hidden;}
-    .sp-fill{height:100%;border-radius:5px;background:#FF6B9D;transition:width .4s ease;}
-    .stat-pill.green .sp-fill{background:#4CAF50;}
-    .stat-pill.purple .sp-fill{background:#7C4DCC;}
-    .stat-pill.orange .sp-fill{background:#FFA726;}
-    .sp-icon{font-size:16px;flex-shrink:0;}
+    .journey-btn{
+      margin-left:auto;display:flex;align-items:center;gap:5px;
+      background:linear-gradient(135deg,#d4a76a,#a67c52);
+      color:#fff;border:none;border-radius:999px;
+      padding:8px 14px;font-size:11px;font-weight:900;font-family:inherit;
+      cursor:pointer;text-decoration:none;
+    }
+    .sections-scroll{
+      display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;
+      scrollbar-width:none;
+    }
+    .sections-scroll::-webkit-scrollbar{display:none;}
+    .sec-btn{
+      display:flex;align-items:center;gap:4px;
+      padding:7px 11px;border-radius:20px;border:none;
+      font-size:12px;font-weight:700;font-family:inherit;
+      cursor:pointer;white-space:nowrap;
+      background:rgba(201,169,110,0.18);color:#5e4636;
+      text-decoration:none;transition:background .15s;
+    }
+    .sec-btn.active{background:#c9a96e;color:#fff;}
+    .sec-btn-icon{font-size:14px;}
 
-    /* ── scene ── */
-    .scene{flex:1;position:relative;overflow:hidden;min-height:320px;}
+    /* ── Care panel ── */
+    .care-panel{
+      background:rgba(255,255,255,0.55);
+      border-radius:20px;margin:10px 14px 0;padding:14px 16px;
+      flex-shrink:0;backdrop-filter:blur(8px);
+      border:1px solid rgba(201,169,110,0.3);
+    }
+    .care-headline{font-size:13px;font-weight:700;color:#3d2b1f;margin-bottom:10px;}
+    .needs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .need-row{display:flex;align-items:center;gap:7px;}
+    .need-icon{font-size:15px;flex-shrink:0;}
+    .need-label{font-size:11px;font-weight:700;color:#5e4636;width:48px;flex-shrink:0;}
+    .need-bar{flex:1;height:8px;background:rgba(0,0,0,0.1);border-radius:4px;overflow:hidden;}
+    .need-fill{height:100%;border-radius:4px;transition:width .4s ease;}
+    .need-fill.hunger{background:#F97316;}
+    .need-fill.happy{background:#EC4899;}
+    .need-fill.calm{background:#60A5FA;}
+    .need-fill.energy{background:#34D399;}
+
+    /* ── Scene ── */
+    .scene{flex:1;position:relative;overflow:hidden;min-height:270px;}
     #garden{width:100%;display:block;}
 
-    /* ── speech bubble ── */
+    /* ── Speech bubble ── */
     #speech{
       position:absolute;top:10px;left:50%;transform:translateX(-50%);
       background:#fff;border-radius:14px;padding:6px 14px;
-      font-size:13px;font-weight:700;color:#4a3580;white-space:nowrap;
-      box-shadow:0 4px 12px rgba(100,60,180,.15);
+      font-size:13px;font-weight:700;color:#3d2b1f;white-space:nowrap;
+      box-shadow:0 4px 12px rgba(61,43,31,.15);
       opacity:0;pointer-events:none;z-index:20;transition:opacity .2s;
     }
     #speech::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
@@ -70,432 +94,330 @@
       100%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.85)}
     }
 
-    /* ── particle ── */
+    /* ── Particle ── */
     .ptc{position:absolute;font-size:16px;pointer-events:none;animation:ptrise 1.8s ease-out forwards;}
     @keyframes ptrise{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(.4) rotate(30deg)}}
 
-    /* ── action card ── */
+    /* ── Action card ── */
     .acard{
-      background:#fff;border-radius:28px 28px 0 0;padding:18px 16px 28px;
-      box-shadow:0 -4px 20px rgba(150,90,210,.12);flex-shrink:0;position:relative;z-index:2;
+      background:linear-gradient(to top,#fdf3e3,rgba(253,243,227,0.97));
+      border-radius:28px 28px 0 0;
+      padding:16px 16px 34px;
+      box-shadow:0 -4px 20px rgba(61,43,31,.08);
+      flex-shrink:0;
     }
-    .abtn-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    .acard-label{
+      font-size:10px;font-weight:700;color:#9a7a5a;
+      text-transform:uppercase;letter-spacing:.5px;
+      text-align:center;margin-bottom:12px;
+    }
+    .abtn-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
     .abtn{
-      display:flex;flex-direction:column;align-items:center;gap:6px;
-      border:0;background:none;cursor:pointer;padding:4px 0;
+      display:flex;flex-direction:column;align-items:center;gap:5px;
+      border:0;background:none;cursor:pointer;padding:3px 0;
     }
     .abtn-circle{
-      width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-      font-size:26px;transition:transform .15s;
-      box-shadow:0 4px 12px rgba(0,0,0,.15);
+      width:52px;height:52px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;transition:transform .15s;
+      box-shadow:0 3px 10px rgba(0,0,0,.1);
     }
-    .abtn:active .abtn-circle{transform:scale(.9);}
-    .abtn-circle.m{background:#9B6FE8;}
-    .abtn-circle.f{background:#E87060;}
-    .abtn-circle.g{background:#5B9EE8;}
-    .abtn-circle.d{background:#E8A840;}
-    .abtn-circle.k{background:#F070A0;}
-    .abtn-label{font-size:12px;font-weight:600;}
-    .abtn-label.m{color:#9B6FE8;}
-    .abtn-label.f{color:#E87060;}
-    .abtn-label.g{color:#5B9EE8;}
-    .abtn-label.d{color:#E8A840;}
-    .abtn-label.k{color:#F070A0;}
-
-    /* ── tab bar ── */
-    .tab-bar{background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
-      display:flex;border-top:1px solid rgba(200,180,240,.3);padding:8px 0 28px;flex-shrink:0;}
-    .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-      font-size:11px;font-weight:600;color:#9A88B0;text-decoration:none;padding:6px 0;}
-    .tab-item.active{color:#6A3EA0;}
-    .tab-item .tab-icon{font-size:22px;}
+    .abtn:active .abtn-circle{transform:scale(.88);}
+    .abtn-circle.nutri{background:#FDE68A;}
+    .abtn-circle.play{background:#BBF7D0;}
+    .abtn-circle.calma{background:#E9D5FF;}
+    .abtn-circle.diary{background:#FED7AA;}
+    .abtn-circle.metime{background:#BFDBFE;}
+    .abtn-label{font-size:10px;font-weight:700;color:#5e4636;}
   </style>
 </head>
 <body>
 <div class="phone" id="phone">
-  <!-- bg sparkles -->
-  <span class="spark" style="top:8%;left:8%;animation-delay:0s">✦</span>
-  <span class="spark" style="top:15%;right:12%;animation-delay:.8s">⋆</span>
-  <span class="spark" style="top:30%;left:5%;animation-delay:1.6s">✧</span>
-  <span class="spark" style="top:40%;right:7%;animation-delay:.4s">♡</span>
-  <span class="spark" style="top:55%;left:10%;animation-delay:2s">⋆</span>
-  <span class="spark" style="top:62%;right:10%;animation-delay:1.2s">✦</span>
-  <span class="spark" style="top:72%;left:6%;animation-delay:.6s">✧</span>
-  <span class="spark" style="top:20%;left:50%;animation-delay:1.8s">♡</span>
+  <div id="speech"></div>
 
-  <!-- header card -->
-  <div class="hcard">
-    <div class="htitle">MeTime</div>
-    <div class="hmood" id="moodLabel">Mood: calm 🌸</div>
-    <div class="stats">
-      <div class="stat-pill">
-        <span class="sp-label">Felicità</span>
-        <div class="sp-bar"><div class="sp-fill" id="barH" style="width:72%"></div></div>
-        <span class="sp-icon">❤️</span>
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-row">
+      <div class="app-logo">💛 METIME</div>
+      <a class="journey-btn" href="journal.html">📖 Journey</a>
+    </div>
+    <div class="sections-scroll">
+      <a class="sec-btn" href="hub.html"><span class="sec-btn-icon">🏠</span> Casa</a>
+      <a class="sec-btn active" href="home-pet.html"><span class="sec-btn-icon">🌿</span> Giardino</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎮</span> Giochi</a>
+      <a class="sec-btn" href="journal.html"><span class="sec-btn-icon">📖</span> Diario</a>
+      <a class="sec-btn" href="shop.html"><span class="sec-btn-icon">🛍</span> Store</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎒</span> Zaino</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🎨</span> Decora</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">☕</span> Me Time</a>
+      <a class="sec-btn" href="care-ritual.html"><span class="sec-btn-icon">✨</span> Rituale</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🗺️</span> Mappa</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🍽️</span> Ristorante</a>
+      <a class="sec-btn" href="#"><span class="sec-btn-icon">🌾</span> Fattoria</a>
+    </div>
+  </div>
+
+  <!-- Care panel -->
+  <div class="care-panel">
+    <div class="care-headline" id="careHeadline">Come stai oggi? Prenditi cura di te 🌿</div>
+    <div class="needs-grid">
+      <div class="need-row">
+        <span class="need-icon">🍊</span>
+        <span class="need-label">Fame</span>
+        <div class="need-bar"><div class="need-fill hunger" id="barF" style="width:58%"></div></div>
       </div>
-      <div class="stat-pill green">
-        <span class="sp-label">Fame</span>
-        <div class="sp-bar"><div class="sp-fill" id="barF" style="width:58%"></div></div>
-        <span class="sp-icon">🌿</span>
+      <div class="need-row">
+        <span class="need-icon">💗</span>
+        <span class="need-label">Umore</span>
+        <div class="need-bar"><div class="need-fill happy" id="barH" style="width:72%"></div></div>
       </div>
-      <div class="stat-pill purple">
-        <span class="sp-label">Calma</span>
-        <div class="sp-bar"><div class="sp-fill" id="barC" style="width:65%"></div></div>
-        <span class="sp-icon">🌙</span>
+      <div class="need-row">
+        <span class="need-icon">💙</span>
+        <span class="need-label">Calma</span>
+        <div class="need-bar"><div class="need-fill calm" id="barC" style="width:65%"></div></div>
       </div>
-      <div class="stat-pill orange">
-        <span class="sp-label">Energia</span>
-        <div class="sp-bar"><div class="sp-fill" id="barE" style="width:48%"></div></div>
-        <span class="sp-icon">⚡</span>
+      <div class="need-row">
+        <span class="need-icon">💚</span>
+        <span class="need-label">Energia</span>
+        <div class="need-bar"><div class="need-fill energy" id="barE" style="width:48%"></div></div>
       </div>
     </div>
   </div>
 
-  <!-- isometric scene -->
+  <!-- Isometric garden scene -->
   <div class="scene" id="scene">
-    <div id="speech"></div>
-    <svg id="garden" viewBox="0 0 390 300" xmlns="http://www.w3.org/2000/svg">
+    <svg id="garden" viewBox="0 0 390 280" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="petGrad" cx="35%" cy="28%" r="65%">
-          <stop offset="0%" stop-color="#EDD8FF"/>
-          <stop offset="100%" stop-color="#A87FDE"/>
+          <stop offset="0%" stop-color="#FDE68A"/>
+          <stop offset="100%" stop-color="#D97706"/>
         </radialGradient>
         <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(100,60,160,0.22)"/>
-          <stop offset="100%" stop-color="rgba(100,60,160,0)"/>
+          <stop offset="0%" stop-color="rgba(61,43,31,0.18)"/>
+          <stop offset="100%" stop-color="rgba(61,43,31,0)"/>
         </radialGradient>
-        <filter id="petGlow">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
-          <feComposite in="SourceGraphic" in2="blur"/>
-        </filter>
       </defs>
-      <!-- generated by JS below -->
     </svg>
   </div>
 
-  <!-- action card -->
+  <!-- Action card -->
   <div class="acard">
+    <div class="acard-label">Prenditi cura del tuo pet</div>
     <div class="abtn-row">
-      <button class="abtn" data-action="meditate">
-        <div class="abtn-circle m">✨</div>
-        <span class="abtn-label m">Medita</span>
-      </button>
       <button class="abtn" data-action="feed">
-        <div class="abtn-circle f">🥕</div>
-        <span class="abtn-label f">Cibo</span>
+        <div class="abtn-circle nutri">🥕</div>
+        <span class="abtn-label">Nutri</span>
       </button>
       <button class="abtn" data-action="play">
-        <div class="abtn-circle g">🎮</div>
-        <span class="abtn-label g">Gioca</span>
+        <div class="abtn-circle play">🎮</div>
+        <span class="abtn-label">Gioca</span>
       </button>
-      <button class="abtn" data-action="cuddle">
-        <div class="abtn-circle k">💕</div>
-        <span class="abtn-label k">Coccola</span>
+      <button class="abtn" data-action="calm">
+        <div class="abtn-circle calma">✨</div>
+        <span class="abtn-label">Calma</span>
+      </button>
+      <button class="abtn" data-action="diary">
+        <div class="abtn-circle diary">📖</div>
+        <span class="abtn-label">Diario</span>
+      </button>
+      <button class="abtn" data-action="metime">
+        <div class="abtn-circle metime">☕</div>
+        <span class="abtn-label">Me Time</span>
       </button>
     </div>
   </div>
-
-  <!-- tab bar -->
-  <nav class="tab-bar">
-    <a class="tab-item active" href="home-pet.html">
-      <span class="tab-icon">🌿</span>
-      <span>Giardino</span>
-    </a>
-    <a class="tab-item" href="hub.html">
-      <span class="tab-icon">🏠</span>
-      <span>Casa</span>
-    </a>
-    <a class="tab-item" href="journal.html">
-      <span class="tab-icon">📖</span>
-      <span>Diario</span>
-    </a>
-    <a class="tab-item" href="shop.html">
-      <span class="tab-icon">🛍</span>
-      <span>Shop</span>
-    </a>
-  </nav>
 </div>
 
 <script>
-// ── Isometric grid ──────────────────────────────────────────────
 const svg = document.getElementById('garden');
 const NS = 'http://www.w3.org/2000/svg';
-const TW = 64, TH = 32;   // tile width / height
-const CX = 195, SY = 55;  // center X, start Y
-const G  = 5;              // grid size
+const TW = 64, TH = 32;
+const CX = 195, SY = 40;
+const G  = 5;
 
 function el(tag, attrs) {
   const e = document.createElementNS(NS, tag);
   for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
   return e;
 }
-
-function iso(col, row) {
-  return {
-    x: CX + (col - row) * TW / 2,
-    y: SY + (col + row) * TH / 2
-  };
-}
-
+function iso(col, row) { return { x: CX + (col - row) * TW/2, y: SY + (col + row) * TH/2 }; }
 function tilePts(col, row) {
-  const {x, y} = iso(col, row);
-  const hw = TW/2, hh = TH/2;
+  const {x,y} = iso(col,row), hw=TW/2, hh=TH/2;
   return `${x},${y} ${x+hw},${y+hh} ${x},${y+TH} ${x-hw},${y+hh}`;
 }
-
-// paint order: back-to-front by diagonal sum
 function drawOrder() {
-  const items = [];
-  for (let c = 0; c < G; c++)
-    for (let r = 0; r < G; r++)
-      items.push([c, r]);
-  items.sort((a, b) => (a[0]+a[1]) - (b[0]+b[1]) || a[0] - b[0]);
-  return items;
+  const items=[];
+  for(let c=0;c<G;c++) for(let r=0;r<G;r++) items.push([c,r]);
+  return items.sort((a,b)=>(a[0]+a[1])-(b[0]+b[1])||a[0]-b[0]);
 }
 
-// ── Draw tiles ──────────────────────────────────────────────────
-const order = drawOrder();
-const tileLayer = el('g', {id:'tiles'});
-
-for (const [c, r] of order) {
-  const even = (c + r) % 2 === 0;
-  const poly = el('polygon', {
-    points: tilePts(c, r),
-    fill: even ? '#C4ECA6' : '#B0E090',
-    stroke: '#8DC860',
-    'stroke-width': '1',
-    'stroke-linejoin': 'round'
-  });
-  tileLayer.appendChild(poly);
+// Ground tiles — warm earth tones
+const tileLayer = el('g',{id:'tiles'});
+for (const [c,r] of drawOrder()) {
+  tileLayer.appendChild(el('polygon',{
+    points: tilePts(c,r),
+    fill: (c+r)%2===0 ? '#D4C4A0' : '#C8B890',
+    stroke:'#B8A070','stroke-width':'1','stroke-linejoin':'round'
+  }));
 }
 svg.appendChild(tileLayer);
 
-// ── Draw tree (at grid 0,1) ─────────────────────────────────────
+// Tree at (0,1)
 {
-  const pos = iso(0, 1);
-  const bx = pos.x, by = pos.y + TH + 4; // base of trunk at bottom of tile
-
-  const tg = el('g', {id:'tree'});
-  // trunk
-  tg.appendChild(el('rect', {x:bx-5, y:by-28, width:10, height:28, fill:'#8B6040', rx:'3'}));
-  // crown — 3 overlapping circles for volume
-  tg.appendChild(el('circle', {cx:bx-9, cy:by-46, r:'22', fill:'#3D9E3D'}));
-  tg.appendChild(el('circle', {cx:bx+9, cy:by-44, r:'19', fill:'#4DB44D'}));
-  tg.appendChild(el('circle', {cx:bx,   cy:by-56, r:'25', fill:'#5DBD5B'}));
-  // highlight
-  tg.appendChild(el('circle', {cx:bx-6, cy:by-62, r:'8', fill:'#7DD87D', opacity:'.45'}));
+  const {x:bx,y} = iso(0,1); const by = y+TH+4;
+  const tg = el('g',{id:'tree'});
+  tg.appendChild(el('rect',{x:bx-5,y:by-28,width:10,height:28,fill:'#8B6040',rx:'3'}));
+  tg.appendChild(el('circle',{cx:bx-9,cy:by-46,r:'22',fill:'#3D9E3D'}));
+  tg.appendChild(el('circle',{cx:bx+9,cy:by-44,r:'19',fill:'#4DB44D'}));
+  tg.appendChild(el('circle',{cx:bx,  cy:by-56,r:'25',fill:'#5DBD5B'}));
+  tg.appendChild(el('circle',{cx:bx-6,cy:by-62,r:'8', fill:'#7DD87D',opacity:'.45'}));
   svg.appendChild(tg);
 }
 
-// ── Draw bush (at grid 4,2) ─────────────────────────────────────
+// Bush at (4,2)
 {
-  const pos = iso(4, 2);
-  const bx = pos.x + 6, by = pos.y + TH;
-
-  const bg2 = el('g', {id:'bush'});
-  bg2.appendChild(el('circle', {cx:bx-12, cy:by-18, r:'16', fill:'#38883A'}));
-  bg2.appendChild(el('circle', {cx:bx+10, cy:by-16, r:'14', fill:'#44A044'}));
-  bg2.appendChild(el('circle', {cx:bx,    cy:by-24, r:'18', fill:'#4CAF50'}));
-  bg2.appendChild(el('circle', {cx:bx-4,  cy:by-30, r:'6',  fill:'#68CC6A', opacity:'.5'}));
-  svg.appendChild(bg2);
+  const {x:bx,y} = iso(4,2); const by = y+TH;
+  const bg = el('g',{id:'bush'});
+  bg.appendChild(el('circle',{cx:bx-12+6,cy:by-18,r:'16',fill:'#38883A'}));
+  bg.appendChild(el('circle',{cx:bx+10+6,cy:by-16,r:'14',fill:'#44A044'}));
+  bg.appendChild(el('circle',{cx:bx+6,   cy:by-24,r:'18',fill:'#4CAF50'}));
+  bg.appendChild(el('circle',{cx:bx+2,   cy:by-30,r:'6', fill:'#68CC6A',opacity:'.5'}));
+  svg.appendChild(bg);
 }
 
-// ── Draw flowers ────────────────────────────────────────────────
-const flowers = [
-  {c:0, r:3, emoji:'🌸'},
-  {c:1, r:4, emoji:'🌼'},
-  {c:3, r:0, emoji:'🌺'},
-  {c:4, r:3, emoji:'🌷'},
-  {c:2, r:4, emoji:'🌼'},
-];
-const flLayer = el('g', {id:'flowers'});
-for (const {c, r, emoji} of flowers) {
-  const {x, y} = iso(c, r);
-  const ft = el('text', {
-    x: x, y: y + TH / 2 + 6,
-    'font-size': '22',
-    'text-anchor': 'middle',
-    'dominant-baseline': 'middle',
-    style: 'animation: flower-pulse 2s ease-in-out infinite alternate;'
-  });
-  ft.textContent = emoji;
+// Flowers
+const flLayer = el('g',{id:'flowers'});
+for (const {c,r,e} of [{c:0,r:3,e:'🌸'},{c:1,r:4,e:'🌼'},{c:3,r:0,e:'🌺'},{c:4,r:3,e:'🌷'},{c:2,r:4,e:'🌼'}]) {
+  const {x,y} = iso(c,r);
+  const ft = el('text',{x,y:y+TH/2+6,'font-size':'22','text-anchor':'middle','dominant-baseline':'middle'});
+  ft.textContent = e;
   flLayer.appendChild(ft);
 }
 svg.appendChild(flLayer);
 
-// ── Draw pet (at grid 2,2) ──────────────────────────────────────
+// Pet at (2,2) — warm golden tone
 {
-  const pos = iso(2, 2);
-  const px = pos.x, py = pos.y + TH / 2;  // center of tile
+  const {x:px, y:py0} = iso(2,2); const py = py0+TH/2;
+  const pg = el('g',{id:'petGroup',style:'cursor:pointer'});
 
-  const pg = el('g', {id:'petGroup', style:'cursor:pointer'});
+  pg.appendChild(el('ellipse',{cx:px,cy:py+30,rx:'32',ry:'9',fill:'url(#shadowGrad)'}));
+  pg.appendChild(el('ellipse',{cx:px,cy:py+2,rx:'36',ry:'34',
+    fill:'url(#petGrad)',stroke:'#B45309','stroke-width':'2',id:'petBody'}));
+  pg.appendChild(el('ellipse',{cx:px-18,cy:py+10,rx:'10',ry:'6',fill:'rgba(252,165,75,0.42)'}));
+  pg.appendChild(el('ellipse',{cx:px+18,cy:py+10,rx:'10',ry:'6',fill:'rgba(252,165,75,0.42)'}));
 
-  // shadow
-  pg.appendChild(el('ellipse', {cx:px, cy:py+30, rx:'32', ry:'9', fill:'url(#shadowGrad)'}));
+  const eyeL = el('circle',{cx:px-11,cy:py-2,r:'6',fill:'#3d2b1f',id:'eyeL'});
+  const eyeR = el('circle',{cx:px+11,cy:py-2,r:'6',fill:'#3d2b1f',id:'eyeR'});
+  pg.appendChild(eyeL); pg.appendChild(eyeR);
+  pg.appendChild(el('circle',{cx:px-9, cy:py-4,r:'2',fill:'rgba(255,255,255,.9)'}));
+  pg.appendChild(el('circle',{cx:px+13,cy:py-4,r:'2',fill:'rgba(255,255,255,.9)'}));
 
-  // body
-  const body = el('ellipse', {cx:px, cy:py+2, rx:'36', ry:'34',
-    fill:'url(#petGrad)', stroke:'#9070C8', 'stroke-width':'2',
-    id:'petBody'});
-  pg.appendChild(body);
-
-  // cheeks
-  pg.appendChild(el('ellipse', {cx:px-18, cy:py+10, rx:'10', ry:'6',
-    fill:'rgba(255,150,180,0.42)'}));
-  pg.appendChild(el('ellipse', {cx:px+18, cy:py+10, rx:'10', ry:'6',
-    fill:'rgba(255,150,180,0.42)'}));
-
-  // eyes
-  const eyeL = el('circle', {cx:px-11, cy:py-2, r:'6', fill:'#2D1A50', id:'eyeL'});
-  const eyeR = el('circle', {cx:px+11, cy:py-2, r:'6', fill:'#2D1A50', id:'eyeR'});
-  pg.appendChild(eyeL);
-  pg.appendChild(eyeR);
-  // eye shines
-  pg.appendChild(el('circle', {cx:px-9,  cy:py-4, r:'2', fill:'rgba(255,255,255,.9)'}));
-  pg.appendChild(el('circle', {cx:px+13, cy:py-4, r:'2', fill:'rgba(255,255,255,.9)'}));
-
-  // smile
-  const smile = el('path', {
+  const smile = el('path',{
     d:`M ${px-9} ${py+12} Q ${px} ${py+19} ${px+9} ${py+12}`,
-    fill:'none', stroke:'#7A5FAD', 'stroke-width':'2.5',
-    'stroke-linecap':'round', id:'petSmile'
+    fill:'none',stroke:'#92400E','stroke-width':'2.5','stroke-linecap':'round',id:'petSmile'
   });
   pg.appendChild(smile);
-
   svg.appendChild(pg);
 
-  // pet floating animation
-  let fy = 0, fdir = 1, fAF;
-  function floatPet() {
-    fy += fdir * 0.12;
-    if (fy > 6) fdir = -1;
-    if (fy < 0) fdir = 1;
-    pg.setAttribute('transform', `translate(0, ${-fy})`);
-    fAF = requestAnimationFrame(floatPet);
-  }
-  floatPet();
+  // float
+  let fy=0, fd=1;
+  (function loop(){ fy+=fd*0.12; if(fy>6)fd=-1; if(fy<0)fd=1;
+    pg.setAttribute('transform',`translate(0,${-fy})`); requestAnimationFrame(loop); })();
 
   // blink
-  setInterval(() => {
-    eyeL.setAttribute('ry', '2'); eyeR.setAttribute('ry', '2');
-    eyeL.setAttribute('rx', '6'); eyeR.setAttribute('rx', '6');
-    eyeL.tagName === 'circle' && eyeL.setAttribute('r','2');
-    eyeR.tagName === 'circle' && eyeR.setAttribute('r','2');
-    setTimeout(() => {
-      eyeL.setAttribute('r','6'); eyeR.setAttribute('r','6');
-    }, 160);
-  }, 3800 + Math.random()*1200);
+  setInterval(()=>{
+    eyeL.setAttribute('r','2'); eyeR.setAttribute('r','2');
+    setTimeout(()=>{ eyeL.setAttribute('r','6'); eyeR.setAttribute('r','6'); },160);
+  }, 3800+Math.random()*1200);
 
-  // click pet
-  pg.addEventListener('click', () => {
-    state.happiness = clamp(state.happiness + 3);
-    state.calm      = clamp(state.calm      + 1);
-    spawnParticles(px, py - 40);
+  pg.addEventListener('click',()=>{
+    state.happiness=clamp(state.happiness+3); state.calm=clamp(state.calm+1);
+    spawnParticles(px,py-40);
     showSpeech(['Ciao! 👋','Gnam? 🍎','Sono felice ✨','Gioca con me! 🎉'][Math.floor(Math.random()*4)]);
-    squishPet();
-    render();
+    squishPet(); render();
   });
 }
 
-// squish pet body
-function squishPet() {
-  const b = document.getElementById('petBody');
-  if (!b) return;
+function squishPet(){
+  const b=document.getElementById('petBody'); if(!b)return;
   b.setAttribute('rx','42'); b.setAttribute('ry','28');
-  setTimeout(() => { b.setAttribute('rx','32'); b.setAttribute('ry','38'); }, 120);
-  setTimeout(() => { b.setAttribute('rx','36'); b.setAttribute('ry','34'); }, 280);
+  setTimeout(()=>{ b.setAttribute('rx','32'); b.setAttribute('ry','38'); },120);
+  setTimeout(()=>{ b.setAttribute('rx','36'); b.setAttribute('ry','34'); },280);
 }
 
-// ── Game state ──────────────────────────────────────────────────
-const state = { hunger:58, happiness:72, calm:65, energy:48 };
-const clamp = v => Math.max(0, Math.min(100, v));
+// ── State ──
+const state={hunger:58,happiness:72,calm:65,energy:48};
+const clamp=v=>Math.max(0,Math.min(100,v));
 
-function render() {
-  const moods = [
-    [['tired'], state.energy < 25 || state.hunger < 25],
-    [['anxious'], state.calm < 30],
-    [['happy'], (state.happiness + state.calm) / 2 > 70],
-    [['calm'], true]
-  ];
-  const mood = moods.find(([, cond]) => cond)[0][0];
-  const moodEmoji = {calm:'😊',happy:'🥰',tired:'😴',anxious:'😰'}[mood];
-  document.getElementById('moodLabel').textContent = `Mood: ${mood} ${moodEmoji}`;
+function careHeadlineText(){
+  if(state.hunger<25||state.energy<25) return 'Il tuo pet è affamato e stanco 😴';
+  if(state.calm<30)                    return 'Il tuo pet ha bisogno di calma 😰';
+  if((state.happiness+state.calm)/2>70)return 'Il tuo pet è felice e sereno 🥰';
+  return 'Come stai oggi? Prenditi cura di te 🌿';
+}
 
-  document.getElementById('barH').style.width = state.happiness + '%';
-  document.getElementById('barF').style.width = state.hunger    + '%';
-  document.getElementById('barC').style.width = state.calm      + '%';
-  document.getElementById('barE').style.width = state.energy    + '%';
+function render(){
+  document.getElementById('barH').style.width=state.happiness+'%';
+  document.getElementById('barF').style.width=state.hunger+'%';
+  document.getElementById('barC').style.width=state.calm+'%';
+  document.getElementById('barE').style.width=state.energy+'%';
+  document.getElementById('careHeadline').textContent=careHeadlineText();
 
-  // update smile on mood change
-  const smile = document.getElementById('petSmile');
-  if (smile) {
-    const {x:px} = iso(2,2);
-    const py = iso(2,2).y + TH/2;
-    if (mood === 'tired')
-      smile.setAttribute('d', `M ${px-8} ${py+16} Q ${px} ${py+13} ${px+8} ${py+16}`);
-    else if (mood === 'anxious')
-      smile.setAttribute('d', `M ${px-7} ${py+15} Q ${px} ${py+10} ${px+7} ${py+15}`);
+  const smile=document.getElementById('petSmile');
+  if(smile){
+    const {x:px,y:py0}=iso(2,2); const py=py0+TH/2;
+    if(state.energy<25||state.hunger<25)
+      smile.setAttribute('d',`M ${px-8} ${py+16} Q ${px} ${py+13} ${px+8} ${py+16}`);
+    else if(state.calm<30)
+      smile.setAttribute('d',`M ${px-7} ${py+15} Q ${px} ${py+10} ${px+7} ${py+15}`);
     else
-      smile.setAttribute('d', `M ${px-9} ${py+12} Q ${px} ${py+19} ${px+9} ${py+12}`);
+      smile.setAttribute('d',`M ${px-9} ${py+12} Q ${px} ${py+19} ${px+9} ${py+12}`);
   }
 }
 
-// stat decay
-setInterval(() => {
-  state.hunger    = clamp(state.hunger    - 0.4);
-  state.energy    = clamp(state.energy    - 0.25);
-  state.happiness = clamp(state.happiness - 0.2);
+setInterval(()=>{
+  state.hunger=clamp(state.hunger-0.4);
+  state.energy=clamp(state.energy-0.25);
+  state.happiness=clamp(state.happiness-0.2);
   render();
-}, 5000);
+},5000);
 
-// ── Speech bubble ──────────────────────────────────────────────
-function showSpeech(text) {
-  const s = document.getElementById('speech');
-  s.textContent = text;
-  s.classList.remove('show');
-  void s.offsetWidth;
-  s.classList.add('show');
+function showSpeech(text){
+  const s=document.getElementById('speech');
+  s.textContent=text; s.classList.remove('show'); void s.offsetWidth; s.classList.add('show');
 }
 
-// ── Particles ──────────────────────────────────────────────────
-function spawnParticles(x, y) {
-  const scene = document.getElementById('scene');
-  const emojis = ['✨','💜','🌸','⭐','💫'];
-  for (let i = 0; i < 5; i++) {
-    const p = document.createElement('span');
-    p.className = 'ptc';
-    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    const rect = scene.getBoundingClientRect();
-    // approximate position relative to scene
-    p.style.left = (x / 390 * rect.width + (Math.random()-0.5)*40) + 'px';
-    p.style.top  = (y / 300 * (rect.height - 40) + (Math.random()-0.5)*20) + 'px';
-    p.style.animationDelay = (i * 0.1) + 's';
-    scene.appendChild(p);
-    setTimeout(() => p.remove(), 2000);
+function spawnParticles(x,y){
+  const scene=document.getElementById('scene');
+  const emojis=['✨','💛','🌸','⭐','💫'];
+  for(let i=0;i<5;i++){
+    const p=document.createElement('span'); p.className='ptc';
+    p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    const rect=scene.getBoundingClientRect();
+    p.style.left=(x/390*rect.width+(Math.random()-.5)*40)+'px';
+    p.style.top=(y/280*(rect.height-40)+(Math.random()-.5)*20)+'px';
+    p.style.animationDelay=(i*.1)+'s';
+    scene.appendChild(p); setTimeout(()=>p.remove(),2000);
   }
 }
 
-// ── Action buttons ─────────────────────────────────────────────
-const actions = {
-  meditate: {h:+7,  f:-2, c:+18, e:+2,  msg:'Ommm... 🍃'},
-  feed:     {h:+5,  f:+18,c:-1,  e:+3,  msg:'Gnam gnam! 🍎'},
-  play:     {h:+16, f:-4, c:-3,  e:-8,  msg:'Evviva!! 🎉'},
-  cuddle:   {h:+12, f:0,  c:+8,  e:-2,  msg:'Che coccole! 💕'}
+const actions={
+  feed:   {h:+5, f:+18,c:-1, e:+3, msg:'Gnam gnam! 🍎'},
+  play:   {h:+16,f:-4, c:-3, e:-8, msg:'Evviva!! 🎉'},
+  calm:   {h:+7, f:-2, c:+18,e:+2, msg:'Ommm... 🍃'},
+  diary:  {h:+3, f:0,  c:+5, e:0,  msg:'Scrivo nel diario 📖', link:'journal.html'},
+  metime: {h:+8, f:-1, c:+12,e:+5, msg:'Momento per me ☕', link:'care-ritual.html'}
 };
 
-document.querySelectorAll('[data-action]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const a = actions[btn.dataset.action];
-    if (!a) return;
-    state.happiness = clamp(state.happiness + a.h);
-    state.hunger    = clamp(state.hunger    + a.f);
-    state.calm      = clamp(state.calm      + a.c);
-    state.energy    = clamp(state.energy    + a.e);
-    showSpeech(a.msg);
-    spawnParticles(195, 140);
-    squishPet();
-    render();
-    if (btn.dataset.action === 'meditate') location.href = 'care-ritual.html';
+document.querySelectorAll('[data-action]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const a=actions[btn.dataset.action]; if(!a)return;
+    state.happiness=clamp(state.happiness+a.h);
+    state.hunger   =clamp(state.hunger   +a.f);
+    state.calm     =clamp(state.calm     +a.c);
+    state.energy   =clamp(state.energy   +a.e);
+    showSpeech(a.msg); spawnParticles(195,120); squishPet(); render();
+    if(a.link) setTimeout(()=>location.href=a.link,600);
   });
 });
 

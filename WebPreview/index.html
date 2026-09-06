@@ -54,10 +54,8 @@
     .house {
       position: relative;
       border-radius: 20px;
-      min-height: 360px;
+      min-height: clamp(240px, 65vw, 360px);
       overflow: hidden;
-      perspective: 900px;
-      transform-style: preserve-3d;
       background:
         linear-gradient(rgba(31, 58, 39, 0.13) 1px, transparent 1px),
         linear-gradient(90deg, rgba(31, 58, 39, 0.13) 1px, transparent 1px),
@@ -66,14 +64,20 @@
       background-size: 16px 16px, 16px 16px, auto, auto;
       border: 10px solid #8b6340;
       box-shadow: inset 0 0 0 3px #5e3a22, inset 0 0 24px rgba(61, 43, 31, 0.24);
-      touch-action: none;
+      touch-action: pan-y;
       transition: transform 0.15s ease;
+    }
+
+    @media (max-width: 480px) {
+      .house {
+        touch-action: pan-y;
+        border-width: 6px;
+      }
     }
 
     .world3d {
       position: absolute;
       inset: 0;
-      transform-style: preserve-3d;
       pointer-events: none;
     }
 
@@ -167,23 +171,24 @@
       height: 140px;
       border-radius: 50%;
       background: linear-gradient(180deg, #b89060, #8b6340);
-      transform: rotateX(58deg) translateZ(-8px);
+      transform: scaleY(0.35);
       transform-origin: bottom center;
       filter: saturate(0.95);
+      z-index: 1;
     }
 
     .rug {
       position: absolute;
       bottom: 48px;
       left: 50%;
-      transform: translateX(-50%);
       width: 180px;
       height: 44px;
       border-radius: 999px;
       background: linear-gradient(90deg, #d4969a, #b87070);
       box-shadow: inset 0 -8px 0 rgba(139, 99, 64, 0.24);
-      transform: translateX(-50%) rotateX(62deg) translateZ(6px);
+      transform: translateX(-50%) scaleY(0.45);
       transform-origin: bottom center;
+      z-index: 1;
     }
 
     .pet-shadow {
@@ -193,11 +198,12 @@
       width: 110px;
       height: 26px;
       border-radius: 50%;
-      transform: translateX(-50%) rotateX(70deg);
+      transform: translateX(-50%) scaleY(0.4);
       background: radial-gradient(ellipse at center, rgba(75, 58, 53, 0.35) 0%, rgba(75, 58, 53, 0) 72%);
       filter: blur(1px);
       transition: left 0.24s ease, bottom 0.24s ease;
       pointer-events: none;
+      z-index: 2;
     }
 
     /* ── AC Villager Pet ── */
@@ -205,9 +211,10 @@
       position: absolute;
       left: var(--pet-x, 50%);
       bottom: var(--pet-y, 74px);
-      transform: translateX(-50%) scaleX(var(--pet-facing, 1)) rotateX(12deg) rotateZ(-2deg);
+      transform: translateX(-50%) scaleX(var(--pet-facing, 1));
       width: 110px;
       height: 110px;
+      z-index: 3;
       border-radius: 50%;
       background:
         radial-gradient(circle at 38% 28%, rgba(255,255,255,0.50) 0%, transparent 55%),
@@ -366,8 +373,8 @@
     .foot.right { right: 28px; }
 
     @keyframes ac-float {
-      0%, 100% { transform: translateX(-50%) translateY(0) scaleX(var(--pet-facing, 1)) rotateX(12deg) rotateZ(-2deg); }
-      50% { transform: translateX(-50%) translateY(-7px) scaleX(var(--pet-facing, 1)) rotateX(12deg) rotateZ(-2deg); }
+      0%, 100% { transform: translateX(-50%) translateY(0) scaleX(var(--pet-facing, 1)); }
+      50% { transform: translateX(-50%) translateY(-7px) scaleX(var(--pet-facing, 1)); }
     }
 
     .mood-line {
@@ -542,8 +549,8 @@
     }
 
     @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0) scaleX(var(--pet-facing, 1)) rotateX(12deg) rotateZ(-2deg); }
-      50% { transform: translateX(-50%) translateY(-7px) scaleX(var(--pet-facing, 1)) rotateX(12deg) rotateZ(-2deg); }
+      0%, 100% { transform: translateX(-50%) translateY(0) scaleX(var(--pet-facing, 1)); }
+      50% { transform: translateX(-50%) translateY(-7px) scaleX(var(--pet-facing, 1)); }
     }
 
     .gallery-fab {

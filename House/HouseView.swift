@@ -16,8 +16,6 @@ struct HouseView: View {
     }()
 
     @EnvironmentObject private var navigationState: NavigationState
-    @State private var showsCompactParameters = false
-
     var body: some View {
         GeometryReader { geo in
             content(for: geo.size, safeAreaInsets: geo.safeAreaInsets)
@@ -40,67 +38,37 @@ struct HouseView: View {
     private var houseBackground: some View {
         LinearGradient(
             colors: [
-                Color(hex: "#8fa882"),
-                Color(hex: "#b8cdb0"),
-                Color(hex: "#f5ead8")
+                Color(red: 1.0, green: 0.95, blue: 0.90),
+                Color(red: 0.95, green: 0.89, blue: 0.97),
+                Color(red: 0.88, green: 0.90, blue: 1.0)
             ],
-            startPoint: .top,
-            endPoint: .bottom
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
     }
 
     private func mainColumn(for size: CGSize, safeAreaInsets: EdgeInsets) -> some View {
         let sceneHeight = responsiveSceneHeight(for: size)
         let compact = isCompactWidth(size)
-        let horizontalPadding: CGFloat = compact ? 0 : 16
-        let topPadding = compact ? safeAreaInsets.top : max(safeAreaInsets.top, 12)
+        let topPadding = compact ? safeAreaInsets.top : max(safeAreaInsets.top, 8)
 
-        return Group {
-            if compact {
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        responsiveSceneView(size: size, sceneHeight: sceneHeight)
-
-                        topBar
-                            .padding(.horizontal, horizontalPadding)
-                            .padding(.top, 8)
-
-                        petParametersCard(compact: true)
-                            .padding(.horizontal, 0)
-                            .padding(.top, 8)
-
-                        statusCard
-                            .padding(.horizontal, 0)
-                            .padding(.top, 8)
-
-                        Spacer(minLength: 12)
-                    }
-                    .padding(.bottom, 110)
-                }
-            } else {
-                VStack(spacing: 0) {
-                    topBar
-                        .padding(.horizontal, horizontalPadding)
-                        .padding(.top, topPadding)
-
-                    responsiveSceneView(size: size, sceneHeight: sceneHeight)
-
-                    statusCard
-                        .padding(.horizontal, 18)
-                        .padding(.top, 10)
-
-                    Spacer(minLength: 12)
-                }
+        return ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: compact ? 8 : 10) {
+                responsiveSceneView(size: size, sceneHeight: sceneHeight)
+                statusCard
+                    .padding(.horizontal, compact ? 0 : 18)
             }
+            .padding(.top, topPadding)
+            .padding(.bottom, 110)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private func responsiveSceneHeight(for size: CGSize) -> CGFloat {
         if isCompactWidth(size) {
-            return min(max(size.height * 0.56, 320), size.height * 0.68)
+            return min(max(size.height * 0.66, 380), size.height * 0.78)
         }
-        return min(max(size.height * 0.54, 340), size.height * 0.64)
+        return min(max(size.height * 0.68, 460), size.height * 0.82)
     }
 
     private func isCompactWidth(_ size: CGSize) -> Bool {
@@ -117,11 +85,9 @@ struct HouseView: View {
             .background(sceneCardBackground)
             .clipped()
             .overlay(alignment: .top) {
-                if !compact {
-                    petParametersCard(compact: false)
-                        .padding(.horizontal, 14)
-                        .padding(.top, 14)
-                }
+                petParametersCard(compact: compact)
+                    .padding(.horizontal, compact ? 10 : 14)
+                    .padding(.top, compact ? 18 : 22)
             }
             .overlay(alignment: .bottomTrailing) {
                 JoystickControl(
@@ -136,7 +102,7 @@ struct HouseView: View {
                 .padding(.bottom, compact ? 14 : 20)
             }
             .padding(.horizontal, horizontalInset)
-            .padding(.top, compact ? 8 : 18)
+            .padding(.top, compact ? 6 : 12)
             .onAppear {
                 scene.size = CGSize(width: sceneWidth, height: sceneHeight)
                 scene.petStage = gameStore.pet.stage
@@ -192,94 +158,32 @@ struct HouseView: View {
             )
     }
 
-    // MARK: - Top Bar
-
-    private var topBar: some View {
-        let compact = isCompactWidth(scene.size)
-
-        return HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Casa")
-                    .font(.system(size: compact ? 11 : 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: "#8a7260"))
-
-                Label("La tua stanza", systemImage: "house.fill")
-                    .font(.system(size: compact ? 18 : 24, weight: .black, design: .rounded))
-                    .foregroundColor(Color(hex: "#3d2b1f"))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
-            }
-
-            Spacer()
-
-            HStack(spacing: compact ? 8 : 12) {
-                walletBadge(icon: "dollarsign.circle.fill", value: houseStore.wallet.coins, color: Color(hex: "#d4a843"))
-                walletBadge(icon: "diamond.fill",           value: houseStore.wallet.gems,  color: Color(hex: "#a8c9a0"))
-            }
-        }
-        .padding(.horizontal, compact ? 12 : 18)
-        .padding(.vertical, compact ? 12 : 16)
-        .frame(maxWidth: .infinity)
-        .background(topBarBackground(compact: compact))
-        .shadow(color: Color.black.opacity(compact ? 0.03 : 0.06), radius: 12, y: 6)
-    }
-
-    private func walletBadge(icon: String, value: Int, color: Color) -> some View {
-        let compact = isCompactWidth(scene.size)
-
-        return HStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: compact ? 13 : 16))
-                .foregroundStyle(color)
-            Text("\(value)")
-                .font(.system(size: compact ? 13 : 16, weight: .black, design: .rounded))
-                .foregroundColor(color)
-        }
-        .padding(.horizontal, compact ? 10 : 12)
-        .padding(.vertical, compact ? 7 : 8)
-        .background(Color.white.opacity(0.92))
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(color.opacity(0.15), lineWidth: 1))
-    }
-
     private var statusCard: some View {
         let compact = isCompactWidth(scene.size)
 
-        return VStack(alignment: .leading, spacing: compact ? 10 : 12) {
-            HStack(spacing: 12) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: compact ? 13 : 15, weight: .bold))
-                    .foregroundStyle(Color(hex: "#8fa882"))
-                    .frame(width: compact ? 30 : 34, height: compact ? 30 : 34)
-                    .background(Color(hex: "#fdf3e3").opacity(0.9), in: Circle())
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Spazio accogliente")
-                        .font(.system(size: compact ? 12 : 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#3d2b1f"))
-                    Text("Stanza piu ampia con pet soft in stile villager")
-                        .font(.system(size: compact ? 10 : 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(Color(hex: "#5e4636"))
-                        .lineLimit(1)
+        return VStack(alignment: .leading, spacing: compact ? 8 : 10) {
+            HStack(spacing: 8) {
+                roomFactPill(title: "Mood", value: gameStore.pet.mood.rawValue.capitalized, tint: Color(hex: "#8B6BB5"))
+                roomFactPill(title: "Stile", value: roomStyleName, tint: Color(hex: "#F59E0B"))
+                roomFactPill(title: "Cura", value: "\(Int((overallCareScore * 100).rounded()))%", tint: Color(hex: "#EC4899"))
+                if !compact {
+                    roomFactPill(title: "Relax", value: "\(Int((relaxationScore * 100).rounded()))%", tint: Color(hex: "#60A5FA"))
                 }
-
-                Spacer()
             }
-
         }
         .padding(.horizontal, compact ? 12 : 14)
-        .padding(.vertical, compact ? 8 : 10)
+        .padding(.vertical, compact ? 7 : 9)
         .frame(maxWidth: .infinity)
         .background(statusCardBackground(compact: compact))
     }
 
     private func petParametersCard(compact: Bool) -> some View {
-        VStack(spacing: compact ? 6 : 10) {
+        VStack(spacing: compact ? 6 : 8) {
             HStack(spacing: compact ? 6 : 8) {
                 compactParameterChip(
                     title: "Mood",
                     value: gameStore.pet.mood.rawValue.capitalized,
-                    tint: Color(hex: "#8fa882"),
+                    tint: Color(hex: "#8B6BB5"),
                     compact: compact
                 )
                 compactParameterChip(
@@ -297,55 +201,29 @@ struct HouseView: View {
             }
 
             if compact {
-                Button {
-                    withAnimation(.snappy(duration: 0.2)) {
-                        showsCompactParameters.toggle()
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        HStack(spacing: 10) {
-                            miniStatDot(label: "H", value: gameStore.pet.needs.hunger, tint: Color(hex: "#F97316"))
-                            miniStatDot(label: "Ha", value: gameStore.pet.needs.happiness, tint: Color(hex: "#EC4899"))
-                            miniStatDot(label: "C", value: gameStore.pet.needs.calm, tint: Color(hex: "#60A5FA"))
-                            miniStatDot(label: "E", value: gameStore.pet.needs.energy, tint: Color(hex: "#22C55E"))
-                        }
-
-                        Spacer(minLength: 8)
-
-                        Label(showsCompactParameters ? "Chiudi" : "Dettagli", systemImage: showsCompactParameters ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundStyle(Color(hex: "#5e4636"))
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-                    .background(Color(hex: "#fdf3e3").opacity(0.80), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                HStack(spacing: 10) {
+                    miniStatDot(label: "H", value: gameStore.pet.needs.hunger, tint: Color(hex: "#F97316"))
+                    miniStatDot(label: "Ha", value: gameStore.pet.needs.happiness, tint: Color(hex: "#EC4899"))
+                    miniStatDot(label: "C", value: gameStore.pet.needs.calm, tint: Color(hex: "#60A5FA"))
+                    miniStatDot(label: "E", value: gameStore.pet.needs.energy, tint: Color(hex: "#22C55E"))
                 }
-                .buttonStyle(.plain)
-
-                if showsCompactParameters {
-                    VStack(spacing: 7) {
-                        parameterBar(title: "Hunger", value: gameStore.pet.needs.hunger, tint: Color(hex: "#F97316"))
-                        parameterBar(title: "Happiness", value: gameStore.pet.needs.happiness, tint: Color(hex: "#EC4899"))
-                        parameterBar(title: "Calm", value: gameStore.pet.needs.calm, tint: Color(hex: "#60A5FA"))
-                        parameterBar(title: "Energy", value: gameStore.pet.needs.energy, tint: Color(hex: "#22C55E"))
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
+                .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 8) {
-                    parameterBar(title: "Hunger", value: gameStore.pet.needs.hunger, tint: Color(hex: "#F97316"))
-                    parameterBar(title: "Happiness", value: gameStore.pet.needs.happiness, tint: Color(hex: "#EC4899"))
-                    parameterBar(title: "Calm", value: gameStore.pet.needs.calm, tint: Color(hex: "#60A5FA"))
-                    parameterBar(title: "Energy", value: gameStore.pet.needs.energy, tint: Color(hex: "#22C55E"))
+                HStack(spacing: 12) {
+                    miniStatDot(label: "Hunger", value: gameStore.pet.needs.hunger, tint: Color(hex: "#F97316"))
+                    miniStatDot(label: "Happy", value: gameStore.pet.needs.happiness, tint: Color(hex: "#EC4899"))
+                    miniStatDot(label: "Calm", value: gameStore.pet.needs.calm, tint: Color(hex: "#60A5FA"))
+                    miniStatDot(label: "Energy", value: gameStore.pet.needs.energy, tint: Color(hex: "#22C55E"))
                 }
+                .frame(maxWidth: .infinity)
             }
         }
         .padding(.horizontal, compact ? 10 : 14)
-        .padding(.vertical, compact ? 7 : 10)
-        .background(Color(hex: "#fdf3e3").opacity(compact ? 0.85 : 0.90), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(.vertical, compact ? 5 : 6)
+        .background(.white.opacity(compact ? 0.74 : 0.80), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color(hex: "#c9a96e").opacity(0.4), lineWidth: 1.5)
+                .stroke(Color.white.opacity(0.7), lineWidth: 1)
         )
     }
 
@@ -353,7 +231,7 @@ struct HouseView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.system(size: compact ? 8 : 9, weight: .bold, design: .rounded))
-                .foregroundStyle(Color(hex: "#8a7260"))
+                .foregroundStyle(Color(hex: "#8A7AA8"))
             Text(value)
                 .font(.system(size: compact ? 11 : 12, weight: .black, design: .rounded))
                 .foregroundStyle(tint)
@@ -363,14 +241,14 @@ struct HouseView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, compact ? 8 : 9)
         .padding(.vertical, compact ? 6 : 8)
-        .background(Color(hex: "#fdf3e3").opacity(0.88), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Color.white.opacity(0.82), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private func miniStatDot(label: String, value: Float, tint: Color) -> some View {
-        VStack(spacing: 3) {
+        VStack(spacing: 5) {
             Text(label)
-                .font(.system(size: 8, weight: .bold, design: .rounded))
-                .foregroundStyle(Color(hex: "#8a7260"))
+                .font(.system(size: label.count > 2 ? 9 : 8, weight: .bold, design: .rounded))
+                .foregroundStyle(Color(hex: "#8A7AA8"))
             Circle()
                 .fill(tint.opacity(0.18))
                 .overlay(
@@ -379,33 +257,30 @@ struct HouseView: View {
                         .stroke(tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                 )
-                .frame(width: 18, height: 18)
+                .overlay {
+                    Text("\(Int((value * 100).rounded()))")
+                        .font(.system(size: label.count > 2 ? 8 : 7, weight: .black, design: .rounded))
+                        .foregroundStyle(tint)
+                }
+                .frame(width: label.count > 2 ? 42 : 30, height: label.count > 2 ? 42 : 30)
         }
     }
 
-    private func parameterBar(title: String, value: Float, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack {
-                Text(title)
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: "#5e4636"))
-                Spacer()
-                Text("\(Int((value * 100).rounded()))%")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(tint)
-            }
-
-            GeometryReader { proxy in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 999, style: .continuous)
-                        .fill(Color.white.opacity(0.65))
-                    RoundedRectangle(cornerRadius: 999, style: .continuous)
-                        .fill(tint)
-                        .frame(width: max(proxy.size.width * CGFloat(value), 8))
-                }
-            }
-            .frame(height: 8)
+    private func roomFactPill(title: String, value: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(title)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(Color(hex: "#8A7AA8"))
+            Text(value)
+                .font(.system(size: 12, weight: .black, design: .rounded))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(0.78), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     // MARK: - Action Bar
@@ -417,19 +292,19 @@ struct HouseView: View {
             if compact {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#e8a0a0")) { navigationState.activeSection = .store }
-                        actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#a8c9a0")) { navigationState.activeSection = .inventory }
-                        actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#d4884a")) { navigationState.activeSection = .decorate }
-                        actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#d4a843")) { navigationState.activeSection = .meTime }
+                        actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#F87171")) { navigationState.activeSection = .store }
+                        actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#60A5FA")) { navigationState.activeSection = .inventory }
+                        actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#A78BFA")) { navigationState.activeSection = .decorate }
+                        actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#F59E0B")) { navigationState.activeSection = .meTime }
                     }
                     .padding(.horizontal, 10)
                 }
             } else {
                 HStack(spacing: 12) {
-                    actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#e8a0a0")) { navigationState.activeSection = .store }
-                    actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#a8c9a0")) { navigationState.activeSection = .inventory }
-                    actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#d4884a")) { navigationState.activeSection = .decorate }
-                    actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#d4a843")) { navigationState.activeSection = .meTime }
+                    actionButton(icon: "bag.fill",       label: "Store",   color: Color(hex: "#F87171")) { navigationState.activeSection = .store }
+                    actionButton(icon: "backpack.fill",  label: "Zaino",   color: Color(hex: "#60A5FA")) { navigationState.activeSection = .inventory }
+                    actionButton(icon: "wand.and.stars", label: "Decora",  color: Color(hex: "#A78BFA")) { navigationState.activeSection = .decorate }
+                    actionButton(icon: "sparkles",       label: "Me Time", color: Color(hex: "#F59E0B")) { navigationState.activeSection = .meTime }
                 }
                 .padding(.horizontal, 14)
             }
@@ -448,8 +323,8 @@ struct HouseView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color(hex: "#f5ead8").opacity(0),
-                        Color(hex: "#f5ead8").opacity(0.82)
+                        Color.white.opacity(0),
+                        Color.white.opacity(0.72)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -487,7 +362,7 @@ struct HouseView: View {
     private var backgroundDecorations: some View {
         ZStack {
             ForEach(Array(zip(
-                ["🌿", "🍃", "🌸", "🌺", "🌼", "🍀", "🌙"],
+                ["⭐", "💫", "🌸", "✨", "🌟", "💕", "🌙"],
                 [
                     CGPoint(x: 40, y: 96),
                     CGPoint(x: 330, y: 88),
@@ -507,30 +382,41 @@ struct HouseView: View {
         .allowsHitTesting(false)
     }
 
-    private func topBarBackground(compact: Bool) -> some View {
-        RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-            .fill(Color(hex: "#fdf3e3").opacity(compact ? 0.82 : 0.90))
-            .overlay(
-                RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-                    .stroke(Color(hex: "#c9a96e").opacity(compact ? 0.35 : 0.55), lineWidth: 1.5)
-            )
-    }
-
     private func statusCardBackground(compact: Bool) -> some View {
         RoundedRectangle(cornerRadius: compact ? 0 : 22, style: .continuous)
-            .fill(Color(hex: "#fdf3e3").opacity(compact ? 0.72 : 0.82))
+            .fill(Color.white.opacity(compact ? 0.62 : 0.72))
             .overlay(
                 RoundedRectangle(cornerRadius: compact ? 0 : 22, style: .continuous)
-                    .stroke(Color(hex: "#c9a96e").opacity(compact ? 0.25 : 0.45), lineWidth: 1.5)
+                    .stroke(Color.white.opacity(compact ? 0.24 : 0.6), lineWidth: 1)
             )
     }
 
     private func actionBarBackground(compact: Bool) -> some View {
         RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-            .fill(Color(hex: "#fdf3e3").opacity(compact ? 0.92 : 0.95))
+            .fill(.white.opacity(compact ? 0.88 : 0.92))
             .overlay(
                 RoundedRectangle(cornerRadius: compact ? 0 : 28, style: .continuous)
-                    .stroke(Color(hex: "#c9a96e").opacity(compact ? 0.35 : 0.55), lineWidth: 1.5)
+                    .stroke(Color.white.opacity(compact ? 0.28 : 0.65), lineWidth: 1)
             )
+    }
+
+    private var roomStyleName: String {
+        switch gameStore.pet.stage {
+        case 0: return "Starter Cozy"
+        case 1: return "Soft Bloom"
+        case 2: return "Sweet Nest"
+        case 3: return "Dream Room"
+        default: return "Star Haven"
+        }
+    }
+
+    private var overallCareScore: Float {
+        let needs = gameStore.pet.needs
+        return min(max((needs.hunger + needs.happiness + needs.calm + needs.energy) / 4, 0), 1)
+    }
+
+    private var relaxationScore: Float {
+        let needs = gameStore.pet.needs
+        return min(max((needs.calm + needs.energy) / 2, 0), 1)
     }
 }

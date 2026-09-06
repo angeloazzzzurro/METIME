@@ -4,11 +4,6 @@ import Foundation
 // MARK: - HouseScene
 
 final class HouseScene: SKScene {
-    private struct TileCoordinate: Hashable {
-        let col: Int
-        let row: Int
-    }
-
     // MARK: Config
     private var tileW: CGFloat = 84
     private var tileH: CGFloat = 42
@@ -43,14 +38,6 @@ final class HouseScene: SKScene {
     private var movementVector: CGVector = .zero
     private var lastMovementUpdateTime: TimeInterval?
     private let movementSpeed: CGFloat = 132
-
-    private let cols: Int = 13
-    private let rows: Int = 13
-    private var centerCol: Int { max(cols / 2, 0) }
-    private var centerRow: Int { max(rows / 2, 0) }
-    private var petCol: Int { centerCol }
-    private var petRow: Int { min(centerRow + 1, rows - 1) }
-    private var activeTiles: Set<TileCoordinate> { squareTileCoordinates() }
 
     // MARK: Mood palette (pareti + pavimento)
     private var floorColor: UIColor {
@@ -134,24 +121,8 @@ final class HouseScene: SKScene {
         wallLayer.removeAllChildren()
         decorLayer.removeAllChildren()
 
-        // Pavimento isometrico
-        for row in 0..<rows {
-            for col in 0..<cols where containsTile(col: col, row: row) {
-                let tile = makeTile(col: col, row: row)
-                floorLayer.addChild(tile)
-            }
-        }
-
-        // Pareti solo sul perimetro visibile della stanza
-        for tile in activeTiles {
-            if !containsTile(col: tile.col - 1, row: tile.row) {
-                wallLayer.addChild(makeWallLeft(col: tile.col, row: tile.row))
-            }
-            if !containsTile(col: tile.col, row: tile.row - 1) {
-                wallLayer.addChild(makeWallBack(col: tile.col, row: tile.row))
-            }
-        }
-
+        buildFrontRoom()
+        addArchitecturalDecor()
         addAmbientDecor()
     }
 
@@ -171,103 +142,40 @@ final class HouseScene: SKScene {
 
     private func configureLayout(for size: CGSize) {
         let compact = size.width < 390 || size.height < 340
-        let availableWidth = compact ? max(size.width * 0.84, 260) : max(size.width * 1.02, 380)
-        let availableHeight = compact ? max(size.height * 0.56, 180) : max(size.height * 0.72, 280)
-
-        let widthBasedTile = availableWidth / CGFloat(cols + rows)
-        let heightBasedTile = availableHeight / CGFloat(rows + cols) * (compact ? 2.15 : 2.55)
-        let minimumTile: CGFloat = compact ? 28 : 40
-        let maximumTile: CGFloat = compact ? 92 : 118
-        let resolvedTileW = min(max(min(widthBasedTile, heightBasedTile), minimumTile), maximumTile)
-
-        tileW = resolvedTileW
-        tileH = resolvedTileW * 0.5
+        let baseTileWidth = compact ? size.width * 0.125 : size.width * 0.112
+        tileW = min(max(baseTileWidth, compact ? 34 : 46), compact ? 72 : 88)
+        tileH = tileW * 0.58
         let baseWallHeight = compact
-            ? min(max(size.height * 0.24, 58), 104)
-            : min(max(size.height * 0.34, 110), 196)
+            ? min(max(size.height * 0.34, 96), 160)
+            : min(max(size.height * 0.42, 150), 248)
         wallHeight = baseWallHeight
-        anchorPoint = CGPoint(x: 0.5, y: compact ? 0.40 : 0.34)
-    }
-
-    private func makeTile(col: Int, row: Int) -> SKShapeNode {
-        let pos = isoPosition(col: col, row: row)
-        let path = isoTilePath()
-        let node = SKShapeNode(path: path)
-
-        let brightness: CGFloat = 1.0 - CGFloat(col + row) * 0.015
-        node.fillColor = floorColor.withAlphaComponent(brightness)
-        node.strokeColor = UIColor.white.withAlphaComponent(0.22)
-        node.lineWidth = 0.5
-        node.position = pos
-        node.zPosition = CGFloat(row * cols + col)
-        node.name = "tile_\(col)_\(row)"
-        return node
-    }
-
-    private func makeWallLeft(col: Int, row: Int) -> SKShapeNode {
-        let basePos = isoPosition(col: col, row: row)
-
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: -tileW / 2, y: 0))
-        path.addLine(to: CGPoint(x: 0, y: tileH / 2))
-        path.addLine(to: CGPoint(x: 0, y: tileH / 2 + wallHeight))
-        path.addLine(to: CGPoint(x: -tileW / 2, y: wallHeight))
-        path.closeSubpath()
-
-        let node = SKShapeNode(path: path)
-        node.fillColor = wallColor.withAlphaComponent(0.90)
-        node.strokeColor = UIColor.white.withAlphaComponent(0.2)
-        node.lineWidth = 0.5
-        node.position = basePos
-        node.zPosition = CGFloat(row * cols) - 0.5
-        return node
-    }
-
-    private func makeWallBack(col: Int, row: Int) -> SKShapeNode {
-        let basePos = isoPosition(col: col, row: row)
-
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: 0, y: tileH / 2))
-        path.addLine(to: CGPoint(x: tileW / 2, y: 0))
-        path.addLine(to: CGPoint(x: tileW / 2, y: wallHeight))
-        path.addLine(to: CGPoint(x: 0, y: tileH / 2 + wallHeight))
-        path.closeSubpath()
-
-        let node = SKShapeNode(path: path)
-        node.fillColor = wallColor.withAlphaComponent(0.78)
-        node.strokeColor = UIColor.white.withAlphaComponent(0.2)
-        node.lineWidth = 0.5
-        node.position = basePos
-        node.zPosition = CGFloat(col) - 0.5
-        return node
+        anchorPoint = CGPoint(x: 0.5, y: compact ? 0.48 : 0.44)
     }
 
     private func addAmbientDecor() {
-        let decorAnchor = decorAnchorTile()
-        let centerPos = isoPosition(col: decorAnchor.col, row: decorAnchor.row)
+        let centerPos = CGPoint(x: 0, y: -tileH * 1.1)
 
-        let rugWidth = tileW * min(CGFloat(cols) * 0.42, 4.6)
-        let rugHeight = tileH * min(CGFloat(rows) * 0.72, 4.2)
-        let rug = SKShapeNode(path: roundedDiamondPath(width: rugWidth, height: rugHeight, cornerRadius: 18))
+        let rugWidth = tileW * 3.8
+        let rugHeight = tileH * 2.3
+        let rug = SKShapeNode(rectOf: CGSize(width: rugWidth, height: rugHeight), cornerRadius: 26)
         rug.fillColor = UIColor(red: 0.92, green: 0.88, blue: 1.0, alpha: 0.95)
         rug.strokeColor = UIColor.white.withAlphaComponent(0.35)
         rug.lineWidth = 1
-        rug.position = CGPoint(x: centerPos.x, y: centerPos.y - 6)
+        rug.position = centerPos
         rug.zPosition = 120
         decorLayer.addChild(rug)
 
-        let glow = SKShapeNode(ellipseOf: CGSize(width: tileW * 2.8, height: tileH * 1.2))
+        let glow = SKShapeNode(ellipseOf: CGSize(width: tileW * 4.2, height: tileH * 1.8))
         glow.fillColor = UIColor.white.withAlphaComponent(0.12)
         glow.strokeColor = .clear
-        glow.position = CGPoint(x: centerPos.x + tileW * 0.75, y: centerPos.y + wallHeight * 0.9)
+        glow.position = CGPoint(x: centerPos.x + tileW * 1.1, y: wallHeight * 0.9)
         glow.zPosition = 180
         decorLayer.addChild(glow)
 
-        let sparkleSpan = max(CGFloat(cols), CGFloat(rows)) * 0.18
         let sparkles = [
-            CGPoint(x: -tileW * (1.2 + sparkleSpan), y: wallHeight * 1.1),
-            CGPoint(x: tileW * (1.1 + sparkleSpan), y: wallHeight * 1.0),
-            CGPoint(x: tileW * 1.15, y: wallHeight * 1.35)
+            CGPoint(x: -tileW * 2.6, y: wallHeight * 0.92),
+            CGPoint(x: tileW * 2.7, y: wallHeight * 0.86),
+            CGPoint(x: tileW * 0.8, y: wallHeight * 1.16)
         ]
         for point in sparkles {
             let sparkle = SKLabelNode(text: "✦")
@@ -279,19 +187,203 @@ final class HouseScene: SKScene {
         }
     }
 
-    private func roundedDiamondPath(width: CGFloat, height: CGFloat, cornerRadius: CGFloat) -> CGPath {
-        let halfW = width / 2
-        let halfH = height / 2
-        let radius = min(cornerRadius, min(halfW, halfH) * 0.45)
+    private func buildFrontRoom() {
+        let compact = isCompactScene
+        let roomWidth = tileW * (compact ? 6.4 : 7.6)
+        let roomDepth = tileH * (compact ? 3.4 : 4.2)
+        let floorY = -tileH * (compact ? 1.6 : 1.8)
 
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0, y: halfH))
-        path.addQuadCurve(to: CGPoint(x: halfW, y: 0), controlPoint: CGPoint(x: radius, y: halfH - radius))
-        path.addQuadCurve(to: CGPoint(x: 0, y: -halfH), controlPoint: CGPoint(x: halfW - radius, y: -radius))
-        path.addQuadCurve(to: CGPoint(x: -halfW, y: 0), controlPoint: CGPoint(x: -radius, y: -halfH + radius))
-        path.addQuadCurve(to: CGPoint(x: 0, y: halfH), controlPoint: CGPoint(x: -halfW + radius, y: radius))
-        path.close()
-        return path.cgPath
+        let wall = SKShapeNode(rectOf: CGSize(width: roomWidth, height: wallHeight * 1.18), cornerRadius: 30)
+        wall.fillColor = wallColor.withAlphaComponent(0.92)
+        wall.strokeColor = UIColor.white.withAlphaComponent(0.32)
+        wall.lineWidth = 1.2
+        wall.position = CGPoint(x: 0, y: floorY + wallHeight * 0.64)
+        wall.zPosition = 5
+        wallLayer.addChild(wall)
+
+        let wallPanel = SKShapeNode(rectOf: CGSize(width: roomWidth * 0.88, height: wallHeight * 0.78), cornerRadius: 22)
+        wallPanel.fillColor = wallColor.withAlphaComponent(0.58)
+        wallPanel.strokeColor = UIColor.white.withAlphaComponent(0.14)
+        wallPanel.lineWidth = 1
+        wallPanel.position = CGPoint(x: 0, y: floorY + wallHeight * 0.68)
+        wallPanel.zPosition = 6
+        wallLayer.addChild(wallPanel)
+
+        let skirting = SKShapeNode(rectOf: CGSize(width: roomWidth * 0.94, height: 16), cornerRadius: 8)
+        skirting.fillColor = UIColor(red: 0.93, green: 0.88, blue: 0.82, alpha: 0.98)
+        skirting.strokeColor = UIColor(red: 0.79, green: 0.70, blue: 0.62, alpha: 0.72)
+        skirting.lineWidth = 1
+        skirting.position = CGPoint(x: 0, y: floorY + 6)
+        skirting.zPosition = 8
+        wallLayer.addChild(skirting)
+
+        let floor = SKShapeNode(rectOf: CGSize(width: roomWidth * 1.02, height: roomDepth), cornerRadius: 22)
+        floor.fillColor = floorColor.withAlphaComponent(0.98)
+        floor.strokeColor = UIColor.white.withAlphaComponent(0.18)
+        floor.lineWidth = 1
+        floor.position = CGPoint(x: 0, y: floorY - roomDepth * 0.25)
+        floor.zPosition = 20
+        floorLayer.addChild(floor)
+
+        let floorInner = SKShapeNode(rectOf: CGSize(width: roomWidth * 0.92, height: roomDepth * 0.68), cornerRadius: 18)
+        floorInner.fillColor = floorColor.withAlphaComponent(0.74)
+        floorInner.strokeColor = UIColor.clear
+        floorInner.position = CGPoint(x: 0, y: floorY - roomDepth * 0.20)
+        floorInner.zPosition = 21
+        floorLayer.addChild(floorInner)
+
+        addFloorLines(roomWidth: roomWidth, floorY: floorY, roomDepth: roomDepth)
+    }
+
+    private func addFloorLines(roomWidth: CGFloat, floorY: CGFloat, roomDepth: CGFloat) {
+        let lineColor = UIColor.white.withAlphaComponent(0.14)
+        for index in -2...2 {
+            let x = CGFloat(index) * roomWidth * 0.17
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: x, y: floorY - roomDepth * 0.47))
+            path.addLine(to: CGPoint(x: x, y: floorY + roomDepth * 0.04))
+            let line = SKShapeNode(path: path)
+            line.strokeColor = lineColor
+            line.lineWidth = 1
+            line.zPosition = 22
+            floorLayer.addChild(line)
+        }
+    }
+
+    private func addArchitecturalDecor() {
+        let wallY = wallHeight * 0.34
+        addWallWindow(at: CGPoint(x: tileW * 1.95, y: wallY))
+        addFloatingShelf(at: CGPoint(x: -tileW * 1.95, y: wallY + wallHeight * 0.04))
+        addHangingLamp(at: CGPoint(x: 0, y: wallHeight * 0.96))
+        addFloorPlant(at: CGPoint(x: tileW * 2.75, y: -tileH * 2.45))
+        addSidePouf(at: CGPoint(x: -tileW * 2.15, y: -tileH * 2.95))
+    }
+
+    private func addWallWindow(at position: CGPoint) {
+        let glow = SKShapeNode(ellipseOf: CGSize(width: tileW * 2.0, height: wallHeight * 0.58))
+        glow.fillColor = UIColor(red: 1.0, green: 0.95, blue: 0.80, alpha: 0.12)
+        glow.strokeColor = .clear
+        glow.position = CGPoint(x: position.x, y: position.y - wallHeight * 0.06)
+        glow.zPosition = 90
+        decorLayer.addChild(glow)
+
+        let frame = SKShapeNode(rectOf: CGSize(width: tileW * 1.5, height: wallHeight * 0.82), cornerRadius: 12)
+        frame.fillColor = UIColor(red: 0.98, green: 0.94, blue: 0.86, alpha: 0.98)
+        frame.strokeColor = UIColor(red: 0.79, green: 0.66, blue: 0.50, alpha: 0.88)
+        frame.lineWidth = 2
+        frame.position = position
+        frame.zPosition = 96
+        decorLayer.addChild(frame)
+
+        let glass = SKShapeNode(rectOf: CGSize(width: tileW * 1.22, height: wallHeight * 0.62), cornerRadius: 9)
+        glass.fillColor = UIColor(red: 0.77, green: 0.90, blue: 1.0, alpha: 0.78)
+        glass.strokeColor = UIColor.white.withAlphaComponent(0.62)
+        glass.lineWidth = 1.2
+        glass.position = position
+        glass.zPosition = 97
+        decorLayer.addChild(glass)
+
+        let curtainL = SKShapeNode(rectOf: CGSize(width: tileW * 0.28, height: wallHeight * 0.88), cornerRadius: 10)
+        curtainL.fillColor = UIColor(red: 0.96, green: 0.77, blue: 0.86, alpha: 0.94)
+        curtainL.strokeColor = UIColor.clear
+        curtainL.position = CGPoint(x: position.x - tileW * 0.74, y: position.y)
+        curtainL.zPosition = 95
+        decorLayer.addChild(curtainL)
+
+        let curtainR = SKShapeNode(rectOf: CGSize(width: tileW * 0.28, height: wallHeight * 0.88), cornerRadius: 10)
+        curtainR.fillColor = UIColor(red: 0.88, green: 0.82, blue: 1.0, alpha: 0.94)
+        curtainR.strokeColor = UIColor.clear
+        curtainR.position = CGPoint(x: position.x + tileW * 0.74, y: position.y)
+        curtainR.zPosition = 95
+        decorLayer.addChild(curtainR)
+    }
+
+    private func addFloatingShelf(at position: CGPoint) {
+        let plank = SKShapeNode(rectOf: CGSize(width: tileW * 1.45, height: 10), cornerRadius: 5)
+        plank.fillColor = UIColor(red: 0.83, green: 0.63, blue: 0.45, alpha: 0.98)
+        plank.strokeColor = UIColor(red: 0.63, green: 0.44, blue: 0.28, alpha: 0.82)
+        plank.lineWidth = 1
+        plank.position = position
+        plank.zPosition = 92
+        decorLayer.addChild(plank)
+
+        let book = SKShapeNode(rectOf: CGSize(width: 12, height: 24), cornerRadius: 3)
+        book.fillColor = UIColor(red: 0.56, green: 0.73, blue: 0.96, alpha: 0.98)
+        book.strokeColor = .clear
+        book.position = CGPoint(x: position.x - 18, y: position.y + 12)
+        book.zPosition = 93
+        decorLayer.addChild(book)
+
+        let vase = SKShapeNode(ellipseOf: CGSize(width: 18, height: 24))
+        vase.fillColor = UIColor(red: 0.95, green: 0.81, blue: 0.88, alpha: 0.96)
+        vase.strokeColor = UIColor.white.withAlphaComponent(0.48)
+        vase.lineWidth = 1
+        vase.position = CGPoint(x: position.x + 20, y: position.y + 15)
+        vase.zPosition = 93
+        decorLayer.addChild(vase)
+    }
+
+    private func addHangingLamp(at position: CGPoint) {
+        let cordPath = CGMutablePath()
+        cordPath.move(to: CGPoint(x: position.x, y: position.y + 30))
+        cordPath.addLine(to: CGPoint(x: position.x, y: position.y))
+        let cord = SKShapeNode(path: cordPath)
+        cord.strokeColor = UIColor(red: 0.65, green: 0.57, blue: 0.50, alpha: 0.76)
+        cord.lineWidth = 2
+        cord.zPosition = 110
+        decorLayer.addChild(cord)
+
+        let shade = SKShapeNode(rectOf: CGSize(width: tileW * 0.72, height: 20), cornerRadius: 10)
+        shade.fillColor = UIColor(red: 0.98, green: 0.92, blue: 0.82, alpha: 0.98)
+        shade.strokeColor = UIColor(red: 0.82, green: 0.70, blue: 0.55, alpha: 0.86)
+        shade.lineWidth = 1.2
+        shade.position = position
+        shade.zPosition = 111
+        decorLayer.addChild(shade)
+
+        let lightGlow = SKShapeNode(ellipseOf: CGSize(width: tileW * 2.4, height: wallHeight * 0.58))
+        lightGlow.fillColor = UIColor(red: 1.0, green: 0.97, blue: 0.82, alpha: 0.16)
+        lightGlow.strokeColor = .clear
+        lightGlow.position = CGPoint(x: position.x, y: position.y - wallHeight * 0.28)
+        lightGlow.zPosition = 89
+        decorLayer.addChild(lightGlow)
+    }
+
+    private func addFloorPlant(at position: CGPoint) {
+        let pot = SKShapeNode(rectOf: CGSize(width: tileW * 0.46, height: 18), cornerRadius: 8)
+        pot.fillColor = UIColor(red: 0.89, green: 0.66, blue: 0.49, alpha: 0.98)
+        pot.strokeColor = UIColor(red: 0.67, green: 0.48, blue: 0.33, alpha: 0.86)
+        pot.lineWidth = 1
+        pot.position = position
+        pot.zPosition = 205
+        decorLayer.addChild(pot)
+
+        for (offset, scale) in [(-10.0, 1.0), (0.0, 1.18), (11.0, 0.94)] {
+            let leaf = SKShapeNode(ellipseOf: CGSize(width: 14 * scale, height: 30 * scale))
+            leaf.fillColor = UIColor(red: 0.52, green: 0.84, blue: 0.56, alpha: 0.96)
+            leaf.strokeColor = UIColor.clear
+            leaf.position = CGPoint(x: position.x + offset, y: position.y + 18 + 10 * scale)
+            leaf.zRotation = offset < 0 ? -.pi / 7 : .pi / 8
+            leaf.zPosition = 206
+            decorLayer.addChild(leaf)
+        }
+    }
+
+    private func addSidePouf(at position: CGPoint) {
+        let pouf = SKShapeNode(ellipseOf: CGSize(width: tileW * 0.70, height: tileH * 0.92))
+        pouf.fillColor = UIColor(red: 0.96, green: 0.80, blue: 0.87, alpha: 0.95)
+        pouf.strokeColor = UIColor(red: 0.86, green: 0.63, blue: 0.77, alpha: 0.74)
+        pouf.lineWidth = 1.2
+        pouf.position = position
+        pouf.zPosition = 214
+        decorLayer.addChild(pouf)
+
+        let tuft = SKShapeNode(circleOfRadius: 4)
+        tuft.fillColor = UIColor.white.withAlphaComponent(0.52)
+        tuft.strokeColor = .clear
+        tuft.position = CGPoint(x: position.x, y: position.y + 3)
+        tuft.zPosition = 215
+        decorLayer.addChild(tuft)
     }
 
     // MARK: - Pet
@@ -302,21 +394,26 @@ final class HouseScene: SKScene {
         pet.setColor(petColor, animated: false)
         pet.setMood(mood)
         pet.setStage(petStage)
-        pet.setScale(min(size.width / 67, size.height / 83))
+        pet.setScale(min(size.width / 92, size.height / 82))
 
         // Ombra
         let shadow = SKShapeNode(ellipseOf: CGSize(width: size.width, height: tileH * 0.32))
         shadow.fillColor = UIColor(red: 0.5, green: 0.4, blue: 0.7, alpha: 0.25)
         shadow.strokeColor = .clear
 
-        // Posizione centrale nella stanza
-        let anchor = petAnchorTile()
-        let centerPos = isoPosition(col: anchor.col, row: anchor.row)
-        pet.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.18)
+        let centerPos = CGPoint(x: 0, y: -tileH * 1.55)
+        pet.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.16)
         pet.zPosition = 500
 
-        shadow.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 0.05)
+        shadow.position = CGPoint(x: centerPos.x, y: centerPos.y - tileH * 0.18)
         shadow.zPosition = 499
+
+        // Animazione idle
+        let bob = SKAction.sequence([
+            SKAction.moveBy(x: 0, y: 5, duration: 0.95),
+            SKAction.moveBy(x: 0, y: -5, duration: 0.95)
+        ])
+        pet.run(SKAction.repeatForever(bob))
 
         addChild(shadow)
         addChild(pet)
@@ -544,8 +641,7 @@ final class HouseScene: SKScene {
     }
 
     private func refreshPetAppearance(animated: Bool) {
-        let anchor = petAnchorTile()
-        let centerPos = isoPosition(col: anchor.col, row: anchor.row)
+        let centerPos = CGPoint(x: 0, y: -tileH * 1.55)
         let newSize = petBodySize(for: petStage)
 
         guard let petNode, let petShadowNode else {
@@ -557,8 +653,8 @@ final class HouseScene: SKScene {
         petNode.removeAllActions()
         petNode.setStage(petStage)
         petNode.setMood(mood)
-        petNode.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.18)
-        petNode.setScale(min(newSize.width / 67, newSize.height / 83))
+        petNode.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.16)
+        petNode.setScale(min(newSize.width / 92, newSize.height / 82))
 
         petShadowNode.path = CGPath(ellipseIn: CGRect(
             x: -newSize.width / 2,
@@ -566,11 +662,15 @@ final class HouseScene: SKScene {
             width: newSize.width,
             height: tileH * 0.32
         ), transform: nil)
-        petShadowNode.position = CGPoint(x: centerPos.x, y: centerPos.y + tileH * 0.05)
+        petShadowNode.position = CGPoint(x: centerPos.x, y: centerPos.y - tileH * 0.18)
 
         guard animated else { return }
         petNode.position = previousPosition
-        petNode.run(.move(to: CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.18), duration: 0.2))
+        petNode.run(.repeatForever(.sequence([
+            .moveBy(x: 0, y: 5, duration: 0.95),
+            .moveBy(x: 0, y: -5, duration: 0.95)
+        ])))
+        petNode.run(.move(to: CGPoint(x: centerPos.x, y: centerPos.y + tileH * 1.16), duration: 0.2))
         runEvolutionCelebration()
     }
 
@@ -586,7 +686,7 @@ final class HouseScene: SKScene {
         petNode.position = clampedPosition
         petShadowNode.position = CGPoint(
             x: clampedPosition.x,
-            y: clampedPosition.y - tileH * 1.13
+            y: clampedPosition.y - tileH * 1.34
         )
     }
 
@@ -599,10 +699,12 @@ final class HouseScene: SKScene {
     }
 
     private func petMovementBounds() -> CGRect {
-        let minX = CGFloat(-(cols - 1)) * (tileW / 2) + tileW * 0.9
-        let maxX = CGFloat(rows - 1) * (tileW / 2) - tileW * 0.9
-        let minY = CGFloat(-(cols + rows - 2)) * (tileH / 2) + tileH * 1.6
-        let maxY = tileH * 2.1
+        let roomWidth = tileW * (isCompactScene ? 6.4 : 7.6)
+        let roomDepth = tileH * (isCompactScene ? 3.4 : 4.2)
+        let minX = -roomWidth * 0.39
+        let maxX = roomWidth * 0.39
+        let minY = -tileH * 2.25 - roomDepth * 0.18
+        let maxY = -tileH * 0.35
 
         return CGRect(
             x: minX,
@@ -623,67 +725,4 @@ final class HouseScene: SKScene {
         return CGSize(width: tileW * 0.98 * stageScale, height: tileH * 1.95 * stageScale)
     }
 
-    private func squareTileCoordinates() -> Set<TileCoordinate> {
-        Set((0..<rows).flatMap { row in
-            (0..<cols).map { col in
-                TileCoordinate(col: col, row: row)
-            }
-        })
-    }
-
-    private func containsTile(col: Int, row: Int) -> Bool {
-        activeTiles.contains(TileCoordinate(col: col, row: row))
-    }
-
-    private func petAnchorTile() -> TileCoordinate {
-        let preferred = TileCoordinate(col: petCol, row: petRow)
-        if activeTiles.contains(preferred) {
-            return preferred
-        }
-
-        return activeTiles
-            .min { lhs, rhs in
-                let lhsDistance = abs(lhs.col - centerCol) + abs(lhs.row - petRow)
-                let rhsDistance = abs(rhs.col - centerCol) + abs(rhs.row - petRow)
-                if lhsDistance == rhsDistance {
-                    return lhs.row < rhs.row
-                }
-                return lhsDistance < rhsDistance
-            } ?? TileCoordinate(col: centerCol, row: centerRow)
-    }
-
-    private func decorAnchorTile() -> TileCoordinate {
-        let preferred = TileCoordinate(col: centerCol, row: max(centerRow - 1, 1))
-        if activeTiles.contains(preferred) {
-            return preferred
-        }
-
-        return activeTiles
-            .sorted { lhs, rhs in
-                if lhs.row == rhs.row {
-                    return lhs.col < rhs.col
-                }
-                return lhs.row < rhs.row
-            }
-            .dropFirst(activeTiles.count / 2)
-            .first ?? petAnchorTile()
-    }
-
-    // MARK: - Isometric Math
-
-    private func isoPosition(col: Int, row: Int) -> CGPoint {
-        let x = CGFloat(col - row) * (tileW / 2)
-        let y = CGFloat(col + row) * (tileH / 2) * -1
-        return CGPoint(x: x, y: y)
-    }
-
-    private func isoTilePath() -> CGPath {
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: 0, y: tileH / 2))
-        path.addLine(to: CGPoint(x: tileW / 2, y: 0))
-        path.addLine(to: CGPoint(x: 0, y: -tileH / 2))
-        path.addLine(to: CGPoint(x: -tileW / 2, y: 0))
-        path.closeSubpath()
-        return path
-    }
 }

@@ -2,6 +2,7 @@ import SpriteKit
 
 final class GardenScene: SKScene {
     private let worldLayer = SKNode()
+    private let skyLayer = SKNode()
     private let groundLayer = SKNode()
     private let plotLayer = SKNode()
     private let decorLayer = SKNode()
@@ -42,6 +43,7 @@ final class GardenScene: SKScene {
     override func didMove(to view: SKView) {
         backgroundColor = .clear
         addChild(worldLayer)
+        worldLayer.addChild(skyLayer)
         worldLayer.addChild(groundLayer)
         worldLayer.addChild(plotLayer)
         worldLayer.addChild(decorLayer)
@@ -120,6 +122,7 @@ final class GardenScene: SKScene {
         groundLayer.removeAllChildren()
         plotLayer.removeAllChildren()
         decorLayer.removeAllChildren()
+        skyLayer.removeAllChildren()
 
         let centerX = size.width * 0.5
         let widthScale = 0.76 + (CGFloat(terrainExpansionLevel) * 0.07)
@@ -134,6 +137,7 @@ final class GardenScene: SKScene {
             height: boardHeight
         )
 
+        addSkyBackdrop(centerX: centerX, boardCenterY: boardCenterY, boardWidth: boardWidth, boardHeight: boardHeight)
         let grassBoard = SKShapeNode(rectOf: CGSize(width: boardWidth, height: boardHeight), cornerRadius: 34)
         grassBoard.fillColor = lawnColor
         grassBoard.strokeColor = lawnStrokeColor
@@ -158,10 +162,36 @@ final class GardenScene: SKScene {
         path.position = CGPoint(x: centerX, y: boardCenterY - boardHeight * 0.24)
         groundLayer.addChild(path)
 
+        addPathDetails(boardWidth: boardWidth, centerX: centerX, centerY: boardCenterY)
+        addMeadowPatches(boardWidth: boardWidth, boardHeight: boardHeight, centerX: centerX, centerY: boardCenterY)
+
         addFence(boardWidth: boardWidth, boardHeight: boardHeight, centerX: centerX, centerY: boardCenterY)
         addCornerDecor(boardWidth: boardWidth, boardHeight: boardHeight, centerX: centerX, centerY: boardCenterY)
         addPlots(boardWidth: boardWidth, boardHeight: boardHeight, centerX: centerX, centerY: boardCenterY)
+        addFeatureDecor(boardWidth: boardWidth, boardHeight: boardHeight, centerX: centerX, centerY: boardCenterY)
         placePet(boardWidth: boardWidth, centerX: centerX, centerY: boardCenterY)
+    }
+
+    private func addSkyBackdrop(centerX: CGFloat, boardCenterY: CGFloat, boardWidth: CGFloat, boardHeight: CGFloat) {
+        let glow = SKShapeNode(ellipseOf: CGSize(width: boardWidth * 1.22, height: boardHeight * 0.74))
+        glow.fillColor = UIColor.white.withAlphaComponent(mood == .happy || mood == .evolving ? 0.22 : 0.16)
+        glow.strokeColor = .clear
+        glow.position = CGPoint(x: centerX, y: boardCenterY + boardHeight * 0.48)
+        skyLayer.addChild(glow)
+
+        let haze = SKShapeNode(ellipseOf: CGSize(width: boardWidth * 1.08, height: boardHeight * 0.30))
+        haze.fillColor = UIColor(red: 0.92, green: 0.98, blue: 0.90, alpha: 0.20)
+        haze.strokeColor = .clear
+        haze.position = CGPoint(x: centerX, y: boardCenterY + boardHeight * 0.12)
+        skyLayer.addChild(haze)
+
+        let cloudOffsets = [
+            CGPoint(x: -boardWidth * 0.26, y: boardHeight * 0.46),
+            CGPoint(x: boardWidth * 0.18, y: boardHeight * 0.52)
+        ]
+        for offset in cloudOffsets {
+            addCloud(at: CGPoint(x: centerX + offset.x, y: boardCenterY + offset.y))
+        }
     }
 
     private func addFence(boardWidth: CGFloat, boardHeight: CGFloat, centerX: CGFloat, centerY: CGFloat) {
@@ -193,6 +223,20 @@ final class GardenScene: SKScene {
         addFlowerCluster(at: CGPoint(x: centerX + boardWidth * 0.08, y: centerY - boardHeight * 0.05))
         addTree(at: CGPoint(x: centerX - boardWidth * 0.47, y: centerY + boardHeight * 0.28))
         addTree(at: CGPoint(x: centerX + boardWidth * 0.46, y: centerY + boardHeight * 0.30))
+    }
+
+    private func addFeatureDecor(boardWidth: CGFloat, boardHeight: CGFloat, centerX: CGFloat, centerY: CGFloat) {
+        if terrainExpansionLevel > 0 {
+            addPond(at: CGPoint(x: centerX + boardWidth * 0.30, y: centerY + boardHeight * 0.06))
+        }
+
+        if terrainExpansionLevel > 1 {
+            addBench(at: CGPoint(x: centerX - boardWidth * 0.31, y: centerY - boardHeight * 0.16))
+        }
+
+        if terrainExpansionLevel > 2 {
+            addLantern(at: CGPoint(x: centerX + boardWidth * 0.02, y: centerY + boardHeight * 0.22))
+        }
     }
 
     private func addPlots(boardWidth: CGFloat, boardHeight: CGFloat, centerX: CGFloat, centerY: CGFloat) {
@@ -352,6 +396,120 @@ final class GardenScene: SKScene {
             crown.position = CGPoint(x: position.x + crownOffsets[index].x, y: position.y + crownOffsets[index].y)
             decorLayer.addChild(crown)
         }
+    }
+
+    private func addCloud(at position: CGPoint) {
+        let cloud = SKNode()
+        cloud.position = position
+        skyLayer.addChild(cloud)
+        let parts: [(CGFloat, CGPoint)] = [
+            (18, .zero),
+            (14, CGPoint(x: -18, y: -2)),
+            (15, CGPoint(x: 18, y: -1)),
+            (12, CGPoint(x: 2, y: 8))
+        ]
+        for (radius, offset) in parts {
+            let puff = SKShapeNode(circleOfRadius: radius)
+            puff.fillColor = UIColor.white.withAlphaComponent(0.58)
+            puff.strokeColor = UIColor.white.withAlphaComponent(0.26)
+            puff.lineWidth = 1
+            puff.position = offset
+            cloud.addChild(puff)
+        }
+        let drift = SKAction.sequence([
+            .moveBy(x: 8, y: 0, duration: 3.8),
+            .moveBy(x: -8, y: 0, duration: 3.8)
+        ])
+        cloud.run(.repeatForever(drift))
+    }
+
+    private func addPathDetails(boardWidth: CGFloat, centerX: CGFloat, centerY: CGFloat) {
+        let stepCount = 5 + terrainExpansionLevel
+        let stepSpacing = (boardWidth - 90) / CGFloat(max(stepCount - 1, 1))
+        let startX = centerX - (CGFloat(stepCount - 1) * stepSpacing / 2)
+        let baseY = centerY - currentBoardFrame.height * 0.24
+
+        for index in 0..<stepCount {
+            let stone = SKShapeNode(ellipseOf: CGSize(width: 24, height: 12))
+            stone.fillColor = UIColor(red: 0.91, green: 0.84, blue: 0.68, alpha: 0.95)
+            stone.strokeColor = UIColor(red: 0.79, green: 0.68, blue: 0.50, alpha: 0.78)
+            stone.lineWidth = 1
+            stone.position = CGPoint(
+                x: startX + CGFloat(index) * stepSpacing,
+                y: baseY + (index.isMultiple(of: 2) ? -3 : 3)
+            )
+            groundLayer.addChild(stone)
+        }
+    }
+
+    private func addMeadowPatches(boardWidth: CGFloat, boardHeight: CGFloat, centerX: CGFloat, centerY: CGFloat) {
+        let patches = [
+            CGPoint(x: centerX - boardWidth * 0.16, y: centerY + boardHeight * 0.21),
+            CGPoint(x: centerX + boardWidth * 0.20, y: centerY - boardHeight * 0.02),
+            CGPoint(x: centerX - boardWidth * 0.34, y: centerY - boardHeight * 0.18)
+        ]
+
+        for position in patches {
+            let patch = SKShapeNode(ellipseOf: CGSize(width: 42, height: 18))
+            patch.fillColor = UIColor(red: 0.82, green: 0.93, blue: 0.63, alpha: 0.30)
+            patch.strokeColor = .clear
+            patch.position = position
+            patch.zRotation = .pi / 18
+            groundLayer.addChild(patch)
+        }
+    }
+
+    private func addPond(at position: CGPoint) {
+        let pond = SKShapeNode(ellipseOf: CGSize(width: 62, height: 34))
+        pond.fillColor = UIColor(red: 0.48, green: 0.78, blue: 0.94, alpha: 0.84)
+        pond.strokeColor = UIColor(red: 0.33, green: 0.60, blue: 0.80, alpha: 0.8)
+        pond.lineWidth = 1.2
+        pond.position = position
+        decorLayer.addChild(pond)
+
+        let highlight = SKShapeNode(ellipseOf: CGSize(width: 24, height: 8))
+        highlight.fillColor = UIColor.white.withAlphaComponent(0.28)
+        highlight.strokeColor = .clear
+        highlight.position = CGPoint(x: position.x - 8, y: position.y + 5)
+        decorLayer.addChild(highlight)
+    }
+
+    private func addBench(at position: CGPoint) {
+        let seat = SKShapeNode(rectOf: CGSize(width: 42, height: 10), cornerRadius: 4)
+        seat.fillColor = UIColor(red: 0.84, green: 0.62, blue: 0.36, alpha: 1)
+        seat.strokeColor = UIColor(red: 0.58, green: 0.38, blue: 0.22, alpha: 0.86)
+        seat.lineWidth = 1
+        seat.position = position
+        decorLayer.addChild(seat)
+
+        for xOffset in [-12.0, 12.0] {
+            let leg = SKShapeNode(rectOf: CGSize(width: 6, height: 16), cornerRadius: 2)
+            leg.fillColor = UIColor(red: 0.49, green: 0.34, blue: 0.22, alpha: 1)
+            leg.strokeColor = .clear
+            leg.position = CGPoint(x: position.x + xOffset, y: position.y - 11)
+            decorLayer.addChild(leg)
+        }
+    }
+
+    private func addLantern(at position: CGPoint) {
+        let pole = SKShapeNode(rectOf: CGSize(width: 6, height: 36), cornerRadius: 3)
+        pole.fillColor = UIColor(red: 0.44, green: 0.34, blue: 0.24, alpha: 1)
+        pole.strokeColor = .clear
+        pole.position = position
+        decorLayer.addChild(pole)
+
+        let lamp = SKShapeNode(circleOfRadius: 10)
+        lamp.fillColor = UIColor(red: 1.0, green: 0.93, blue: 0.68, alpha: 0.92)
+        lamp.strokeColor = UIColor(red: 0.82, green: 0.70, blue: 0.42, alpha: 0.84)
+        lamp.lineWidth = 1
+        lamp.position = CGPoint(x: position.x, y: position.y + 20)
+        decorLayer.addChild(lamp)
+
+        let glow = SKShapeNode(circleOfRadius: 18)
+        glow.fillColor = UIColor(red: 1.0, green: 0.93, blue: 0.68, alpha: 0.16)
+        glow.strokeColor = .clear
+        glow.position = lamp.position
+        decorLayer.addChild(glow)
     }
 
     private func placePet(boardWidth: CGFloat, centerX: CGFloat, centerY: CGFloat) {

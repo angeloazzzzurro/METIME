@@ -32,6 +32,21 @@ struct GardenSectionView: View {
                             RoundedRectangle(cornerRadius: compact ? 28 : 34, style: .continuous)
                                 .stroke(Color.white.opacity(0.18), lineWidth: 1)
                         )
+                        .overlay(alignment: .topLeading) {
+                            gardenSceneHeader(compact: compact)
+                                .padding(.leading, compact ? 14 : 18)
+                                .padding(.top, compact ? 14 : 18)
+                        }
+                        .overlay(alignment: .topTrailing) {
+                            gardenResourceStrip(compact: compact)
+                                .padding(.trailing, compact ? 14 : 18)
+                                .padding(.top, compact ? 14 : 18)
+                        }
+                        .overlay(alignment: .bottomLeading) {
+                            gardenProgressOverlay(compact: compact)
+                                .padding(.leading, compact ? 14 : 18)
+                                .padding(.bottom, compact ? 14 : 18)
+                        }
                         .overlay(alignment: .bottomTrailing) {
                             JoystickControl(
                                 onMove: { vector in
@@ -67,20 +82,8 @@ struct GardenSectionView: View {
                             scene.terrainExpansionLevel = newLevel
                         }
 
-                    Group {
-                        if compact {
-                            VStack(spacing: 10) {
-                                gardenHeroCard(compact: compact)
-                                gardenStatsRow
-                            }
-                        } else {
-                            HStack(alignment: .top, spacing: 12) {
-                                gardenHeroCard(compact: compact)
-                                gardenStatsColumn
-                            }
-                        }
-                    }
-                    .padding(.horizontal, compact ? 12 : 18)
+                    gardenOverviewPanel(compact: compact)
+                        .padding(.horizontal, compact ? 12 : 18)
 
                     gardenBottomDock(compact: compact)
                         .padding(.horizontal, compact ? 12 : 18)
@@ -108,7 +111,7 @@ struct GardenSectionView: View {
                 .font(.system(size: compact ? 22 : 24, weight: .black, design: .rounded))
                 .foregroundStyle(Color(hex: "#2E5F3C"))
 
-            Text("Uno spazio piu arioso con aiuole, sentiero e nuove zollette da sbloccare.")
+            Text(gardenHeadline)
                 .font(.system(size: compact ? 11 : 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(Color(hex: "#5D8462"))
                 .fixedSize(horizontal: false, vertical: true)
@@ -137,6 +140,110 @@ struct GardenSectionView: View {
                 .stroke(Color.white.opacity(0.62), lineWidth: 1)
         )
         .shadow(color: Color(hex: "#7AA36B").opacity(0.14), radius: 16, y: 8)
+    }
+
+    private func gardenSceneHeader(compact: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Gardening")
+                .font(.system(size: compact ? 11 : 12, weight: .black, design: .rounded))
+                .foregroundStyle(Color(hex: "#406947"))
+            Text(gardenStatusTitle)
+                .font(.system(size: compact ? 17 : 20, weight: .black, design: .rounded))
+                .foregroundStyle(Color(hex: "#2E5F3C"))
+                .lineLimit(2)
+            Text(gardenHeadline)
+                .font(.system(size: compact ? 10 : 11, weight: .bold, design: .rounded))
+                .foregroundStyle(Color(hex: "#5D8462"))
+                .lineLimit(3)
+        }
+        .padding(.horizontal, compact ? 12 : 14)
+        .padding(.vertical, compact ? 10 : 12)
+        .frame(maxWidth: compact ? 190 : 220, alignment: .leading)
+        .background(Color.white.opacity(0.78), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .stroke(Color.white.opacity(0.58), lineWidth: 1)
+        )
+    }
+
+    private func gardenProgressCard(compact: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Progressi")
+                .font(.system(size: compact ? 16 : 18, weight: .black, design: .rounded))
+                .foregroundStyle(Color(hex: "#2E5F3C"))
+
+            progressRow(
+                title: "Zollette",
+                value: "\(houseStore.unlockedGardenPlots)/\(HouseStore.maxGardenPlots)",
+                progress: Double(houseStore.unlockedGardenPlots) / Double(HouseStore.maxGardenPlots),
+                tint: Color(hex: "#53A86A")
+            )
+            progressRow(
+                title: "Terreno",
+                value: "\(houseStore.gardenTerrainExpansionLevel)/\(HouseStore.maxGardenTerrainExpansions)",
+                progress: Double(houseStore.gardenTerrainExpansionLevel) / Double(HouseStore.maxGardenTerrainExpansions),
+                tint: Color(hex: "#6E8CFF")
+            )
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            Color.white.opacity(0.80),
+            in: RoundedRectangle(cornerRadius: 24, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.white.opacity(0.6), lineWidth: 1)
+        )
+    }
+
+    private func gardenOverviewPanel(compact: Bool) -> some View {
+        Group {
+            if compact {
+                VStack(spacing: 10) {
+                    gardenStatsRow
+                    gardenProgressCard(compact: true)
+                }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    gardenProgressCard(compact: false)
+                    gardenStatsColumn
+                }
+            }
+        }
+    }
+
+    private func gardenResourceStrip(compact: Bool) -> some View {
+        Group {
+            if compact {
+                HStack(spacing: 8) {
+                    compactStatPill(icon: "dollarsign.circle.fill", value: "\(houseStore.wallet.coins)", tint: Color(hex: "#D69A2A"))
+                    compactStatPill(icon: "square.grid.2x2.fill", value: "\(houseStore.unlockedGardenPlots)/\(HouseStore.maxGardenPlots)", tint: Color(hex: "#53A86A"))
+                }
+            } else {
+                HStack(spacing: 8) {
+                    compactStatPill(icon: "dollarsign.circle.fill", value: "\(houseStore.wallet.coins)", tint: Color(hex: "#D69A2A"))
+                    compactStatPill(icon: "square.grid.2x2.fill", value: "\(houseStore.unlockedGardenPlots)/\(HouseStore.maxGardenPlots)", tint: Color(hex: "#53A86A"))
+                    compactStatPill(icon: "arrow.up.left.and.arrow.down.right", value: "\(houseStore.gardenTerrainExpansionLevel)/\(HouseStore.maxGardenTerrainExpansions)", tint: Color(hex: "#6E8CFF"))
+                }
+                .frame(maxWidth: 270)
+            }
+        }
+    }
+
+    private func gardenProgressOverlay(compact: Bool) -> some View {
+        HStack(spacing: 8) {
+            overlayMetric(title: "Plot", value: "\(houseStore.unlockedGardenPlots)/\(HouseStore.maxGardenPlots)", tint: Color(hex: "#53A86A"))
+            overlayMetric(title: "Land", value: "\(houseStore.gardenTerrainExpansionLevel)/\(HouseStore.maxGardenTerrainExpansions)", tint: Color(hex: "#6E8CFF"))
+        }
+        .padding(.horizontal, compact ? 10 : 12)
+        .padding(.vertical, compact ? 8 : 10)
+        .background(Color.white.opacity(0.78), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.white.opacity(0.56), lineWidth: 1)
+        )
     }
 
     private var gardenStatsColumn: some View {
@@ -320,6 +427,17 @@ struct GardenSectionView: View {
         )
     }
 
+    private func overlayMetric(title: String, value: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.system(size: 9, weight: .black, design: .rounded))
+                .foregroundStyle(Color(hex: "#6A8A67"))
+            Text(value)
+                .font(.system(size: 11, weight: .black, design: .rounded))
+                .foregroundStyle(tint)
+        }
+    }
+
     private func tagChip(icon: String, text: String) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
@@ -335,6 +453,63 @@ struct GardenSectionView: View {
             Capsule()
                 .stroke(Color.white.opacity(0.58), lineWidth: 1)
         )
+    }
+
+    private func progressRow(title: String, value: String, progress: Double, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(Color(hex: "#406947"))
+                Spacer()
+                Text(value)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(tint)
+            }
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color(hex: "#E4EEDB"))
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [tint, tint.opacity(0.72)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: proxy.size.width * max(0.04, min(progress, 1.0)))
+                }
+            }
+            .frame(height: 10)
+        }
+    }
+
+    private var gardenHeadline: String {
+        if houseStore.gardenTerrainExpansionLevel == HouseStore.maxGardenTerrainExpansions,
+           houseStore.unlockedGardenPlots == HouseStore.maxGardenPlots {
+            return "Il giardino e completo: piu profondo, piu ricco e pronto per il relax del pet."
+        }
+
+        if houseStore.gardenTerrainExpansionLevel > 0 || houseStore.unlockedGardenPlots > 3 {
+            return "Uno spazio che cresce con il pet: nuove aiuole, piu respiro e dettagli ambientali."
+        }
+
+        return "Uno spazio piu arioso con aiuole, sentiero e nuove zollette da sbloccare."
+    }
+
+    private var gardenStatusTitle: String {
+        if houseStore.gardenTerrainExpansionLevel == HouseStore.maxGardenTerrainExpansions,
+           houseStore.unlockedGardenPlots == HouseStore.maxGardenPlots {
+            return "Bloom Sanctuary"
+        }
+
+        if houseStore.gardenTerrainExpansionLevel >= 2 || houseStore.unlockedGardenPlots >= 6 {
+            return "Growing Retreat"
+        }
+
+        return "Soft Garden"
     }
 
     private func purchasePlot() {

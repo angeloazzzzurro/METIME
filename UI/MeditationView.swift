@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import SpriteKit
 
 struct MeditationView: View {
     @EnvironmentObject private var gameStore: GameStore
@@ -13,6 +14,12 @@ struct MeditationView: View {
     @State private var phaseElapsed = 0
     @State private var completionSummary: MeditationCompletion?
     @State private var timerTask: Task<Void, Never>?
+    @State private var petScene: MeditationPetScene = {
+        let scene = MeditationPetScene()
+        scene.size = CGSize(width: 260, height: 190)
+        scene.scaleMode = .resizeFill
+        return scene
+    }()
 
     private let durations = [120, 240, 420]
 
@@ -23,21 +30,22 @@ struct MeditationView: View {
     var body: some View {
         GeometryReader { proxy in
             let compact = proxy.size.width < 900
+            let phoneCompact = proxy.size.width < 430
 
             ScrollView {
                 VStack(spacing: compact ? 16 : 20) {
-                    headerCard
+                    headerCard(phoneCompact: phoneCompact)
 
-                    modePicker
+                    modePicker(phoneCompact: phoneCompact)
 
                     if compact {
                         VStack(spacing: 14) {
-                            focusCard(compact: true)
+                            focusCard(compact: true, phoneCompact: phoneCompact)
                             sidebarColumn
                         }
                     } else {
                         HStack(alignment: .top, spacing: 16) {
-                            focusCard(compact: false)
+                            focusCard(compact: false, phoneCompact: false)
                                 .frame(maxWidth: .infinity)
 
                             sidebarColumn
@@ -45,7 +53,7 @@ struct MeditationView: View {
                         }
                     }
                 }
-                .padding(compact ? 14 : 20)
+                .padding(compact ? (phoneCompact ? 12 : 14) : 20)
             }
             .background(backgroundGradient.ignoresSafeArea())
             .navigationTitle("Meditazione")
@@ -73,38 +81,38 @@ struct MeditationView: View {
         )
     }
 
-    private var headerCard: some View {
+    private func headerCard(phoneCompact: Bool) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Tempio Meditazione")
-                        .font(.system(size: 13, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: "#8B6340"))
-
-                    Text("Respira, rallenta e registra le sessioni reali del pet.")
-                        .font(.system(size: 28, weight: .black, design: .rounded))
-                        .foregroundStyle(Color(hex: "#4A3425"))
-
-                    Text(selectedMode.description)
-                        .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        .foregroundStyle(Color(hex: "#7C6858"))
+            if phoneCompact {
+                VStack(alignment: .leading, spacing: 12) {
+                    headerTextBlock(phoneCompact: true)
+                    headerBadgeColumn(phoneCompact: true)
                 }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    headerTextBlock(phoneCompact: false)
 
-                Spacer(minLength: 12)
+                    Spacer(minLength: 12)
 
-                VStack(alignment: .trailing, spacing: 8) {
-                    meditationBadge(icon: "face.smiling.fill", label: gameStore.pet.mood.rawValue.capitalized)
-                    meditationBadge(icon: "dollarsign.circle.fill", label: "+\(coinReward) coin")
+                    headerBadgeColumn(phoneCompact: false)
                 }
             }
 
-            HStack(spacing: 10) {
-                summaryChip(title: "Calma", value: "+\(calmReward)%")
-                summaryChip(title: "Felicita", value: "+15%")
-                summaryChip(title: "Energia", value: "+10%")
+            if phoneCompact {
+                VStack(spacing: 8) {
+                    summaryChip(title: "Calma", value: "+\(calmReward)%")
+                    summaryChip(title: "Felicita", value: "+15%")
+                    summaryChip(title: "Energia", value: "+10%")
+                }
+            } else {
+                HStack(spacing: 10) {
+                    summaryChip(title: "Calma", value: "+\(calmReward)%")
+                    summaryChip(title: "Felicita", value: "+15%")
+                    summaryChip(title: "Energia", value: "+10%")
+                }
             }
         }
-        .padding(18)
+        .padding(phoneCompact ? 16 : 18)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(.white.opacity(0.76))
@@ -115,8 +123,32 @@ struct MeditationView: View {
         )
     }
 
-    private var modePicker: some View {
-        HStack(spacing: 10) {
+    private func headerTextBlock(phoneCompact: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Tempio Meditazione")
+                .font(.system(size: 13, weight: .black, design: .rounded))
+                .foregroundStyle(Color(hex: "#8B6340"))
+
+            Text("Respira, rallenta e registra le sessioni reali del pet.")
+                .font(.system(size: phoneCompact ? 24 : 28, weight: .black, design: .rounded))
+                .foregroundStyle(Color(hex: "#4A3425"))
+
+            Text(selectedMode.description)
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(Color(hex: "#7C6858"))
+        }
+    }
+
+    private func headerBadgeColumn(phoneCompact: Bool) -> some View {
+        VStack(alignment: phoneCompact ? .leading : .trailing, spacing: 8) {
+            meditationBadge(icon: "face.smiling.fill", label: gameStore.pet.mood.rawValue.capitalized)
+            meditationBadge(icon: "dollarsign.circle.fill", label: "+\(coinReward) coin")
+        }
+        .frame(maxWidth: phoneCompact ? .infinity : nil, alignment: phoneCompact ? .leading : .trailing)
+    }
+
+    private func modePicker(phoneCompact: Bool) -> some View {
+        HStack(spacing: phoneCompact ? 8 : 10) {
             ForEach(MeditationMode.allCases) { mode in
                 Button {
                     guard !isRunning else { return }
@@ -126,14 +158,15 @@ struct MeditationView: View {
                 } label: {
                     VStack(spacing: 6) {
                         Text(mode.icon)
-                            .font(.system(size: 18))
+                            .font(.system(size: phoneCompact ? 16 : 18))
                         Text(mode.title)
-                            .font(.system(size: 13, weight: .black, design: .rounded))
+                            .font(.system(size: phoneCompact ? 12 : 13, weight: .black, design: .rounded))
                             .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     }
                     .foregroundStyle(selectedMode == mode ? Color(hex: "#4A3425") : Color(hex: "#866B56"))
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, phoneCompact ? 10 : 12)
                     .background(
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(selectedMode == mode ? Color(hex: "#F0DFC4") : .white.opacity(0.6))
@@ -149,12 +182,14 @@ struct MeditationView: View {
         }
     }
 
-    private func focusCard(compact: Bool) -> some View {
-        VStack(spacing: 16) {
+    private func focusCard(compact: Bool, phoneCompact: Bool) -> some View {
+        let orbSize: CGFloat = compact ? (phoneCompact ? 210 : 250) : 300
+
+        return VStack(spacing: phoneCompact ? 14 : 16) {
             VStack(alignment: .leading, spacing: 6) {
-                HStack {
+                HStack(alignment: .top) {
                     Text(selectedMode.title)
-                        .font(.system(size: 24, weight: .black, design: .rounded))
+                        .font(.system(size: phoneCompact ? 22 : 24, weight: .black, design: .rounded))
                         .foregroundStyle(Color(hex: "#4A3425"))
                     Spacer()
                     Text(durationLabel(selectedDuration))
@@ -166,9 +201,11 @@ struct MeditationView: View {
                 }
 
                 Text(selectedMode.instruction(phaseName: phase.name))
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .font(.system(size: phoneCompact ? 12 : 13, weight: .semibold, design: .rounded))
                     .foregroundStyle(Color(hex: "#7C6858"))
             }
+
+            petPreview(compact: compact, phoneCompact: phoneCompact)
 
             ZStack {
                 Circle()
@@ -180,7 +217,7 @@ struct MeditationView: View {
                             endRadius: compact ? 140 : 160
                         )
                     )
-                    .frame(width: compact ? 250 : 300, height: compact ? 250 : 300)
+                    .frame(width: orbSize, height: orbSize)
                     .scaleEffect(circleScale)
                     .shadow(color: Color(hex: "#8B6340").opacity(0.22), radius: 20, x: 0, y: 14)
                     .animation(.easeInOut(duration: 0.9), value: phaseIndex)
@@ -188,59 +225,47 @@ struct MeditationView: View {
 
                 VStack(spacing: 8) {
                     Text(isRunning ? phase.name : selectedMode.restingLabel)
-                        .font(.system(size: compact ? 18 : 20, weight: .black, design: .rounded))
+                        .font(.system(size: phoneCompact ? 16 : (compact ? 18 : 20), weight: .black, design: .rounded))
                         .foregroundStyle(.white)
 
                     Text(formatTimeString(elapsedSeconds))
-                        .font(.system(size: compact ? 38 : 46, weight: .heavy, design: .rounded))
+                        .font(.system(size: phoneCompact ? 32 : (compact ? 38 : 46), weight: .heavy, design: .rounded))
                         .foregroundStyle(.white)
 
                     Text(isRunning ? phaseHint : selectedMode.restInstruction)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(.system(size: phoneCompact ? 11 : 12, weight: .bold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.82))
                 }
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 18)
+                .padding(.horizontal, phoneCompact ? 14 : 18)
             }
             .frame(maxWidth: .infinity)
 
-            durationPicker
+            durationPicker(phoneCompact: phoneCompact)
 
-            HStack(spacing: 10) {
-                Button(action: startSession) {
-                    Label("Inizia", systemImage: "play.fill")
-                        .font(.system(size: 15, weight: .black, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color(hex: "#E8D5B0"), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .foregroundStyle(Color(hex: "#4A3425"))
+            Group {
+                if phoneCompact {
+                    VStack(spacing: 10) {
+                        startButton
+                        stopButton
+                    }
+                } else {
+                    HStack(spacing: 10) {
+                        startButton
+                        stopButton
+                    }
                 }
-                .buttonStyle(.plain)
-                .disabled(isRunning)
-                .opacity(isRunning ? 0.55 : 1)
-
-                Button(action: { stopSession(resetClock: true, persist: true) }) {
-                    Label("Termina", systemImage: "stop.fill")
-                        .font(.system(size: 15, weight: .black, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(.white.opacity(0.86), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .foregroundStyle(Color(hex: "#6B4A30"))
-                }
-                .buttonStyle(.plain)
-                .disabled(!isRunning && elapsedSeconds == 0)
-                .opacity((!isRunning && elapsedSeconds == 0) ? 0.55 : 1)
             }
         }
-        .padding(compact ? 16 : 20)
+        .padding(compact ? (phoneCompact ? 14 : 16) : 20)
         .background(
             RoundedRectangle(cornerRadius: 26, style: .continuous)
                 .fill(.white.opacity(0.82))
         )
     }
 
-    private var durationPicker: some View {
-        HStack(spacing: 10) {
+    private func durationPicker(phoneCompact: Bool) -> some View {
+        HStack(spacing: phoneCompact ? 8 : 10) {
             ForEach(durations, id: \.self) { duration in
                 Button {
                     guard !isRunning else { return }
@@ -250,13 +275,13 @@ struct MeditationView: View {
                 } label: {
                     VStack(spacing: 4) {
                         Text(durationLabel(duration))
-                            .font(.system(size: 13, weight: .black, design: .rounded))
+                            .font(.system(size: phoneCompact ? 12 : 13, weight: .black, design: .rounded))
                         Text(durationCaption(duration))
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(.system(size: phoneCompact ? 10 : 11, weight: .bold, design: .rounded))
                     }
                     .foregroundStyle(selectedDuration == duration ? .white : Color(hex: "#6B4A30"))
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
+                    .padding(.vertical, phoneCompact ? 9 : 10)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
                             .fill(selectedDuration == duration ? Color(hex: "#6B4A30") : .white.opacity(0.8))
@@ -281,7 +306,7 @@ struct MeditationView: View {
                 .font(.system(size: 18, weight: .black, design: .rounded))
                 .foregroundStyle(Color(hex: "#4A3425"))
 
-            ForEach(selectedMode.techniques, id: \.self) { technique in
+            ForEach(Array(selectedMode.techniques.enumerated()), id: \.offset) { _, technique in
                 VStack(alignment: .leading, spacing: 4) {
                     Text(technique.title)
                         .font(.system(size: 13, weight: .black, design: .rounded))
@@ -387,6 +412,69 @@ struct MeditationView: View {
 
     private var coinReward: Int {
         max(2, max(elapsedSeconds, selectedDuration) / 120)
+    }
+
+    private func petPreview(compact: Bool, phoneCompact: Bool) -> some View {
+        let previewHeight: CGFloat = phoneCompact ? 140 : (compact ? 165 : 185)
+
+        return SpriteView(scene: petScene, options: [.allowsTransparency])
+            .frame(maxWidth: .infinity)
+            .frame(height: previewHeight)
+            .background(
+                RoundedRectangle(cornerRadius: phoneCompact ? 20 : 24, style: .continuous)
+                    .fill(.white.opacity(0.5))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: phoneCompact ? 20 : 24, style: .continuous)
+                    .stroke(Color.white.opacity(0.45), lineWidth: 1)
+            )
+            .onAppear {
+                syncPetScene(height: previewHeight)
+            }
+            .onChange(of: gameStore.pet.stage) { _, _ in
+                syncPetScene(height: previewHeight)
+            }
+            .onChange(of: gameStore.pet.colorIndex) { _, _ in
+                syncPetScene(height: previewHeight)
+            }
+            .onChange(of: gameStore.pet.moodRaw) { _, _ in
+                syncPetScene(height: previewHeight)
+            }
+    }
+
+    private func syncPetScene(height: CGFloat) {
+        petScene.size = CGSize(width: max(height * 1.35, 220), height: height)
+        petScene.petStage = gameStore.pet.stage
+        petScene.petColor = gameStore.currentPetColor
+        petScene.petMood = gameStore.pet.mood
+    }
+
+    private var startButton: some View {
+        Button(action: startSession) {
+            Label("Inizia", systemImage: "play.fill")
+                .font(.system(size: 15, weight: .black, design: .rounded))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color(hex: "#E8D5B0"), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .foregroundStyle(Color(hex: "#4A3425"))
+        }
+        .buttonStyle(.plain)
+        .disabled(isRunning)
+        .opacity(isRunning ? 0.55 : 1)
+    }
+
+    private var stopButton: some View {
+        Button(action: { stopSession(resetClock: true, persist: true) }) {
+            Label("Termina", systemImage: "stop.fill")
+                .font(.system(size: 15, weight: .black, design: .rounded))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(.white.opacity(0.86), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .foregroundStyle(Color(hex: "#6B4A30"))
+        }
+        .buttonStyle(.plain)
+        .disabled(!isRunning && elapsedSeconds == 0)
+        .opacity((!isRunning && elapsedSeconds == 0) ? 0.55 : 1)
     }
 
     private func meditationBadge(icon: String, label: String) -> some View {
@@ -619,6 +707,66 @@ private struct MeditationCompletion: Identifiable {
     let durationSeconds: Int
     let calmReward: Int
     let coinsReward: Int
+}
+
+private final class MeditationPetScene: SKScene {
+    private let petNode = PetNode()
+    private let shadowNode = SKShapeNode(ellipseOf: CGSize(width: 86, height: 28))
+    private var configured = false
+
+    var petColor: PetColor = .cream {
+        didSet {
+            guard configured else { return }
+            petNode.setColor(petColor)
+        }
+    }
+
+    var petMood: PetMood = .calm {
+        didSet {
+            guard configured else { return }
+            petNode.setMood(petMood)
+        }
+    }
+
+    var petStage: Int = 0 {
+        didSet {
+            guard configured else { return }
+            petNode.setStage(petStage)
+        }
+    }
+
+    override func didMove(to view: SKView) {
+        backgroundColor = .clear
+        scaleMode = .resizeFill
+
+        guard !configured else {
+            updateLayout()
+            return
+        }
+
+        shadowNode.fillColor = UIColor.black.withAlphaComponent(0.12)
+        shadowNode.strokeColor = .clear
+        addChild(shadowNode)
+        addChild(petNode)
+
+        configured = true
+        petNode.setStage(petStage)
+        petNode.setColor(petColor, animated: false)
+        petNode.setMood(petMood)
+        updateLayout()
+    }
+
+    override func didChangeSize(_ oldSize: CGSize) {
+        super.didChangeSize(oldSize)
+        guard configured else { return }
+        updateLayout()
+    }
+
+    private func updateLayout() {
+        let center = CGPoint(x: size.width / 2, y: size.height / 2)
+        shadowNode.position = CGPoint(x: center.x, y: max(24, size.height * 0.24))
+        petNode.position = CGPoint(x: center.x, y: center.y + 6)
+    }
 }
 
 #Preview {
